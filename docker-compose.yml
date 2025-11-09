@@ -1,0 +1,57 @@
+services:
+  shs-db:
+    container_name: "shs-db"
+    image: "mariadb:11.7"
+    restart: "always"
+    ports:
+      - "3306:3306"
+    stdin_open: true
+    environment:
+      MARIADB_ROOT_PASSWORD: "previetcomrade"
+      MARIADB_DATABASE: "shsdb"
+    env_file:
+      - .env.docker
+    volumes:
+      - shs-db-config:/etc/mysql
+      - shs-db-data:/var/lib/mysql
+    networks:
+      - shsnetwork
+
+  shs-cache:
+    container_name: "shs-cache"
+    image: "redis:7.2.4"
+    restart: "always"
+    ports:
+      - "6379:6379"
+    stdin_open: true
+    env_file:
+      - .env.docker
+    networks:
+      - shsnetwork
+    command: >
+      --requirepass previetcomrade
+
+networks:
+  shsnetwork: {}
+
+volumes:
+  shs-files:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./.serve
+
+  shs-db-config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./.db/etc
+
+  shs-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./.db/var
