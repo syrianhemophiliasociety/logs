@@ -1,0 +1,56 @@
+package components
+
+type InputType string
+
+const (
+	InputTypeButton        InputType = "button"
+	InputTypeCheckbox      InputType = "checkbox"
+	InputTypeColor         InputType = "color"
+	InputTypeDate          InputType = "date"
+	InputTypeDateTimeLocal InputType = "datetime-local"
+	InputTypeEmail         InputType = "email"
+	InputTypeFile          InputType = "file"
+	InputTypeHidden        InputType = "hidden"
+	InputTypeImage         InputType = "image"
+	InputTypeMonth         InputType = "month"
+	InputTypeNumber        InputType = "number"
+	InputTypePassword      InputType = "password"
+	InputTypeRadio         InputType = "radio"
+	InputTypeRange         InputType = "range"
+	InputTypeReset         InputType = "reset"
+	InputTypeSearch        InputType = "search"
+	InputTypeSubmit        InputType = "submit"
+	InputTypeTel           InputType = "tel"
+	InputTypeText          InputType = "text"
+	InputTypeTime          InputType = "time"
+	InputTypeUrl           InputType = "url"
+	InputTypeWeek          InputType = "week"
+)
+
+type InputOptions struct {
+	Id          string
+	Type        InputType
+	Name        string
+	Title       string
+	Required    bool
+	Autofocus   bool
+	Class       []string
+	Placeholder string
+}
+
+templ Input(options InputOptions) {
+	<label class={ "text-secondary", "text-[16px]" } for={ options.Id }>{ options.Title }</label>
+	<input
+		id={ options.Id }
+		type={ options.Type }
+		if options.Required {
+			required
+		}
+		class={ "w-full", "p-[10px]", "lg:p-[15px]", "rounded-[8px]", "bg-secondary", "text-primary", options.Class }
+		name={ options.Name }
+		placeholder={ options.Placeholder }
+		if options.Autofocus {
+			autofocus
+		}
+	/>
+}

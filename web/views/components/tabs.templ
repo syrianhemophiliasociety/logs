@@ -1,0 +1,63 @@
+package components
+
+import "strings"
+import "fmt"
+
+type TabContent struct {
+	Title     string
+	GroupName string
+	Content   templ.Component
+}
+
+func (t TabContent) TitleId() string {
+	return fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.Title))
+}
+
+func tabClickActionHS(currentTabIndex int, tabs []TabContent) string {
+	hsAction := strings.Builder{}
+	hsAction.WriteString("on click\n")
+
+	for i, tab := range tabs {
+		if i == currentTabIndex {
+			fmt.Fprintf(&hsAction, "remove .hidden from #%s\n", tab.TitleId())
+			fmt.Fprintf(&hsAction, "show #%s with *display\n", tab.TitleId())
+		} else {
+			fmt.Fprintf(&hsAction, "hide #%s with *display\n", tab.TitleId())
+		}
+	}
+
+	hsAction.WriteString("end")
+
+	return hsAction.String()
+}
+
+templ Tabs(tabs ...TabContent) {
+	<div class={ "flex", "flex-col",  "h-full", "w-full", "gap-5" }>
+		<!-- tabs blyat -->
+		<div class={ "flex", "justify-start", "items-center", "gap-x-8", "w-full", "tabs" }>
+			for i, tab := range tabs {
+				<input
+					type="radio"
+					name="tab"
+					id={ tab.TitleId() + "-button" }
+					if i == 0 {
+						checked
+					}
+					_={ tabClickActionHS(i, tabs) }
+				/>
+				<label for={ tab.TitleId() + "-button" }>{ tab.Title }</label>
+			}
+		</div>
+		<!-- tabs content -->
+		<div class={ "h-full", "flex", "justify-start", "items-start", "gap-8", "w-full", "tabs", "flex-col" }>
+			for i, tab := range tabs {
+				<div
+					id={ tab.TitleId() }
+					class={ "contents", templ.KV("hidden", i!=0) }
+				>
+					@tab.Content
+				</div>
+			}
+		</div>
+	</div>
+}

@@ -1,0 +1,133 @@
+package layouts
+
+import (
+	"context"
+	"fmt"
+	"shs-web/i18n"
+	"shs-web/views/components"
+	"shs-web/views/icons"
+)
+
+func lang(ctx context.Context) string {
+	langKey, ok := ctx.Value("locale").(string)
+	if !ok {
+		return "ar"
+	}
+	return langKey
+}
+
+templ Default(props PageProps, content templ.Component) {
+	<!DOCTYPE html>
+	<html
+		lang={ lang(ctx) }
+		if lang(ctx) == "ar" {
+			dir="rtl"
+		} else {
+			dir="ltr"
+		}
+	>
+		<head>
+			<meta charset="UTF-8"/>
+			<title>{ props.Title } - { i18n.StringsCtx(ctx).Title }</title>
+			<link rel="icon" type="image/png" href="/assets/favicon-96x96.png" sizes="96x96"/>
+			<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+			<link rel="shortcut icon" href="/assets/favicon.ico"/>
+			<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"/>
+			<meta name="apple-mobile-web-app-title" content="Syrian Hemophelia Socity Logs"/>
+			<link rel="manifest" href="/assets/site.webmanifest"/>
+			<meta
+				name="viewport"
+				content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=yes"
+			/>
+			<meta name="description" content="A patient care follow up platform for Syrian Hemophilia Society"/>
+			<meta name="og:title" content={ props.Title + " - SyrianHemophiliaSocietyLogs" }/>
+			<meta name="og:description" content="A patient care follow up platform for Syrian Hemophilia Society"/>
+			<meta property="og:site_name" content="SyrianHemophiliaSocietyLogs"/>
+			if props.Url  != "" {
+				<meta property="og:url" content={ props.Url }/>
+			}
+			if props.ImageUrl  != "" {
+				<meta property="og:image" content={ props.ImageUrl }/>
+			}
+			<meta
+				name="keywords"
+				content="shs-web"
+			/>
+			<link
+				defer
+				rel="stylesheet"
+				type="text/css"
+				href="/assets/css/ubuntu-font.css"
+			/>
+			<link
+				defer
+				rel="stylesheet"
+				type="text/css"
+				href="/assets/css/ibm-plex-font.css"
+			/>
+			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", ctx.Value("theme-name").(string)) } rel="stylesheet"/>
+			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
+			<link defer href="/assets/css/refresher.css" rel="stylesheet"/>
+			<script defer src="/assets/js/htmx/htmx.min.js"></script>
+			<script defer src="/assets/js/htmx/json-enc.js"></script>
+			<script defer src="/assets/js/htmx/loading-states.js"></script>
+			<script defer src="/assets/js/htmx/hyperscript.min.js"></script>
+		</head>
+		<body
+			hx-ext="loading-states"
+			style="min-width: 360px; min-height: 100dvh; padding: 0; margin: 0; background-color: var(--color-primary);"
+			if lang(ctx) == "ar" {
+				class="font-IBMPlex"
+			} else {
+				class="font-Ubuntu"
+			}
+		>
+			<div class="refresher">
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+				<div class="loading-bar"></div>
+			</div>
+			<main
+				class={ "text-secondary", "flex" }
+				style="width: 100%; height: 100dvh;"
+			>
+				@components.Sidebar()
+				<div
+					id="main-contents"
+					style="display: contents; width: 100%; height: 100%;"
+				>
+					@content
+				</div>
+			</main>
+			<div id="loading" style="display: none;">
+				@components.Loading()
+			</div>
+			@icons.IconsLoader()
+			<input id="clipboard-text-blyat" type="text" hidden/>
+			//
+			<script defer src="/assets/js/utils.js"></script>
+			<script defer src="/assets/js/router.js"></script>
+			<script defer src="/assets/js/refresher.js"></script>
+			<script type="module">
+				function registerServiceWorkers() {
+					if (!("serviceWorker" in navigator)) {
+						console.error("Browser doesn't support service workers");
+						return;
+					}
+					window.addEventListener("load", () => {
+						navigator.serviceWorker
+							.register("/assets/js/service-worker.js")
+							.then((reg) => {
+								console.log("Service Worker Registered", reg);
+							})
+							.catch((err) => {
+								console.error("Service Worker Registration failed:", err);
+							});
+					});
+				}
+				registerServiceWorkers();
+			</script>
+		</body>
+	</html>
+}

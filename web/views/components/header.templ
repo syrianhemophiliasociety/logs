@@ -1,0 +1,25 @@
+package components
+
+import "shs-web/i18n"
+
+templ Header() {
+	<header
+		id="dank-header"
+		class={
+			"bg-primary", "p-2", "text-secondary", "w-full",
+			"flex", "flex-row", "justify-between", "items-center",
+			"gap-y-5", "border-b", "border-b-secondary",
+		}
+	>
+		<div class={ "flex", "justify-center", "items-center", "flex-row", "gap-1", "h-min" }>
+			<img
+				width="40"
+				height="40"
+				src="/assets/images/logo.webp"
+				alt="SyrianHemophiliaSocietyLogs Logo"
+				class={ "w-[40px]", "rounded-md" }
+			/>
+			<h1 class={ "text-2xl" }>{ i18n.StringsCtx(ctx).Title }</h1>
+		</div>
+	</header>
+}

@@ -3,6 +3,7 @@ package actions
 import "shs/app/models"
 
 type Virus struct {
+	Id   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -75,6 +76,7 @@ func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, err
 	outViri := make([]Virus, 0, len(viri))
 	for _, virus := range viri {
 		outViri = append(outViri, Virus{
+			Id:   virus.Id,
 			Name: virus.Name,
 		})
 	}

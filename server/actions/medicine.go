@@ -6,9 +6,10 @@ import (
 )
 
 type Medicine struct {
-	Name string
-	Dose int
-	Unit models.MedicineDoseUnit
+	Id   uint                    `json:"id"`
+	Name string                  `json:"name"`
+	Dose int                     `json:"dose"`
+	Unit models.MedicineDoseUnit `json:"unit"`
 }
 
 type CreateMedicineParams struct {
@@ -79,6 +80,7 @@ func (a *Actions) ListAllMedicine(params ListAllMedicineParams) (ListAllMedicine
 	outMedicines := make([]Medicine, 0, len(medicines))
 	for _, medicine := range medicines {
 		outMedicines = append(outMedicines, Medicine{
+			Id:   medicine.Id,
 			Name: medicine.Name,
 			Dose: medicine.Dose,
 			Unit: medicine.Unit,

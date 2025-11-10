@@ -1,0 +1,40 @@
+package components
+
+import "shs-web/i18n"
+
+templ Sidebar() {
+	<div class={ "w-[200px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
+		<div class={ "flex", "justify-center", "items-center", "flex-row", "gap-1", "h-min" }>
+			<img
+				width="40"
+				height="40"
+				src="/assets/images/logo.webp"
+				alt="SyrianHemophiliaSocietyLogs Logo"
+				class={ "w-[40px]", "rounded-md" }
+			/>
+			<h1 class={ "text-xl" }>{ i18n.StringsCtx(ctx).Title }</h1>
+		</div>
+		<div>
+			<nav class={ "p-10" }>
+				<ul class={ "list-none", "flex", "flex-col", "gap-x-5" }>
+					<li>
+						@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
+					</li>
+					<li>
+						@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
+					</li>
+					<li>
+						@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
+					</li>
+					<li>
+						@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)
+					</li>
+					<li>
+						@RouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false)
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div>3</div>
+	</div>
+}

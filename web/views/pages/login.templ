@@ -1,0 +1,107 @@
+package pages
+
+import "shs-web/views/components"
+import "shs-web/i18n"
+
+/*
+   This page uses desktop design after lg (1024px)
+*/
+
+templ Login() {
+	<main id="main-login-container" class={ "w-full", "h-screen", "flex" }>
+		<!-- logo and details -->
+		<div class={ "hidden", "lg:block", "relative", "w-[70%]", "xl:w-full", "h-fit", "flex" }>
+			<!-- logo -->
+			<div
+				class={
+					"w-full", "h-screen", "bg-primary", "bg-[url('/assets/images/shs-cropped.png')]",
+					"bg-repeat", "bg-cover", "bg-center",
+				}
+			></div>
+			<!-- details -->
+			<div class={ "absolute", "top-0", "left-0", "z-10", "w-full", "h-full", "bg-primary-trans-20" }>
+				<div class={ "absolute", "start-[20px]", "bottom-[20px]" }>
+					@components.Intro()
+					@components.Links()
+				</div>
+			</div>
+		</div>
+		<!-- login form -->
+		<div
+			class={
+				"w-full", "p-[15px]", "lg:px-[40px]",
+				"bg-primary-trans-20", "flex", "flex-col", "justify-center", "items-center",
+			}
+		>
+			<div class={ "flex", "flex-col", "justify-start", "gap-y-4", "lg:hidden", "mb-5", "text-secondary" }>
+				<div class={ "flex", "justify-center", "items-center", "flex-row", "gap-1", "h-min" }>
+					<img
+						width="55"
+						height="55"
+						src="/assets/images/logo.webp"
+						alt="SyrianHemophiliaSocietyLogs Logo"
+						class={ "w-[55px]", "rounded-md" }
+					/>
+					<h1 class={ "text-3xl" }>{ i18n.StringsCtx(ctx).Title }</h1>
+				</div>
+				@components.Intro()
+			</div>
+			<div
+				id="replaceable-login-form"
+				class={
+					"w-full", "h-[95%]", "lg:h-auto", "bg-secondary-trans-20", "backdrop-blur-xs",
+					"p-[20px]", "lg:p-[60px]", "rounded-[10px]",
+					"flex", "flex-col", "justify-between", "lg:gap-y-[30px]",
+				}
+			>
+				<h1
+					class={ "text-secondary", "text-[35px]", "lg:text-[48px]", "font-light" }
+				>
+					{ i18n.StringsCtx(ctx).Login }
+				</h1>
+				@loginForm()
+			</div>
+			<div class={ "block", "lg:hidden" }>
+				@components.Links()
+			</div>
+		</div>
+	</main>
+}
+
+templ loginForm() {
+	<form
+		class={ "flex", "flex-col", "gap-y-[15px]", "lg:gap-y-[25px]" }
+		hx-post="/api/login/username"
+		hx-ext="json-enc"
+		hx-target="#replaceable-login-form"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+	>
+		<div class={ "flex", "flex-col", "gap-y-[15px]" }>
+			@components.Input(components.InputOptions{
+				Id:          "username",
+				Name:        "username",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   true,
+				Title:       i18n.StringsCtx(ctx).LoginUsername,
+				Placeholder: i18n.StringsCtx(ctx).LoginEnterUsername,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "password",
+				Name:        "password",
+				Type:        components.InputTypePassword,
+				Required:    true,
+				Autofocus:   true,
+				Title:       i18n.StringsCtx(ctx).LoginPassword,
+				Placeholder: i18n.StringsCtx(ctx).LoginEnterPassword,
+			})
+			<button
+				type="submit"
+				class={ "cursor-pointer", "bg-secondary", "rounded-[50px]", "p-[10px]", "px-[60px]", "w-full", "text-accent" }
+			>
+				{ i18n.StringsCtx(ctx).Login }
+			</button>
+		</div>
+	</form>
+}

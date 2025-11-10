@@ -1,0 +1,13 @@
+.DS_Store
+node_modules
+.env
+.env.*
+!.env.example
+shs-web
+handlers/static/assets/js/htmx/*
+handlers/static/assets/css/tailwind.css
+google-service-account.json
+*_templ.go
+views/**/*_templ.go
+views/**/*.txt
+.*/

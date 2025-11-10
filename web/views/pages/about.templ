@@ -1,0 +1,165 @@
+package pages
+
+import (
+	"fmt"
+	"shs-web/views/components"
+)
+
+var badges = []struct {
+	img   string
+	title string
+	link  string
+}{
+	{title: "Built with Go!", link: "https://golang.org", img: "https://dankstuff.net/assets/dank-imgs/builtwithgo.png"},
+	{title: "Built with HTMX!", link: "https://htmx.org", img: "https://dankstuff.net/assets/dank-imgs/builtwithhtmx.webp"},
+	{title: "A DankStuff product!", link: "https://dankstuff.net", img: "https://dankstuff.net/assets/dank-imgs/dankstuffproduct.webp"},
+	{title: "Donate, maybe?", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/donate00.gif"},
+	{title: "Made by Baraa", link: "https://mbaraa.com", img: "https://mbaraa.com/resources/images/madebybaraa.webp"},
+	{title: "Buy me a coffee!", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/coffee_set2c.gif"},
+	{title: "NEON", link: "", img: "https://dankstuff.net/assets/dank-imgs/fairlite.gif"},
+	{title: "This site is blazingly fast!", link: "", img: "https://dankstuff.net/assets/dank-imgs/fastweb.gif"},
+	{title: "World Wide Web Vibes Kurwa!", link: "", img: "https://dankstuff.net/assets/dank-imgs/geocitieswww.gif"},
+	{title: "Buy me a Coffee but a different logo :0", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/dollarspindownd.gif"},
+	{title: "Smile or something, maybe your smile can save someone's life!", link: "", img: "https://dankstuff.net/assets/dank-imgs/hasmile.gif"},
+	{title: "JK JK!", link: "", img: "https://dankstuff.net/assets/dank-imgs/thispageviolatestos.gif"},
+}
+
+templ About() {
+	@components.Container(aboutHeader(), aboutContent())
+}
+
+templ aboutHeader() {
+	<section id="brand" class={ "w-full", "flex", "justify-center" }>
+		<div
+			class={ "flex", "flex-col", "justify-center", "items-center", "gap-y-3", }
+		>
+			<img
+				width="200"
+				height="200"
+				class={ "w-[200px]", "h-[200px]", "rounded-[100px]" }
+				src="/assets/images/logo.webp"
+				alt="SyrianHemophiliaSocietyLogs Logo"
+			/>
+			<h2 class={ "text-3xl" }>SyrianHemophiliaSocietyLogs</h2>
+			<h3>A patient care follow up platform for Syrian Hemophilia Society</h3>
+			@components.Links()
+		</div>
+	</section>
+}
+
+templ aboutContent() {
+	<div class={ "flex", "flex-col", "gap-y-4" }>
+		<section id="more-info" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>What should you expect?</h2>
+			<p>SyrianHemophiliaSocietyLogs is something idk</p>
+		</section>
+		<section id="license" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>License</h2>
+			<p>
+				This application is licensed under the GNU General Public License version 3 (GPLv3), that is, this application is free to use for any purpose, it’s source-code is available on GitHub here for any purpose needed to look at the code, any redestribution of the application has to be under GPLv3 including license and copyright notices.
+				<br/>
+				Full license is available <a class={ "nav-link" } href="https://github.com/mbaraa/shs-web/blob/main/LICENSE" target="_blank">here</a>.
+			</p>
+		</section>
+		<section id="privacy" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>Privacy</h2>
+			<p>
+				You can find details about privacy <a class={ "nav-link" } href="/privacy">here</a>.
+				<br/>
+				TLDR; I don’t collect any data, not sure install uBlock and check trackers yourself or check the code on <a class={ "nav-link" } href="https://github.com/mbaraa/shs-web" target="_blank">GitHub</a>.
+			</p>
+		</section>
+		<section id="technologies" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>Technologies used</h2>
+			<ul class={ "list-disc", "ms-5" }>
+				<li><a class={ "nav-link" } target="_blank" href="https://golang.org">Go</a>: Main programming language.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://developer.mozilla.org/en-US/docs/Web/javascript">JavaScript</a>: Dynamic client logic.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://hyperscript.org">_hyperscript</a>: Dynamic client logic with style 😎.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://templ.guide">templ</a>:  The better <a class={ "nav-link" } harget="_blank" href="https://pkg.go.dev/html/template">html/template</a>.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://htmx.org">htmx</a>: The front-end library of peace.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://gorm.io">GORM</a>: The fantastic ORM library for Golang.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://mariadb.org">MariaDB</a>: Relational database.</li>
+				<li><a class={ "nav-link" } harget="_blank" href="https://github.com/tdewolff/minify">minify</a>: Minify assets text files.</li>
+			</ul>
+			<button
+				class={ "text-accent", "p-5", "rounded-md", "border", "border-black" }
+				_="on pointerdown
+              repeat until event pointerup from the document
+                set rand to Math.random() * 360
+                transition *background-color
+                        to `hsl($rand 100% 90%)`
+                      over 250ms
+              end
+              transition *background-color to initial"
+				style="background-color: rgb(245, 255, 204); transition: 250ms ease-in;"
+			>
+				This nugget uses hyperscript :)
+			</button>
+		</section>
+		<section id="acknoledgements" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>Acknoledgements</h2>
+			<ul class={ "list-disc", "ms-5" }>
+				<li>
+					<p class={ "font-bold" }>This project is not affiliated with anyone :)</p>
+				</li>
+				<li>Loader’s CSS was made by <a class={ "nav-link" } href="https://github.com/thamudi" target="_blank">&commat;thamudi</a> </li>
+			</ul>
+		</section>
+		<section id="badges" class={ "flex", "flex-col", "gap-y-1" }>
+			<h2 class={ "text-xl", "font-bold" }>Awesome Badges</h2>
+			<div
+				class={ "flex", "gap-2", "flex-wrap", "justify-center", "space-x-2", "!p-3", "!mt-4", "border", "bg-white/10", "shadow-sm", "text-white" }
+			>
+				<div class={ "flex", "place-content-center", "items-center", "bg-black", "!p-2", "!max-h-10" }>
+					<img
+						class="h-6 mx-1"
+						style="image-rendering: pixelated"
+						src="/assets/images/github.svg"
+						alt="source code"
+						title="source code"
+					/>
+					<p>
+						<a
+							class="text-md underline text-white"
+							href="https://github.com/mbaraa/shs-web"
+							target="_blank"
+						>&nbsp;Source code</a>
+					</p>
+				</div>
+				for _, thing := range badges {
+					if thing.link != "" {
+						<a href={ templ.SafeURL(thing.link) } target="_blank">
+							<img
+								class="inline-block h-10"
+								style="image-rendering: pixelated"
+								src={ thing.img }
+								alt={ thing.title }
+								title={ thing.title }
+							/>
+						</a>
+					} else {
+						<img
+							class="inline-block h-10"
+							style="image-rendering: pixelated"
+							src={ thing.img }
+							alt={ thing.title }
+							title={ thing.title }
+						/>
+					}
+				}
+			</div>
+			<div
+				class="text-center mx-auto opacity-20 hover:opacity-100 transition duration-500 !min-w-20"
+			>
+				<p
+					class="font-mono font-bold bg-[#fcfcde] px-1 border-2 border-black text-black mt-4"
+				>
+					version:
+					<a class="italic" href="https://github.com/mbaraa/shs-web">
+						{ fmt.Sprint(ctx.Value("version")) }
+					</a>
+				</p>
+			</div>
+		</section>
+	</div>
+}

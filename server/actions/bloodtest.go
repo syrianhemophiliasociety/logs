@@ -13,6 +13,7 @@ type BloodTestField struct {
 }
 
 type BloodTest struct {
+	Id     uint             `json:"id"`
 	Name   string           `json:"name"`
 	Fields []BloodTestField `json:"fields"`
 }
@@ -139,6 +140,7 @@ func mapModelBloodTest(bt models.BloodTest) BloodTest {
 	btFields := make([]BloodTestField, 0, len(bt.Fields))
 	for _, field := range bt.Fields {
 		btFields = append(btFields, BloodTestField{
+
 			Name:     field.Name,
 			Unit:     field.Unit,
 			MinValue: field.MinValue,
@@ -147,6 +149,7 @@ func mapModelBloodTest(bt models.BloodTest) BloodTest {
 	}
 
 	return BloodTest{
+		Id:     bt.Id,
 		Name:   bt.Name,
 		Fields: btFields,
 	}

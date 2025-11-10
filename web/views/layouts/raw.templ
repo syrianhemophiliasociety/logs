@@ -1,0 +1,97 @@
+package layouts
+
+import (
+	"fmt"
+	"shs-web/views/components"
+)
+
+templ Raw(props PageProps, content templ.Component) {
+	<!DOCTYPE html>
+	<html
+		lang={ lang(ctx) }
+		if lang(ctx) == "ar" {
+			dir="rtl"
+		} else {
+			dir="ltr"
+		}
+	>
+		<head>
+			<meta charset="UTF-8"/>
+			<title>{ props.Title } - SyrianHemophiliaSocietyLogs</title>
+			<link rel="icon" type="image/png" href="/assets/favicon-96x96.png" sizes="96x96"/>
+			<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"/>
+			<link rel="shortcut icon" href="/assets/favicon.ico"/>
+			<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"/>
+			<meta name="apple-mobile-web-app-title" content="SyrianHemophiliaSocietyLogs"/>
+			<link rel="manifest" href="/assets/site.webmanifest"/>
+			<meta name="theme-color" content="#DFD9B4"/>
+			<meta
+				name="viewport"
+				content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=yes"
+			/>
+			<meta name="description" content="A patient care follow up platform for Syrian Hemophilia Society"/>
+			<meta name="og:title" content={ props.Title + " - SyrianHemophiliaSocietyLogs" }/>
+			<meta name="og:description" content="A patient care follow up platform for Syrian Hemophilia Society"/>
+			<meta property="og:site_name" content="SyrianHemophiliaSocietyLogs"/>
+			if props.Url != "" {
+				<meta property="og:url" content={ props.Url }/>
+			}
+			if props.ImageUrl  != "" {
+				<meta property="og:image" content={ props.ImageUrl }/>
+			}
+			<meta
+				name="keywords"
+				content="shs-web"
+			/>
+			<link
+				defer
+				rel="stylesheet"
+				type="text/css"
+				href="/assets/css/ubuntu-font.css"
+			/>
+			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", ctx.Value("theme-name").(string)) } rel="stylesheet"/>
+			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
+			<script defer src="/assets/js/htmx/htmx.min.js"></script>
+			<script defer src="/assets/js/htmx/json-enc.js"></script>
+			<script defer src="/assets/js/htmx/loading-states.js"></script>
+			<script defer src="/assets/js/htmx/hyperscript.min.js"></script>
+		</head>
+		<body
+			hx-ext="loading-states"
+			style="min-width: 360px; min-height: 100dvh; padding: 0; margin: 0; background-color: var(--color-primary);"
+			if lang(ctx) == "ar" {
+				class="font-IBMPlex"
+			} else {
+				class="font-Ubuntu"
+			}
+		>
+			<main id="main-contents" style="display: contents">
+				@content
+			</main>
+			<div id="loading" style="display: none;">
+				@components.Loading()
+			</div>
+			//
+			<script defer src="/assets/js/utils.js"></script>
+			<script type="module">
+				function registerServiceWorkers() {
+					if (!("serviceWorker" in navigator)) {
+						console.error("Browser doesn't support service workers");
+						return;
+					}
+					window.addEventListener("load", () => {
+						navigator.serviceWorker
+							.register("/assets/js/service-worker.js")
+							.then((reg) => {
+								console.log("Service Worker Registered", reg);
+							})
+							.catch((err) => {
+								console.log("Service Worker Registration failed:", err);
+							});
+					});
+				}
+				registerServiceWorkers();
+			</script>
+		</body>
+	</html>
+}

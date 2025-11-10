@@ -1,0 +1,11 @@
+package components
+
+import "shs-web/i18n"
+
+templ Intro() {
+	<div class={ "p-[20px]", "bg-accent-trans-69", "max-w-[420px]", "rounded-xl" }>
+		<p class={ "text-secondary", "text-[20px]", "font-thin" }>
+			{ i18n.StringsCtx(ctx).Description }
+		</p>
+	</div>
+}

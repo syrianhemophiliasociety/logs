@@ -1,0 +1,146 @@
+package pages
+
+import (
+	"net/http"
+	"shs-web/actions"
+	"shs-web/config"
+	"shs-web/handlers/middlewares/contenttype"
+	"shs-web/i18n"
+	"shs-web/views/components"
+	"shs-web/views/layouts"
+	"shs-web/views/pages"
+
+	_ "github.com/a-h/templ"
+)
+
+type pagesHandler struct {
+	usecases *actions.Actions
+}
+
+func New(usecases *actions.Actions) *pagesHandler {
+	return &pagesHandler{
+		usecases: usecases,
+	}
+}
+
+func (p *pagesHandler) HandleHomePage(w http.ResponseWriter, r *http.Request) {
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavHome)
+		w.Header().Set("HX-Push-Url", "/")
+		pages.Index().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavHome,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Index()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleAboutPage(w http.ResponseWriter, r *http.Request) {
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavAbout)
+		w.Header().Set("HX-Push-Url", "/about")
+		pages.About().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavAbout,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.About()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandlePrivacyPage(w http.ResponseWriter, r *http.Request) {
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavPrivacy)
+		w.Header().Set("HX-Push-Url", "/privacy")
+		pages.Privacy().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPrivacy,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Privacy()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleLoginPage(w http.ResponseWriter, r *http.Request) {
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavLogin)
+		w.Header().Set("HX-Push-Url", "/login")
+		pages.Login().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Raw(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavLogin,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Login()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleVirusesPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	viruses, err := p.usecases.ListAllViruses(actions.ListAllVirusesParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavViruses)
+		w.Header().Set("HX-Push-Url", "/viruses")
+		pages.Viruses(viruses).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavViruses,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Viruses(viruses)).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleMedicinesPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	medicines, err := p.usecases.ListAllMedicines(actions.ListAllMedicinesParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavMedicine)
+		w.Header().Set("HX-Push-Url", "/medicines")
+		pages.Medicines(medicines).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavMedicine,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Medicines(medicines)).Render(r.Context(), w)
+}

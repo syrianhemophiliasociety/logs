@@ -1,0 +1,55 @@
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Thin.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-ExtraLight.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Light.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Regular.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Medium.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans Arabic", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Bold.ttf");
+}
