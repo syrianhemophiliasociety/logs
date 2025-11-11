@@ -1,0 +1,121 @@
+package pages
+
+import (
+	"fmt"
+	"shs-web/actions"
+	"shs-web/i18n"
+	"shs-web/views/components"
+)
+
+templ BloodTests(bloodTests []actions.BloodTest) {
+	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
+		<h1 class="font-bold text-2xl text-secondary w-full">{ i18n.StringsCtx(ctx).NavBloodTests }</h1>
+		@components.Tabs(
+			components.TabContent{
+				Title:     "List",
+				GroupName: "BloodTest",
+				Content:   allBloodTests(bloodTests),
+			},
+			components.TabContent{
+				Title:     "New",
+				GroupName: "BloodTest",
+				Content:   newBloodTest(),
+			})
+	</div>
+}
+
+templ allBloodTests(bloodTests []actions.BloodTest) {
+	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		for _, bloodTest := range bloodTests {
+			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+				<div class={ "flex", "gap-x-5" }>
+					<span class="w-20 text-lg text-secondary">{ bloodTest.Name }</span>
+				</div>
+				<button
+					class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
+					hx-delete={ fmt.Sprintf("/api/blood-test/%d", bloodTest.Id) }
+					hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' bloodTest?",
+        bloodTest.Name) }
+					hx-trigger="click consume"
+					hx-target="closest div"
+					hx-swap="delete"
+				>
+					{ 
+        i18n.StringsCtx(ctx).FormsDelete }
+				</button>
+			</div>
+		}
+	</div>
+}
+
+templ newBloodTest() {
+	<form
+		class={ "flex" , "flex-row", "w-full", "justify-between" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+		hx-post="/api/blood-test"
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+	>
+		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+			<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestDetails }</p>
+			@components.Input(components.InputOptions{
+				Id:          "name",
+				Name:        "name",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   true,
+				Title:       i18n.StringsCtx(ctx).BloodTestName,
+				Placeholder: i18n.StringsCtx(ctx).EnterBloodTestName,
+			})
+			<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestFields }</p>
+			<div id="blood_test_field_container" class={ "flex", "flex-row", "justify-between", "gap-5" }>
+				<div class={ "block", }>
+					@components.Input(components.InputOptions{
+						Id:          "blood_test_field_name",
+						Name:        "blood_test_field_name",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).BloodTestFieldName,
+						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldName,
+					})
+				</div>
+				<div class={ "block" }>
+					@components.Select(components.SelectParams{
+						Id:          "blood_test_field_unit",
+						Name:        i18n.StringsCtx(ctx).BloodTestFieldUnit,
+						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldUnit,
+						Options: []components.SelectOption{
+							{Name: "mL", Value: "mL"},
+							{Name: "Second", Value: "second"},
+							{Name: "Gram", Value: "g"},
+							{Name: "Percent", Value: "%"},
+							{Name: "Cell", Value: "cell"},
+							{Name: "BU", Value: "BU"},
+							{Name: "g/dL", Value: "g/dL"},
+							{Name: "g/L", Value: "g/L"},
+							{Name: "g/cm^3", Value: "g/cm^3"},
+							{Name: "cell/mm^3", Value: "cell/mm^3"},
+							{Name: "IU/dL", Value: "IU/dL"},
+						},
+					})
+				</div>
+			</div>
+			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+				{ i18n.StringsCtx(ctx).FormsSubmit }
+			</button>
+		</div>
+		<div>
+			<button
+				type="button"
+				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+				_="on click put #blood_test_field_container's outerHTML after #blood_test_field_container"
+			>
+				{ i18n.StringsCtx(ctx).FormsNewField }
+			</button>
+		</div>
+	</form>
+	<div id="status-msg"></div>
+}

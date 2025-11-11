@@ -1,0 +1,28 @@
+package components
+
+type SelectOption struct {
+	Name  string
+	Value string
+}
+
+type SelectParams struct {
+	Id          string
+	Name        string
+	Placeholder string
+	Options     []SelectOption
+}
+
+templ Select(params SelectParams) {
+	<label class={ "text-secondary", "text-[16px]" } for={ params.Id }>{ params.Name }</label>
+	<select
+		name={ params.Id }
+		id={ params.Id }
+		class={ "w-full", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary" }
+		required
+	>
+		<option selected="true" disabled="disabled">{ params.Placeholder }</option>
+		for _, option := range params.Options {
+			<option value={ option.Value }>{ option.Name }</option>
+		}
+	</select>
+}

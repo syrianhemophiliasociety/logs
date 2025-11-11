@@ -28,8 +28,9 @@ type Keys struct {
 	NavViruses    string
 	NavManagement string
 
-	FormsSubmit string
-	FormsDelete string
+	FormsSubmit   string
+	FormsDelete   string
+	FormsNewField string
 
 	Virus          string
 	EnterVirusName string
@@ -40,6 +41,16 @@ type Keys struct {
 	EnterMedicineDose string
 	MedicineUnit      string
 	EnterMedicineUnit string
+
+	BloodTest               string
+	BloodTestDetails        string
+	BloodTestName           string
+	EnterBloodTestName      string
+	BloodTestFields         string
+	BloodTestFieldName      string
+	EnterBloodTestFieldName string
+	BloodTestFieldUnit      string
+	EnterBloodTestFieldUnit string
 }
 
 var localeKeys = map[string]Keys{

@@ -9,7 +9,7 @@ import (
 
 templ Viruses(viruses []actions.Virus) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
-		<h1 class="w-20 font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavViruses }</h1>
+		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavViruses }</h1>
 		@components.Tabs(
 			components.TabContent{
 				Title:     "List",
@@ -25,23 +25,25 @@ templ Viruses(viruses []actions.Virus) {
 }
 
 templ allViruses(viruses []actions.Virus) {
-	for _, virus := range viruses {
-		<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-			<span class="w-20 text-xl text-white">{ virus.Name }</span>
-			<button
-				class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
-				hx-delete={ fmt.Sprintf("/api/virus/%d", virus.Id) }
-				hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' virus?",
+	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		for _, virus := range viruses {
+			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+				<span class="w-20 text-xl text-secondary">{ virus.Name }</span>
+				<button
+					class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
+					hx-delete={ fmt.Sprintf("/api/virus/%d", virus.Id) }
+					hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' virus?",
         virus.Name) }
-				hx-trigger="click consume"
-				hx-target="closest div"
-				hx-swap="delete"
-			>
-				{ 
+					hx-trigger="click consume"
+					hx-target="closest div"
+					hx-swap="delete"
+				>
+					{ 
         i18n.StringsCtx(ctx).FormsDelete }
-			</button>
-		</div>
-	}
+				</button>
+			</div>
+		}
+	</div>
 }
 
 templ newVirus() {

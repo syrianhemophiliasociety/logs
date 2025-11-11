@@ -43,13 +43,14 @@ templ Tabs(tabs ...TabContent) {
 					if i == 0 {
 						checked
 					}
+					class={ "hidden" }
 					_={ tabClickActionHS(i, tabs) }
 				/>
-				<label for={ tab.TitleId() + "-button" }>{ tab.Title }</label>
+				<label class={ "p-2", "cursor-pointer", "rounded-md", "inline-block", "ms-1" } for={ tab.TitleId() + "-button" }>{ tab.Title }</label>
 			}
 		</div>
 		<!-- tabs content -->
-		<div class={ "h-full", "flex", "justify-start", "items-start", "gap-8", "w-full", "tabs", "flex-col" }>
+		<div class={ "h-full", "flex", "justify-start", "items-start", "gap-8", "w-full", "flex-col" }>
 			for i, tab := range tabs {
 				<div
 					id={ tab.TitleId() }

@@ -144,3 +144,34 @@ func (p *pagesHandler) HandleMedicinesPage(w http.ResponseWriter, r *http.Reques
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
 	}, pages.Medicines(medicines)).Render(r.Context(), w)
 }
+
+func (p *pagesHandler) HandleBloodTestsPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	bloodTests, err := p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavBloodTests)
+		w.Header().Set("HX-Push-Url", "/blood-tests")
+		pages.BloodTests(bloodTests).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavBloodTests,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.BloodTests(bloodTests)).Render(r.Context(), w)
+}
