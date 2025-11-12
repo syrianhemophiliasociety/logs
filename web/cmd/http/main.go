@@ -77,6 +77,7 @@ func main() {
 	logoutApi := apis.NewLogoutApi(usecases)
 	virusApi := apis.NewVirusApi(usecases)
 	medicineApi := apis.NewMedicineApi(usecases)
+	bloodTestApi := apis.NewBloodTestApi(usecases)
 
 	apisHandler := http.NewServeMux()
 	apisHandler.HandleFunc("POST /login/username", usernameLoginApi.HandleUsernameLogin)
@@ -87,6 +88,9 @@ func main() {
 
 	apisHandler.HandleFunc("POST /medicine", authMiddleware.AuthApi(medicineApi.HandleCreateMedicine))
 	apisHandler.HandleFunc("DELETE /medicine/{id}", authMiddleware.AuthApi(medicineApi.HandleDeleteMedicine))
+
+	apisHandler.HandleFunc("POST /blood-test", authMiddleware.AuthApi(bloodTestApi.HandleCreateBloodTest))
+	apisHandler.HandleFunc("DELETE /blood-test/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", locale.Handler(ismobile.Handler(theme.Handler(pagesHandler))))

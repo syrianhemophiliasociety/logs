@@ -20,7 +20,7 @@ type BloodTest struct {
 
 type CreateBloodTestParams struct {
 	ActionContext
-	BloodTest BloodTest `json:"blood_test"`
+	BloodTest BloodTest `json:"new_blood_test"`
 }
 
 type CreateBloodTestPayload struct {

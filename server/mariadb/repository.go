@@ -119,6 +119,21 @@ func (r *Repository) CreateBloodTest(bt models.BloodTest) (models.BloodTest, err
 func (r *Repository) DeleteBloodTest(id uint) error {
 	err := tryWrapDbError(
 		r.client.
+			Model(new(models.BloodTestField)).
+			Delete(&models.BloodTestField{BloodTestId: id}, "blood_test_id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "blood_test",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
 			Model(new(models.BloodTest)).
 			Delete(&models.BloodTest{Id: id}, "id = ?", id).
 			Error,

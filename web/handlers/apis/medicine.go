@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"shs-web/actions"
 	"shs-web/i18n"
+	"shs-web/log"
 	"shs-web/views/components"
 	"strconv"
 )
@@ -23,6 +24,7 @@ func (v *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Reques
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
 		return
 	}
 
@@ -30,6 +32,7 @@ func (v *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Reques
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
 		return
 	}
 
@@ -39,6 +42,7 @@ func (v *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Reques
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
 		return
 	}
 
@@ -49,6 +53,7 @@ func (v *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Reques
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
 		return
 	}
 
@@ -61,6 +66,7 @@ func (v *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Reques
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
 		return
 	}
 

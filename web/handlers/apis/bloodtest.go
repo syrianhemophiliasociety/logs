@@ -2,6 +2,7 @@ package apis
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"shs-web/actions"
 	"shs-web/i18n"
@@ -10,17 +11,17 @@ import (
 	"strconv"
 )
 
-type virusApi struct {
+type bloodTestApi struct {
 	usecases *actions.Actions
 }
 
-func NewVirusApi(usecases *actions.Actions) *virusApi {
-	return &virusApi{
+func NewBloodTestApi(usecases *actions.Actions) *bloodTestApi {
+	return &bloodTestApi{
 		usecases: usecases,
 	}
 }
 
-func (v *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
+func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -28,17 +29,32 @@ func (v *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var reqBody actions.Virus
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
 	}
 
-	_, err = v.usecases.CreateVirus(actions.CreateVirusParams{
-		RequestContext: ctx,
-		NewVirus:       reqBody,
+	var reqBody actions.RequestBloodTest
+	var reqBody2 actions.RequestBloodTestSingle
+	err = json.Unmarshal(body, &reqBody)
+	if err != nil {
+		err = json.Unmarshal(body, &reqBody2)
+		if err != nil {
+			components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+			log.Errorln(err)
+			return
+		}
+	}
+
+	log.Warningln("body json", string(body))
+	log.Warningf("body json %+v\n", reqBody)
+
+	_, err = v.usecases.CreateBloodTest(actions.CreateBloodTestParams{
+		RequestContext:     ctx,
+		NewBloodTest:       reqBody,
+		NewBloodTestSingle: reqBody2,
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -49,7 +65,7 @@ func (v *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
 }
 
-func (v *virusApi) HandleDeleteVirus(w http.ResponseWriter, r *http.Request) {
+func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -60,9 +76,9 @@ func (v *virusApi) HandleDeleteVirus(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	intId, _ := strconv.Atoi(id)
 
-	_, err = v.usecases.DeleteVirus(actions.DeleteVirusParams{
+	_, err = v.usecases.DeleteBloodTest(actions.DeleteBloodTestParams{
 		RequestContext: ctx,
-		VirusId:        uint(intId),
+		BloodTestId:    uint(intId),
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
