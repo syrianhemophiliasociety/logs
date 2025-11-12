@@ -11,6 +11,10 @@ type Keys struct {
 
 	ErrorSomethingWentWrong string
 	MessageSuccess          string
+	ChooseTheme             string
+	DarkTheme               string
+	LightTheme              string
+	ChooseLanguage          string
 
 	LoginUsername      string
 	LoginPassword      string
@@ -71,4 +75,16 @@ func StringsCtx(ctx context.Context) Keys {
 		return Strings("en")
 	}
 	return Strings(localeKey)
+}
+
+type language struct {
+	DisplayName string
+	LocaleKey   string
+}
+
+func Languages() []language {
+	return []language{
+		{DisplayName: "العربية", LocaleKey: "ar"},
+		{DisplayName: "English", LocaleKey: "en"},
+	}
 }

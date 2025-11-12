@@ -35,6 +35,18 @@ templ Sidebar() {
 				</ul>
 			</nav>
 		</div>
-		<div>3</div>
+		<div class={ "flex", "flex-col", "items-center", "justify-center", "p-10", "gap-y-5", "w-full" }>
+			<select _="on change window.Theme.changeTheme(event.target.value)" class={ "w-full" }>
+				<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseTheme }</option>
+				<option value="black">{ i18n.StringsCtx(ctx).DarkTheme }</option>
+				<option value="white">{ i18n.StringsCtx(ctx).LightTheme }</option>
+			</select>
+			<select _="on change window.Locale.changeLocale(event.target.value)" class={ "w-full" }>
+				<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseLanguage }</option>
+				for _, lang :=  range i18n.Languages() {
+					<option value={ lang.LocaleKey }>{ lang.DisplayName }</option>
+				}
+			</select>
+		</div>
 	</div>
 }

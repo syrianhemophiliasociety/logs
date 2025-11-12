@@ -72,7 +72,9 @@ templ Raw(props PageProps, content templ.Component) {
 				@components.Loading()
 			</div>
 			//
-			<script defer src="/assets/js/utils.js"></script>
+			<script src="/assets/js/utils.js"></script>
+			<script src="/assets/js/theme.js"></script>
+			<script src="/assets/js/locale.js"></script>
 			<script type="module">
 				function registerServiceWorkers() {
 					if (!("serviceWorker" in navigator)) {

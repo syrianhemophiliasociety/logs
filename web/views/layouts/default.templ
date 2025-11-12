@@ -106,9 +106,11 @@ templ Default(props PageProps, content templ.Component) {
 			@icons.IconsLoader()
 			<input id="clipboard-text-blyat" type="text" hidden/>
 			//
-			<script defer src="/assets/js/utils.js"></script>
+			<script src="/assets/js/utils.js"></script>
 			<script defer src="/assets/js/router.js"></script>
 			<script defer src="/assets/js/refresher.js"></script>
+			<script src="/assets/js/theme.js"></script>
+			<script src="/assets/js/locale.js"></script>
 			<script type="module">
 				function registerServiceWorkers() {
 					if (!("serviceWorker" in navigator)) {
