@@ -84,9 +84,8 @@ templ newMedicine() {
 				Placeholder: i18n.StringsCtx(ctx).EnterMedicineUnit,
 				Required:    true,
 				Options: []components.SelectOption{
-					{Name: "mL", Value: "mL"},
-					{Name: "g", Value: "g"},
-					{Name: "L", Value: "L"},
+					{Name: "mg", Value: "mg"},
+					{Name: "IU", Value: "IU"},
 				},
 			})
 			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
