@@ -18,7 +18,7 @@ const (
 // Context keys
 const (
 	CtxSessionTokenKey = "session-token"
-	PlaylistPermission = "playlist-permission"
+	AccountType        = "account-type"
 )
 
 var noAuthPaths = []string{"/login", "/signup"}

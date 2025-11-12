@@ -94,6 +94,48 @@ func (r *Repository) CreateAccount(account models.Account) (models.Account, erro
 	return account, nil
 }
 
+func (r *Repository) ListAllAccounts(types []models.AccountType) ([]models.Account, error) {
+	var accounts []models.Account
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Where("type IN ?", types).
+			Find(&accounts).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
+func (r *Repository) DeleteAccount(id uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Delete(&models.Account{Id: id}, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (r *Repository) CreateBloodTest(bt models.BloodTest) (models.BloodTest, error) {
 	bt.CreatedAt = time.Now().UTC()
 	bt.UpdatedAt = time.Now().UTC()

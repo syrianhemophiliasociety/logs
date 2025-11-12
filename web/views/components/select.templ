@@ -9,6 +9,7 @@ type SelectParams struct {
 	Id          string
 	Name        string
 	Placeholder string
+	Required    bool
 	Options     []SelectOption
 }
 
@@ -18,7 +19,9 @@ templ Select(params SelectParams) {
 		name={ params.Id }
 		id={ params.Id }
 		class={ "w-full", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary" }
-		required
+		if params.Required {
+			required
+		}
 	>
 		<option selected="true" disabled="disabled">{ params.Placeholder }</option>
 		for _, option := range params.Options {

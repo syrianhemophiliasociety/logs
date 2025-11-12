@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"shs/actions"
 	"shs/log"
+	"strconv"
 )
 
 type accountApi struct {
@@ -62,6 +63,51 @@ func (e *accountApi) HandleCreateSecritaryAccount(w http.ResponseWriter, r *http
 	payload, err := e.usecases.CreateSecritaryAccount(reqBody)
 	if err != nil {
 		log.Errorf("[ACCOUNT API]: Failed to create secritary account: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleListAllAccounts(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListAllAccounts(actions.ListAllAccountsParams{
+		ActionContext: ctx,
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to get accounts, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.DeleteAccount(actions.DeleteAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to delete account, error: %s\n", err.Error())
 		handleErrorResponse(w, err)
 		return
 	}

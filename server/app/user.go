@@ -19,3 +19,15 @@ func (a *App) CreateAccount(account models.Account) (models.Account, error) {
 	account.Password = string(hashedPassword)
 	return a.repo.CreateAccount(account)
 }
+
+func (a *App) ListAllAccountsForAdmin() ([]models.Account, error) {
+	return a.repo.ListAllAccounts([]models.AccountType{models.AccountTypeSecritary})
+}
+
+func (a *App) ListAllAccountsForSuperAdmin() ([]models.Account, error) {
+	return a.repo.ListAllAccounts([]models.AccountType{models.AccountTypeSecritary, models.AccountTypeAdmin})
+}
+
+func (a *App) DeleteAccount(id uint) error {
+	return a.repo.DeleteAccount(id)
+}

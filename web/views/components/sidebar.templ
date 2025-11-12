@@ -47,6 +47,14 @@ templ Sidebar() {
 					<option value={ lang.LocaleKey }>{ lang.DisplayName }</option>
 				}
 			</select>
+			<button
+				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-full" , "text-accent" }
+				type="button"
+				hx-get="/api/logout"
+				hx-target="this"
+				hx-swap="none"
+				_="on htmx:afterRequest window.location.reload()"
+			>{ i18n.StringsCtx(ctx).Logout }</button>
 		</div>
 	</div>
 }

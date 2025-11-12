@@ -2,7 +2,7 @@
 
 @theme {
   --font-Ubuntu: Ubuntu, sans;
-  --font-IBMPlex: "IBM Plex Sans Arabic", sans-serif;
+  --font-IBMPlex: "IBMPlexSans", sans-serif;
 
   --color-primary: var(--primary-color);
 

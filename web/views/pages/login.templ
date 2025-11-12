@@ -8,7 +8,7 @@ import "shs-web/i18n"
 */
 
 templ Login() {
-	<main id="main-login-container" class={ "w-full", "h-screen", "flex" }>
+	<div id="main-login-container" class={ "w-full", "h-screen", "flex" }>
 		<!-- logo and details -->
 		<div class={ "hidden", "lg:block", "relative", "w-[70%]", "xl:w-full", "h-fit", "flex" }>
 			<!-- logo -->
@@ -65,7 +65,7 @@ templ Login() {
 				@components.Links()
 			</div>
 		</div>
-	</main>
+	</div>
 }
 
 templ loginForm() {

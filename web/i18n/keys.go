@@ -21,6 +21,7 @@ type Keys struct {
 	LoginEnterUsername string
 	LoginEnterPassword string
 	Login              string
+	Logout             string
 
 	NavHome       string
 	NavAbout      string
@@ -31,6 +32,10 @@ type Keys struct {
 	NavMedicine   string
 	NavViruses    string
 	NavManagement string
+
+	TabsList   string
+	TabsSearch string
+	TabsCreate string
 
 	FormsSubmit   string
 	FormsDelete   string
@@ -55,6 +60,19 @@ type Keys struct {
 	EnterBloodTestFieldName string
 	BloodTestFieldUnit      string
 	EnterBloodTestFieldUnit string
+
+	Account                 string
+	Accounts                string
+	AccountUsername         string
+	EnterAccountUsername    string
+	AccountDisplayName      string
+	EnterAccountDisplayName string
+	AccountPassword         string
+	EnterAccountPassword    string
+	AccountType             string
+	EnterAccountType        string
+	AccountTypeSecritary    string
+	AccountTypeAdmin        string
 }
 
 var localeKeys = map[string]Keys{

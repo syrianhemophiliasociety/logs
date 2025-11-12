@@ -72,12 +72,14 @@ func main() {
 	pagesHandler.HandleFunc("GET /viruses", contenttype.Html(authMiddleware.AuthPage(pages.HandleVirusesPage)))
 	pagesHandler.HandleFunc("GET /medicines", contenttype.Html(authMiddleware.AuthPage(pages.HandleMedicinesPage)))
 	pagesHandler.HandleFunc("GET /blood-tests", contenttype.Html(authMiddleware.AuthPage(pages.HandleBloodTestsPage)))
+	pagesHandler.HandleFunc("GET /management", contenttype.Html(authMiddleware.AuthPage(pages.HandleManagementPage)))
 
 	usernameLoginApi := apis.NewUsernameLoginApi(usecases)
 	logoutApi := apis.NewLogoutApi(usecases)
 	virusApi := apis.NewVirusApi(usecases)
 	medicineApi := apis.NewMedicineApi(usecases)
 	bloodTestApi := apis.NewBloodTestApi(usecases)
+	accountApi := apis.NewAccountApi(usecases)
 
 	apisHandler := http.NewServeMux()
 	apisHandler.HandleFunc("POST /login/username", usernameLoginApi.HandleUsernameLogin)
@@ -91,6 +93,9 @@ func main() {
 
 	apisHandler.HandleFunc("POST /blood-test", authMiddleware.AuthApi(bloodTestApi.HandleCreateBloodTest))
 	apisHandler.HandleFunc("DELETE /blood-test/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
+
+	apisHandler.HandleFunc("POST /account", authMiddleware.AuthApi(accountApi.HandleCreateAccount))
+	apisHandler.HandleFunc("DELETE /account/{id}", authMiddleware.AuthApi(accountApi.HandleDeleteAccount))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", locale.Handler(ismobile.Handler(theme.Handler(pagesHandler))))

@@ -12,12 +12,12 @@ templ BloodTests(bloodTests []actions.BloodTest) {
 		<h1 class="font-bold text-2xl text-secondary w-full">{ i18n.StringsCtx(ctx).NavBloodTests }</h1>
 		@components.Tabs(
 			components.TabContent{
-				Title:     "List",
+				Title:     i18n.StringsCtx(ctx).TabsList,
 				GroupName: "BloodTest",
 				Content:   allBloodTests(bloodTests),
 			},
 			components.TabContent{
-				Title:     "New",
+				Title:     i18n.StringsCtx(ctx).TabsCreate,
 				GroupName: "BloodTest",
 				Content:   newBloodTest(),
 			})
@@ -90,6 +90,7 @@ templ newBloodTest() {
 						Id:          "blood_test_field_unit",
 						Name:        i18n.StringsCtx(ctx).BloodTestFieldUnit,
 						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldUnit,
+						Required:    true,
 						Options: []components.SelectOption{
 							{Name: "mL", Value: "mL"},
 							{Name: "Second", Value: "second"},

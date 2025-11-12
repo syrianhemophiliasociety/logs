@@ -9,6 +9,8 @@ type Repository interface {
 	GetAccount(id uint) (models.Account, error)
 	GetAccountByUsername(username string) (models.Account, error)
 	CreateAccount(account models.Account) (models.Account, error)
+	ListAllAccounts(types []models.AccountType) ([]models.Account, error)
+	DeleteAccount(id uint) error
 
 	CreateBloodTest(bt models.BloodTest) (models.BloodTest, error)
 	DeleteBloodTest(id uint) error
