@@ -12,16 +12,38 @@ templ Patients(patients []actions.Patient) {
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatients }</h1>
 		@components.Tabs(
 			components.TabContent{
-				Title:     "List",
-				GroupName: "Patient",
-				Content:   allPatients(patients),
-			},
-			components.TabContent{
-				Title:     "New",
+				Title:     i18n.StringsCtx(ctx).TabsSearch,
+				TitleId:   "search",
 				GroupName: "Patient",
 				Content:   newPatient(),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
+				GroupName: "Patient",
+				Content:   newPatient(),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsCheckup,
+				TitleId:   "checkup",
+				GroupName: "Patient",
+				Content:   newPatient(),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
+				GroupName: "Patient",
+				Content:   allPatients(patients),
 			})
 	</div>
+}
+
+templ patientCheckup() {
+	Patient checkup
+}
+
+templ patientSearch() {
+	Patient search
 }
 
 templ allPatients(patients []actions.Patient) {

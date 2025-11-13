@@ -13,11 +13,13 @@ templ Medicines(medicines []actions.Medicine) {
 		@components.Tabs(
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
 				GroupName: "Medicine",
 				Content:   allMedicines(medicines),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
 				GroupName: "Medicine",
 				Content:   newMedicine(),
 			})

@@ -33,9 +33,10 @@ type Keys struct {
 	NavViruses    string
 	NavManagement string
 
-	TabsList   string
-	TabsSearch string
-	TabsCreate string
+	TabsList    string
+	TabsSearch  string
+	TabsCreate  string
+	TabsCheckup string
 
 	FormsSubmit   string
 	FormsDelete   string

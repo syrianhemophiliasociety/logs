@@ -15,11 +15,13 @@ templ Management(accounts []actions.Account) {
 		@components.Tabs(
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
 				GroupName: "Account",
 				Content:   allAccounts(accounts),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
 				GroupName: "Account",
 				Content:   newAccount(),
 			})

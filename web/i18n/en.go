@@ -27,6 +27,7 @@ var english = Keys{
 	TabsList:                "List",
 	TabsSearch:              "Search",
 	TabsCreate:              "Create",
+	TabsCheckup:             "Check-up",
 	FormsSubmit:             "Sumit",
 	FormsDelete:             "Delete",
 	FormsNewField:           "New field",

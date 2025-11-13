@@ -5,12 +5,13 @@ import "fmt"
 
 type TabContent struct {
 	Title     string
+	TitleId   string
 	GroupName string
 	Content   templ.Component
 }
 
-func (t TabContent) TitleId() string {
-	return fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.Title))
+func (t TabContent) id() string {
+	return fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId))
 }
 
 func tabClickActionHS(currentTabIndex int, tabs []TabContent) string {
@@ -19,10 +20,10 @@ func tabClickActionHS(currentTabIndex int, tabs []TabContent) string {
 
 	for i, tab := range tabs {
 		if i == currentTabIndex {
-			fmt.Fprintf(&hsAction, "remove .hidden from #%s\n", tab.TitleId())
-			fmt.Fprintf(&hsAction, "show #%s with *display\n", tab.TitleId())
+			fmt.Fprintf(&hsAction, "remove .hidden from #%s\n", tab.id())
+			fmt.Fprintf(&hsAction, "show #%s with *display\n", tab.id())
 		} else {
-			fmt.Fprintf(&hsAction, "hide #%s with *display\n", tab.TitleId())
+			fmt.Fprintf(&hsAction, "hide #%s with *display\n", tab.id())
 		}
 	}
 
@@ -39,21 +40,21 @@ templ Tabs(tabs ...TabContent) {
 				<input
 					type="radio"
 					name="tab"
-					id={ tab.TitleId() + "-button" }
+					id={ tab.id() + "-button" }
 					if i == 0 {
 						checked
 					}
 					class={ "hidden" }
 					_={ tabClickActionHS(i, tabs) }
 				/>
-				<label class={ "p-2", "cursor-pointer", "rounded-md", "inline-block", "ms-1" } for={ tab.TitleId() + "-button" }>{ tab.Title }</label>
+				<label class={ "p-2", "cursor-pointer", "rounded-md", "inline-block", "ms-1" } for={ tab.id() + "-button" }>{ tab.Title }</label>
 			}
 		</div>
 		<!-- tabs content -->
 		<div class={ "h-full", "flex", "justify-start", "items-start", "gap-8", "w-full", "flex-col" }>
 			for i, tab := range tabs {
 				<div
-					id={ tab.TitleId() }
+					id={ tab.id() }
 					class={ "contents", templ.KV("hidden", i!=0) }
 				>
 					@tab.Content

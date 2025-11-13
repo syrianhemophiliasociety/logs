@@ -13,11 +13,13 @@ templ BloodTests(bloodTests []actions.BloodTest) {
 		@components.Tabs(
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
 				GroupName: "BloodTest",
 				Content:   allBloodTests(bloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
 				GroupName: "BloodTest",
 				Content:   newBloodTest(),
 			})

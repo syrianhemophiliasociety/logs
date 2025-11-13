@@ -206,3 +206,34 @@ func (p *pagesHandler) HandleManagementPage(w http.ResponseWriter, r *http.Reque
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
 	}, pages.Management(accounts)).Render(r.Context(), w)
 }
+
+func (p *pagesHandler) HandlePatientsPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	patients, err := p.usecases.ListAllPatients(actions.ListAllPatientsParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavPatients)
+		w.Header().Set("HX-Push-Url", "/patients")
+		pages.Patients(patients).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPatients,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Patients(patients)).Render(r.Context(), w)
+}

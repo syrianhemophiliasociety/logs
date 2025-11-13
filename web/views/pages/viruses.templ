@@ -13,11 +13,13 @@ templ Viruses(viruses []actions.Virus) {
 		@components.Tabs(
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
 				GroupName: "Virus",
 				Content:   allViruses(viruses),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
 				GroupName: "Virus",
 				Content:   newVirus(),
 			})
