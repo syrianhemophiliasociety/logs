@@ -43,7 +43,77 @@ templ patientCheckup() {
 }
 
 templ patientSearch() {
-	Patient search
+	<form
+		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", }
+		hx-post="/api/patient/find"
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+	>
+		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "first_name",
+					Name:        "first_name",
+					Type:        components.InputTypeText,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).PatientFirstName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "last_name",
+					Name:        "last_name",
+					Type:        components.InputTypeText,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientLastName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientLastName,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "father_name",
+					Name:        "father_name",
+					Type:        components.InputTypeText,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientFatherName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientFatherName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "mother_name",
+					Name:        "mother_name",
+					Type:        components.InputTypeText,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientMotherName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientMotherName,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "national_id",
+					Name:        "national_id",
+					Type:        components.InputTypeText,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).NationalId,
+					Placeholder: i18n.StringsCtx(ctx).EnterNationalId,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "phone_number",
+					Name:        "phone_number",
+					Type:        components.InputTypeTel,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PhoneNumber,
+					Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }></div>
+		</div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+		<div id="status-msg"></div>
+	</form>
 }
 
 templ allPatients(patients []actions.Patient) {
@@ -285,7 +355,7 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 						Id:          fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
 						Name:        fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
 						Type:        components.InputTypeCheckbox,
-						Required:    true,
+						Required:    false,
 						Autofocus:   false,
 						Title:       virus.Name,
 						Placeholder: i18n.StringsCtx(ctx).EnterStreet,

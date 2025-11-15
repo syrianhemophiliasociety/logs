@@ -240,6 +240,51 @@ func (r *Repository) ListAllBloodTests() ([]models.BloodTest, error) {
 	return bloodTests, nil
 }
 
+func (r *Repository) CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error) {
+	btResult.CreatedAt = time.Now().UTC()
+	btResult.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTestResult)).
+			Create(&btResult).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.BloodTestResult{}, &app.ErrExists{
+			ResourceName: "blood_test_result",
+		}
+	}
+	if err != nil {
+		return models.BloodTestResult{}, err
+	}
+
+	return btResult, nil
+}
+
+func (r *Repository) ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error) {
+	var bloodTestResults []models.BloodTestResult
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTestResult)).
+			Preload("FilledFields").
+			Where("patient_id = ?", patientId).
+			Find(&bloodTestResults).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "blood_test_result",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return bloodTestResults, nil
+}
+
 func (r *Repository) CreateVirus(virus models.Virus) (models.Virus, error) {
 	virus.CreatedAt = time.Now().UTC()
 	virus.UpdatedAt = time.Now().UTC()
@@ -393,7 +438,56 @@ func (r *Repository) FindPatientsByVisitDateRange(from, to time.Time) ([]models.
 }
 
 func (r *Repository) FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error) {
-	return nil, errors.New("not implemented")
+	findQuery := make([]string, 0, 9)
+	findArgs := make([]any, 0, 9)
+	if patientIndexFields.FirstName != "" {
+		findQuery = append(findQuery, "LOWER(first_name) LIKE LOWER(?)")
+		findArgs = append(findArgs, likeArg(patientIndexFields.FirstName))
+	}
+	if patientIndexFields.LastName != "" {
+		findQuery = append(findQuery, "LOWER(last_name) LIKE LOWER(?)")
+		findArgs = append(findArgs, likeArg(patientIndexFields.LastName))
+	}
+	if patientIndexFields.FatherName != "" {
+		findQuery = append(findQuery, "LOWER(father_name) LIKE LOWER(?)")
+		findArgs = append(findArgs, likeArg(patientIndexFields.FatherName))
+	}
+	if patientIndexFields.MotherName != "" {
+		findQuery = append(findQuery, "LOWER(mother_name) LIKE LOWER(?)")
+		findArgs = append(findArgs, likeArg(patientIndexFields.MotherName))
+	}
+	if patientIndexFields.PhoneNumber != "" {
+		findQuery = append(findQuery, "LOWER(phone_number) LIKE LOWER(?)")
+		findArgs = append(findArgs, likeArg(patientIndexFields.PhoneNumber))
+	}
+	if patientIndexFields.NationalId != "" {
+		findQuery = append(findQuery, "national_id = ?")
+		findArgs = append(findArgs, patientIndexFields.NationalId)
+	}
+	if patientIndexFields.PublicId != "" {
+		findQuery = append(findQuery, "public_id = ?")
+		findArgs = append(findArgs, patientIndexFields.PublicId)
+	}
+
+	var patients []models.Patient
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			Where(strings.Join(findQuery, " AND "), findArgs...).
+			Find(&patients).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return patients, nil
 }
 
 func (r *Repository) ListMedicinesForVisit(visitId uint) ([]models.Medicine, error) {
@@ -504,7 +598,6 @@ func (r *Repository) GetAllAddressesALike(searchAddress models.Address) ([]model
 	}
 
 	return addresses, nil
-
 }
 
 func (r *Repository) DeleteAddress(id uint) error {

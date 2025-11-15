@@ -18,6 +18,9 @@ type Repository interface {
 	UpdateBloodTest(id uint, bt models.BloodTest) (models.BloodTest, error)
 	ListAllBloodTests() ([]models.BloodTest, error)
 
+	CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error)
+	ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error)
+
 	CreateVirus(virus models.Virus) (models.Virus, error)
 	DeleteVirus(id uint) error
 	ListAllViri() ([]models.Virus, error)

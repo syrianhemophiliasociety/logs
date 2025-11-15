@@ -19,10 +19,10 @@ type Patient struct {
 	PublicId       string            `gorm:"index;not null;unique"`
 	NationalId     string            `gorm:"index;not null;unique"`
 	Nationality    string            `gorm:"not null"`
-	FirstName      string            `gorm:"index;not null;unique"`
-	LastName       string            `gorm:"index;not null;unique"`
-	FatherName     string            `gorm:"index;not null;unique"`
-	MotherName     string            `gorm:"index;not null;unique"`
+	FirstName      string            `gorm:"index;not null"`
+	LastName       string            `gorm:"index;not null"`
+	FatherName     string            `gorm:"index;not null"`
+	MotherName     string            `gorm:"index;not null"`
 	PlaceOfBirth   Address           `gorm:"not null"`
 	PlaceOfBirthId uint              `gorm:"index;not null"`
 	DateOfBirth    time.Time         `gorm:"not null"`

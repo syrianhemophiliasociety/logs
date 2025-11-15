@@ -2,8 +2,8 @@ package actions
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"shs-web/log"
 	"strconv"
 	"strings"
 	"time"
@@ -244,8 +244,75 @@ type CreatePatientParams struct {
 type CreatePatientPayload struct{}
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
-	log.Warningf("patient: %+v\n", params.NewPatient)
-	log.Warningf("patient: %+v\n", params.NewPatient.IntoPatient())
+	payload, err := makeRequest[map[string]any, CreatePatientPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: "/v1/patient",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"new_patient": params.NewPatient.IntoPatient(),
+		},
+	})
+	if err != nil {
+		return CreatePatientPayload{}, err
+	}
 
-	return CreatePatientPayload{}, nil
+	return payload, nil
+}
+
+type FindPatientsParams struct {
+	RequestContext
+	PublicId     string  `json:"public_id"`
+	NationalId   string  `json:"national_id"`
+	FirstName    string  `json:"first_name"`
+	LastName     string  `json:"last_name"`
+	FatherName   string  `json:"father_name"`
+	MotherName   string  `json:"mother_name"`
+	PlaceOfBirth Address `json:"place_of_birth"`
+	Residency    Address `json:"residency"`
+	PhoneNumber  string  `json:"phone_number"`
+}
+
+type FindPatientsPayload struct {
+	Data []Patient `json:"data"`
+}
+
+func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
+	if params.FirstName == "" {
+		params.FirstName = " "
+	}
+	if params.LastName == "" {
+		params.LastName = " "
+	}
+	if params.FatherName == "" {
+		params.FatherName = " "
+	}
+	if params.MotherName == "" {
+		params.MotherName = " "
+	}
+	if params.NationalId == "" {
+		params.NationalId = " "
+	}
+	if params.PhoneNumber == "" {
+		params.PhoneNumber = " "
+	}
+	if params.PublicId == "" {
+		params.PublicId = " "
+	}
+
+	payload, err := makeRequest[any, FindPatientsPayload](makeRequestConfig[any]{
+		method: http.MethodGet,
+		endpoint: fmt.Sprintf(
+			"/v1/patients/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
+			params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return payload.Data, nil
 }

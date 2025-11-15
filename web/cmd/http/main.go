@@ -101,6 +101,8 @@ func main() {
 	apisHandler.HandleFunc("DELETE /account/{id}", authMiddleware.AuthApi(accountApi.HandleDeleteAccount))
 
 	apisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
+	apisHandler.HandleFunc("POST /patient/find", authMiddleware.AuthApi(patientApi.HandleFindPatients))
+
 	// apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 
 	applicationHandler := http.NewServeMux()

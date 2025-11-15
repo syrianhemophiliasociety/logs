@@ -34,7 +34,34 @@ func (e *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request)
 
 	payload, err := e.usecases.CreatePatient(reqBody)
 	if err != nil {
-		log.Errorf("[PATIENT API]: Failed to find patientes: %+v, error: %s\n", reqBody, err.Error())
+		log.Errorf("[PATIENT API]: Failed to create patient: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	findParams := actions.FindPatientsParams{
+		ActionContext: ctx,
+		FirstName:     r.PathValue("first_name"),
+		LastName:      r.PathValue("last_name"),
+		FatherName:    r.PathValue("father_name"),
+		MotherName:    r.PathValue("mother_name"),
+		NationalId:    r.PathValue("national_id"),
+		PhoneNumber:   r.PathValue("phone_number"),
+	}
+
+	payload, err := e.usecases.FindPatients(findParams)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to find patientes: %+v, error: %s\n", findParams, err.Error())
 		handleErrorResponse(w, err)
 		return
 	}

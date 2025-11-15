@@ -91,9 +91,14 @@ func makeRequest[RequestBody any, ResponseBody any](conf makeRequestConfig[Reque
 		return respBody, err
 	}
 
+	respBodyRaw, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return respBody, err
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		var errResp errorResponse
-		err = json.NewDecoder(resp.Body).Decode(&errResp)
+		err = json.Unmarshal(respBodyRaw, &errResp)
 		if err != nil {
 			return respBody, err
 		}
@@ -105,7 +110,7 @@ func makeRequest[RequestBody any, ResponseBody any](conf makeRequestConfig[Reque
 
 	respBodyType := reflect.TypeOf(respBody)
 	if respBodyType != nil && respBodyType.Kind() != reflect.Interface {
-		err = json.NewDecoder(resp.Body).Decode(&respBody)
+		err = json.Unmarshal(respBodyRaw, &respBody)
 		if err != nil {
 			return respBody, err
 		}

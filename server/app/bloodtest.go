@@ -17,3 +17,11 @@ func (a *App) DeleteBloodTest(id uint) error {
 func (a *App) ListAllBloodTests() ([]models.BloodTest, error) {
 	return a.repo.ListAllBloodTests()
 }
+
+func (a *App) CreateBloodTestResult(btr models.BloodTestResult) (models.BloodTestResult, error) {
+	return a.repo.CreateBloodTestResult(btr)
+}
+
+func (a *App) ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error) {
+	return a.repo.ListPatientBloodTestResults(patientId)
+}
