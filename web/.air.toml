@@ -14,7 +14,9 @@ exclude_dir = [
   "ytscraper",
   "ytdl",
 ]
-exclude_file = []
+exclude_file = [
+    "static/assets/css/tailwind.css"
+]
 exclude_regex = [".*_templ.go"]
 exclude_unchanged = false
 follow_symlink = false

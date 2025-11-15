@@ -28,6 +28,7 @@ type Keys struct {
 	NavPrivacy    string
 	NavLogin      string
 	NavPatients   string
+	NavPatient    string
 	NavBloodTests string
 	NavMedicine   string
 	NavViruses    string
@@ -52,15 +53,17 @@ type Keys struct {
 	MedicineUnit      string
 	EnterMedicineUnit string
 
-	BloodTest               string
-	BloodTestDetails        string
-	BloodTestName           string
-	EnterBloodTestName      string
-	BloodTestFields         string
-	BloodTestFieldName      string
-	EnterBloodTestFieldName string
-	BloodTestFieldUnit      string
-	EnterBloodTestFieldUnit string
+	BloodTest                         string
+	BloodTestDetails                  string
+	BloodTestName                     string
+	EnterBloodTestName                string
+	BloodTestFields                   string
+	BloodTestFieldName                string
+	EnterBloodTestFieldName           string
+	BloodTestFieldUnit                string
+	EnterBloodTestFieldUnit           string
+	EnterBloodTestResultFieldValueFmt func(unit string) string
+	RemoveBloodTest                   string
 
 	Account                 string
 	Accounts                string
@@ -74,6 +77,42 @@ type Keys struct {
 	EnterAccountType        string
 	AccountTypeSecritary    string
 	AccountTypeAdmin        string
+
+	Patient                string
+	PatientFirstName       string
+	EnterPatientFirstName  string
+	PatientLastName        string
+	EnterPatientLastName   string
+	PatientFatherName      string
+	EnterPatientFatherName string
+	PatientMotherName      string
+	EnterPatientMotherName string
+	NationalId             string
+	EnterNationalId        string
+	Nationality            string
+	EnterNationality       string
+	PlaceOfBirth           string
+	Governorate            string
+	EnterGovernorate       string
+	Suburb                 string
+	EnterSuburb            string
+	Street                 string
+	EnterStreet            string
+	DateOfBirth            string
+	EnterDateOfBirth       string
+	Residency              string
+	Gender                 string
+	EnterGender            string
+	GenderMale             string
+	GenderFemale           string
+	PhoneNumber            string
+	EnterPhoneNumber       string
+	Diagnosis              string
+
+	NationalitySyrian      string
+	NationalityPalestinian string
+	NationalityIraqi       string
+	NationalityEgyptian    string
 }
 
 var localeKeys = map[string]Keys{

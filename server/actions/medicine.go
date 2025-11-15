@@ -6,10 +6,10 @@ import (
 )
 
 type Medicine struct {
-	Id   uint                    `json:"id"`
-	Name string                  `json:"name"`
-	Dose int                     `json:"dose"`
-	Unit models.MedicineDoseUnit `json:"unit"`
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+	Dose int    `json:"dose"`
+	Unit string `json:"unit"`
 }
 
 type CreateMedicineParams struct {

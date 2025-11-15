@@ -20,10 +20,18 @@ func dbConnector() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = database.Exec("CREATE DATABASE IF NOT EXISTS " + config.Env().DB.Name + ";").Debug().Error
-	if err != nil {
-		return nil, err
+	if config.Env().GoEnv != config.GoEnvProd {
+		err = database.Exec("CREATE DATABASE IF NOT EXISTS " + config.Env().DB.Name + ";").Error
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err = database.Exec("CREATE DATABASE IF NOT EXISTS " + config.Env().DB.Name + ";").Debug().Error
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	instance, err := gorm.Open(mysql.Open(
 		fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=True&loc=Local&charset=utf8mb4",
 			config.Env().DB.Username,

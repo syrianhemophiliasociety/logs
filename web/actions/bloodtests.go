@@ -21,6 +21,7 @@ type RequestBloodTestSingle struct {
 }
 
 type BloodTestField struct {
+	Id       uint   `json:"id"`
 	Name     string `json:"name"`
 	Unit     string `json:"unit"`
 	MinValue uint   `json:"min_value"`

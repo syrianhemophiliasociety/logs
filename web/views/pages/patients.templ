@@ -7,7 +7,7 @@ import (
 	"shs-web/views/components"
 )
 
-templ Patients(patients []actions.Patient) {
+templ Patients(patients []actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatients }</h1>
 		@components.Tabs(
@@ -15,19 +15,19 @@ templ Patients(patients []actions.Patient) {
 				Title:     i18n.StringsCtx(ctx).TabsSearch,
 				TitleId:   "search",
 				GroupName: "Patient",
-				Content:   newPatient(),
+				Content:   patientSearch(),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCreate,
 				TitleId:   "create",
 				GroupName: "Patient",
-				Content:   newPatient(),
+				Content:   newPatient(bloodTests, viruses),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCheckup,
 				TitleId:   "checkup",
 				GroupName: "Patient",
-				Content:   newPatient(),
+				Content:   patientCheckup(),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsList,
@@ -69,9 +69,52 @@ templ allPatients(patients []actions.Patient) {
 	</div>
 }
 
-templ newPatient() {
+func bloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
+	return fmt.Sprintf("blood_test_result_value-%d-%s-%d-%s", bt.Id, actions.Slugify(bt.Name), bt.Id, actions.Slugify(field.Name))
+}
+
+templ bloodTest(bt actions.BloodTest) {
+	<div id={ fmt.Sprintf("%s-%d", bt.Name, bt.Id) } class={ "flex", "flex-col", "gap-1" }>
+		<span class={ "text-xl", "font-bold", }>{ bt.Name }</span>
+		for i := 0; i < len(bt.Fields); i++ {
+			<div class={ "flex", "gap-10", "justify-between" }>
+				@components.Input(components.InputOptions{
+					Id:          bloodTestFormId(bt, bt.Fields[i]),
+					Name:        bloodTestFormId(bt, bt.Fields[i]),
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       bt.Fields[i].Name,
+					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i].Unit),
+					Class:       []string{"!min-w-[230px]"},
+				})
+				if len(bt.Fields)-i != 1 {
+					@components.Input(components.InputOptions{
+						Id:          bloodTestFormId(bt, bt.Fields[i+1]),
+						Name:        bloodTestFormId(bt, bt.Fields[i+1]),
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       bt.Fields[i+1].Name,
+						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i+1].Unit),
+						Class:       []string{"!min-w-[230px]"},
+					})
+					{{ i++ }}
+				}
+			</div>
+		}
+		<button
+			type="button"
+			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-fit" , "text-accent" }
+			_={ "on click remove #" + fmt.Sprintf("%s-%d", bt.Name, bt.Id) }
+		>{ i18n.StringsCtx(ctx).RemoveBloodTest }</button>
+		<hr class={ "my-3" }/>
+	</div>
+}
+
+templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 	<form
-		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", }
 		hx-post="/api/patient"
 		hx-ext="json-enc"
 		hx-target="#status-msg"
@@ -80,19 +123,183 @@ templ newPatient() {
 		data-loading-class-remove="hidden"
 	>
 		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
-			@components.Input(components.InputOptions{
-				Id:          "name",
-				Name:        "name",
-				Type:        components.InputTypeText,
-				Required:    true,
-				Autofocus:   true,
-				Title:       "", //i18n.StringsCtx(ctx).Patient,
-				Placeholder: "", // i18n.StringsCtx(ctx).EnterPatientName,
-			})
-			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
-				{ i18n.StringsCtx(ctx).FormsSubmit }
-			</button>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "first_name",
+					Name:        "first_name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).PatientFirstName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "last_name",
+					Name:        "last_name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientLastName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientLastName,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "father_name",
+					Name:        "father_name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientFatherName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientFatherName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "mother_name",
+					Name:        "mother_name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PatientMotherName,
+					Placeholder: i18n.StringsCtx(ctx).EnterPatientMotherName,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Select(components.SelectParams{
+					Id:          "nationality",
+					Name:        i18n.StringsCtx(ctx).Nationality,
+					Placeholder: i18n.StringsCtx(ctx).EnterNationality,
+					Required:    true,
+					Options: []components.SelectOption{
+						{Name: i18n.StringsCtx(ctx).NationalitySyrian, Value: "syrian"},
+						{Name: i18n.StringsCtx(ctx).NationalityPalestinian, Value: "palestinian"},
+						{Name: i18n.StringsCtx(ctx).NationalityIraqi, Value: "iraqi"},
+						{Name: i18n.StringsCtx(ctx).NationalityEgyptian, Value: "egyptian"},
+					},
+				})
+				@components.Input(components.InputOptions{
+					Id:          "national_id",
+					Name:        "national_id",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).NationalId,
+					Placeholder: i18n.StringsCtx(ctx).EnterNationalId,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Select(components.SelectParams{
+					Id:          "gender",
+					Name:        i18n.StringsCtx(ctx).Gender,
+					Placeholder: i18n.StringsCtx(ctx).EnterGender,
+					Required:    true,
+					Options: []components.SelectOption{
+						{Name: i18n.StringsCtx(ctx).GenderMale, Value: "male"},
+						{Name: i18n.StringsCtx(ctx).GenderFemale, Value: "female"},
+					},
+				})
+				@components.Input(components.InputOptions{
+					Id:          "phone_number",
+					Name:        "phone_number",
+					Type:        components.InputTypeTel,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).PhoneNumber,
+					Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
+				})
+			</div>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "date_of_birth",
+					Name:        "date_of_birth",
+					Type:        components.InputTypeDate,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).DateOfBirth,
+					Placeholder: i18n.StringsCtx(ctx).EnterDateOfBirth,
+				})
+			</div>
+			<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "place_of_birth_governorate",
+					Name:        "place_of_birth_governorate",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Governorate,
+					Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "place_of_birth_suburb",
+					Name:        "place_of_birth_suburb",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Suburb,
+					Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "place_of_birth_street",
+					Name:        "place_of_birth_street",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Street,
+					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+				})
+			</div>
+			<p class={ "text-md" }>{ i18n.StringsCtx(ctx).Residency }</p>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				@components.Input(components.InputOptions{
+					Id:          "residency_governorate",
+					Name:        "residency_governorate",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Governorate,
+					Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "residency_suburb",
+					Name:        "residency_suburb",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Suburb,
+					Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "residency_street",
+					Name:        "residency_street",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).Street,
+					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+				})
+			</div>
+			<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
+			<div class={ "flex",  "justify-between", "gap-10" }>
+				for _, virus := range viruses {
+					@components.Input(components.InputOptions{
+						Id:          fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
+						Name:        fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
+						Type:        components.InputTypeCheckbox,
+						Required:    true,
+						Autofocus:   false,
+						Title:       virus.Name,
+						Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+					})
+				}
+			</div>
+			<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).Diagnosis }</span>
+			for _, bt := range bloodTests {
+				@bloodTest(bt)
+			}
 		</div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
 		<div id="status-msg"></div>
 	</form>
 }

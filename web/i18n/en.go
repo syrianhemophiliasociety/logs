@@ -1,5 +1,7 @@
 package i18n
 
+import "fmt"
+
 var english = Keys{
 	Title:                   "Syrian Hemophilia Society",
 	Description:             "A patient care follow up platform for Syrian Hemophilia Society.",
@@ -20,6 +22,7 @@ var english = Keys{
 	NavPrivacy:              "Privacy",
 	NavLogin:                "Login",
 	NavPatients:             "Patients",
+	NavPatient:              "Patientu details",
 	NavBloodTests:           "Blood tests",
 	NavMedicine:             "Medications",
 	NavViruses:              "Viruses",
@@ -48,6 +51,11 @@ var english = Keys{
 	EnterBloodTestFieldName: "Enter blood test field's name",
 	BloodTestFieldUnit:      "Blood test field' unit",
 	EnterBloodTestFieldUnit: "Select blood test field's unit",
+	EnterBloodTestResultFieldValueFmt: func(unit string) string {
+		return fmt.Sprintf("Enter result value in %s", unit)
+	},
+
+	RemoveBloodTest:         "Remove test",
 	Account:                 "Account",
 	Accounts:                "Accounts",
 	AccountUsername:         "Username",
@@ -60,4 +68,38 @@ var english = Keys{
 	EnterAccountType:        "Choose account type",
 	AccountTypeSecritary:    "Secritary",
 	AccountTypeAdmin:        "Admin",
+	Patient:                 "Patient",
+	PatientFirstName:        "First name",
+	EnterPatientFirstName:   "Enter first name",
+	PatientLastName:         "Last name",
+	EnterPatientLastName:    "Enter last name",
+	PatientFatherName:       "Father's name",
+	EnterPatientFatherName:  "Enter father's name",
+	PatientMotherName:       "Mother's name",
+	EnterPatientMotherName:  "Enter mother's name",
+	NationalId:              "National ID number",
+	EnterNationalId:         "Enter national ID's number",
+	Nationality:             "Nationality",
+	EnterNationality:        "Choose nationality",
+	PlaceOfBirth:            "Place of birth",
+	Governorate:             "Governorate",
+	EnterGovernorate:        "Enter governorate",
+	Suburb:                  "Suburb",
+	EnterSuburb:             "Enter suburb",
+	Street:                  "Street",
+	EnterStreet:             "Enter street",
+	DateOfBirth:             "Date of birth",
+	EnterDateOfBirth:        "Enter date of birth",
+	Residency:               "Residency",
+	Gender:                  "Gender",
+	EnterGender:             "Choose gender",
+	GenderMale:              "Male",
+	GenderFemale:            "Female",
+	PhoneNumber:             "Phone number",
+	EnterPhoneNumber:        "Enter phone number",
+	Diagnosis:               "Diagnosis",
+	NationalitySyrian:       "Syrian",
+	NationalityPalestinian:  "Palestinian",
+	NationalityIraqi:        "Iraqi",
+	NationalityEgyptian:     "Egyptian",
 }

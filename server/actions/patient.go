@@ -22,12 +22,14 @@ type BloodTestResult struct {
 }
 
 type Address struct {
+	Id          uint   `json:"id"`
 	Governorate string `json:"governorate"`
 	Suburb      string `json:"suburb"`
 	Street      string `json:"street"`
 }
 
 type Patient struct {
+	Id           uint              `json:"id"`
 	PublicId     string            `json:"public_id"`
 	NationalId   string            `json:"national_id"`
 	Nationality  string            `json:"nationality"`
@@ -54,6 +56,11 @@ type CreatePatientPayload struct {
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
+	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	if err != nil {
+		return CreatePatientPayload{}, err
+	}
+
 	newPatient := models.Patient{
 		PublicId:    nanoid.New(),
 		NationalId:  params.NewPatient.NationalId,

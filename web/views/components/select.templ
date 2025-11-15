@@ -14,18 +14,20 @@ type SelectParams struct {
 }
 
 templ Select(params SelectParams) {
-	<label class={ "text-secondary", "text-[16px]" } for={ params.Id }>{ params.Name }</label>
-	<select
-		name={ params.Id }
-		id={ params.Id }
-		class={ "w-full", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary" }
-		if params.Required {
-			required
-		}
-	>
-		<option selected="true" disabled="disabled">{ params.Placeholder }</option>
-		for _, option := range params.Options {
-			<option value={ option.Value }>{ option.Name }</option>
-		}
-	</select>
+	<div class={ "flex", "flex-col" }>
+		<label class={ "text-secondary", "text-[16px]" } for={ params.Id }>{ params.Name }</label>
+		<select
+			name={ params.Id }
+			id={ params.Id }
+			class={ "min-w-20", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary" }
+			if params.Required {
+				required
+			}
+		>
+			<option selected="true" disabled="disabled">{ params.Placeholder }</option>
+			for _, option := range params.Options {
+				<option value={ option.Value }>{ option.Name }</option>
+			}
+		</select>
+	</div>
 }
