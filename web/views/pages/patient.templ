@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 )
@@ -20,34 +21,12 @@ templ Patient(patient actions.Patient) {
 			<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
 		</div>
 		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
-		</div>
-		<div>
-			<p>{ patient.FullName() }</p>
+			for _, bt := range patient.BloodTests {
+				<p>{ bt.Name }</p>
+				for _, field := range bt.FilledFields {
+					<p>{ fmt.Sprintf("%s %s %s", field.Name, field.ValueString, field.Unit) }</p>
+				}
+			}
 		</div>
 	</div>
 }
