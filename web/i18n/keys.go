@@ -16,6 +16,10 @@ type Keys struct {
 	LightTheme              string
 	ChooseLanguage          string
 
+	And  string
+	Or   string
+	With string
+
 	LoginUsername      string
 	LoginPassword      string
 	LoginEnterUsername string
@@ -42,6 +46,7 @@ type Keys struct {
 	FormsSubmit   string
 	FormsDelete   string
 	FormsNewField string
+	FormsFind     string
 
 	Virus          string
 	EnterVirusName string
@@ -108,6 +113,8 @@ type Keys struct {
 	PhoneNumber            string
 	EnterPhoneNumber       string
 	Diagnosis              string
+	PatientSonOf           string
+	PatientDaughterOf      string
 
 	NationalitySyrian      string
 	NationalityPalestinian string

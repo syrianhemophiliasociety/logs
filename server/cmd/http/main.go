@@ -87,6 +87,7 @@ func main() {
 		authMiddleware.AuthApi(addressApi.HandleFindAddress))
 
 	v1ApisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
+	v1ApisHandler.HandleFunc("GET /patient/{id}", authMiddleware.AuthApi(patientApi.HandleGetPatient))
 	v1ApisHandler.HandleFunc(
 		"GET /patients/first-name/{first_name}/last-name/{last_name}/father-name/{father_name}/mother-name/{mother_name}/national-id/{national_id}/phone-number/{phone_number}",
 		authMiddleware.AuthApi(patientApi.HandleFindPatients))

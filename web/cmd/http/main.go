@@ -107,7 +107,7 @@ func main() {
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", locale.Handler(ismobile.Handler(theme.Handler(pagesHandler))))
-	applicationHandler.Handle("/api/", ismobile.Handler(theme.Handler(http.StripPrefix("/api", apisHandler))))
+	applicationHandler.Handle("/api/", locale.Handler(ismobile.Handler(theme.Handler(http.StripPrefix("/api", apisHandler)))))
 	applicationHandler.Handle("/assets/", http.StripPrefix("/assets", static.AssetsHandler(minifyer)))
 
 	log.Info("Starting http server at port " + config.Env().Port)

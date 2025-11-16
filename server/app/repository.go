@@ -24,12 +24,14 @@ type Repository interface {
 	CreateVirus(virus models.Virus) (models.Virus, error)
 	DeleteVirus(id uint) error
 	ListAllViri() ([]models.Virus, error)
+	ListViriForPatient(patientId uint) ([]models.Virus, error)
 
 	CreateMedicine(medicine models.Medicine) (models.Medicine, error)
 	DeleteMedicine(id uint) error
 	ListAllMedicines() ([]models.Medicine, error)
 
 	CreatePatient(patient models.Patient) (models.Patient, error)
+	GetPatientById(id uint) (models.Patient, error)
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)
 	FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error)
 

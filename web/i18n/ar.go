@@ -11,6 +11,9 @@ var arabic = Keys{
 	DarkTheme:               "واجهة سوداء",
 	LightTheme:              "واجهة بيضاء",
 	ChooseLanguage:          "اختر اللغة",
+	And:                     "و",
+	Or:                      "او",
+	With:                    "مع",
 	LoginUsername:           "اسم المستخدم",
 	LoginPassword:           "كلمة المرور",
 	LoginEnterUsername:      "أدخل اسم المستخدم",
@@ -34,6 +37,7 @@ var arabic = Keys{
 	FormsSubmit:             "أرسل المحتوى",
 	FormsDelete:             "احذف المحتوى",
 	FormsNewField:           "حقل جديد",
+	FormsFind:               "ابحث",
 	Virus:                   "الفيروس",
 	EnterVirusName:          "أدخل اسم الفيروس",
 	Medicine:                "الدواء",
@@ -54,6 +58,7 @@ var arabic = Keys{
 	EnterBloodTestResultFieldValueFmt: func(unit string) string {
 		return fmt.Sprintf("أدخل قيمة النتيجة في %s", unit)
 	},
+
 	RemoveBloodTest:         "إزالة الفحص",
 	Account:                 "الاسم",
 	Accounts:                "الحسابات",
@@ -97,6 +102,8 @@ var arabic = Keys{
 	PhoneNumber:             "رقم الهاتف",
 	EnterPhoneNumber:        "أدخل رقم الهاتف",
 	Diagnosis:               "التّشخيص",
+	PatientSonOf:            "ابن",
+	PatientDaughterOf:       "بنت",
 	NationalitySyrian:       "سوري",
 	NationalityPalestinian:  "فلسطيني",
 	NationalityIraqi:        "عراقي",

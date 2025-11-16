@@ -39,7 +39,7 @@ func Migrate() error {
 		"blood_test_results",
 		"blood_tests",
 		"did_blood_tests",
-		"has_viruses",
+		"has_viri",
 		"medicines",
 		"patient_use_medicines",
 		"patients",

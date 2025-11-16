@@ -348,6 +348,32 @@ func (r *Repository) ListAllViri() ([]models.Virus, error) {
 	return viri, nil
 }
 
+func (r *Repository) ListViriForPatient(patientId uint) ([]models.Virus, error) {
+	viri := make([]models.Virus, 0)
+
+	query := `SELECT viri.id, viri.name
+	FROM viri
+		JOIN has_viri ON viri.id = has_viri.virus_id
+	WHERE has_viri.patient_id = ?`
+
+	err := tryWrapDbError(
+		r.client.
+			Raw(query, patientId).
+			Find(&viri).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "virus",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return viri, nil
+}
+
 func (r *Repository) CreateMedicine(medicine models.Medicine) (models.Medicine, error) {
 	medicine.CreatedAt = time.Now().UTC()
 	medicine.UpdatedAt = time.Now().UTC()
@@ -423,6 +449,27 @@ func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, erro
 	)
 	if _, ok := err.(*ErrRecordExists); ok {
 		return models.Patient{}, &app.ErrExists{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	return patient, nil
+}
+
+func (r *Repository) GetPatientById(id uint) (models.Patient, error) {
+	var patient models.Patient
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			First(&patient, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Patient{}, &app.ErrNotFound{
 			ResourceName: "patient",
 		}
 	}

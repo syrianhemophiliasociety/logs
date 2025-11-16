@@ -8,5 +8,46 @@ import (
 templ Patient(patient actions.Patient) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatient }</h1>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			if patient.Gender {
+				{ i18n.StringsCtx(ctx).PatientSonOf }
+			} else {
+				{ i18n.StringsCtx(ctx).PatientDaughterOf }
+			}
+			<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
+		<div>
+			<p>{ patient.FullName() }</p>
+		</div>
 	</div>
 }

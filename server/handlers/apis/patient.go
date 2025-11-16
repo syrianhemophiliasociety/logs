@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"shs/actions"
 	"shs/log"
+	"strconv"
 )
 
 type patientApi struct {
@@ -62,6 +63,34 @@ func (e *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) 
 	payload, err := e.usecases.FindPatients(findParams)
 	if err != nil {
 		log.Errorf("[PATIENT API]: Failed to find patientes: %+v, error: %s\n", findParams, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleGetPatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	patientId, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	params := actions.GetPatientParams{
+		ActionContext: ctx,
+		PatientId:     uint(patientId),
+	}
+
+	payload, err := e.usecases.GetPatient(params)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to get patient: %+v, error: %s\n", params, err.Error())
 		handleErrorResponse(w, err)
 		return
 	}

@@ -31,7 +31,7 @@ type Patient struct {
 	Gender         bool              `gorm:"not null"`
 	PhoneNumber    string            `gorm:"index;not null"`
 	BATScore       uint              `gorm:"not null"`
-	Viri           []Virus           `gorm:"not null;many2many:has_viruses;"`
+	Viri           []Virus           `gorm:"not null;many2many:has_viri;"`
 	BloodTests     []BloodTestResult `gorm:"not null;many2many:did_blood_tests;"`
 
 	CreatedAt time.Time `gorm:"index;not null"`

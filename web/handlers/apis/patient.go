@@ -2,7 +2,6 @@ package apis
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"shs-web/actions"
 	"shs-web/i18n"
@@ -73,9 +72,5 @@ func (v *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	for _, patient := range payload {
-		fmt.Fprintf(w, `<p class="text-secondary">%+v</p>`, patient)
-	}
-
-	// w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	components.PatientsBrief(payload).Render(r.Context(), w)
 }

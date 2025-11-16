@@ -225,24 +225,6 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 
 	outPatients := make([]Patient, 0, len(patients))
 	for _, patient := range patients {
-		viruses := make([]Virus, 0, len(patient.Viri))
-		for _, v := range patient.Viri {
-			viruses = append(viruses, Virus{
-				Id:   v.Id,
-				Name: v.Name,
-			})
-		}
-
-		/*
-			bloodTestResults := make([]BloodTestResult, 0, len(patient.BloodTests))
-			for _,bt  := range patient.BloodTests {
-				bloodTestResults = append(bloodTestResults, BloodTestResult{
-					BloodTestId: bt.BloodTestId,
-					Name: bt.,
-				})
-			}
-		*/
-
 		outPatients = append(outPatients, Patient{
 			Id:          patient.Id,
 			PublicId:    patient.PublicId,
@@ -268,12 +250,111 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 			Gender:      patient.Gender,
 			PhoneNumber: patient.PhoneNumber,
 			BATScore:    patient.BATScore,
-			Viri:        viruses,
-			BloodTests:  []BloodTestResult{},
 		})
 	}
 
 	return FindPatientsPayload{
 		Data: outPatients,
+	}, nil
+}
+
+type GetPatientParams struct {
+	ActionContext
+	PatientId uint
+}
+
+type GetPatientPayload struct {
+	Data Patient `json:"data"`
+}
+
+func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error) {
+	err := checkAccountType(params.Account, models.AccountTypeSuperAdmin, models.AccountTypeAdmin, models.AccountTypeSecritary)
+	if err != nil {
+		return GetPatientPayload{}, err
+	}
+
+	patient, err := a.app.GetPatientById(params.PatientId)
+	if err != nil {
+		return GetPatientPayload{}, err
+	}
+
+	viruses := make([]Virus, 0, len(patient.Viri))
+	for _, v := range patient.Viri {
+		viruses = append(viruses, Virus{
+			Id:   v.Id,
+			Name: v.Name,
+		})
+	}
+
+	bloodTests, err := a.app.ListAllBloodTests()
+	if err != nil {
+		return GetPatientPayload{}, err
+	}
+
+	bloodTestNames := make(map[uint]string)
+	bloodTestFieldNames := make(map[uint]string)
+	bloodTestFieldUnits := make(map[uint]models.BlootTestUnit)
+
+	for _, bt := range bloodTests {
+		bloodTestNames[bt.Id] = bt.Name
+		for _, field := range bt.Fields {
+			bloodTestFieldNames[field.Id] = field.Name
+			bloodTestFieldUnits[field.Id] = (field.Unit)
+		}
+	}
+
+	bloodTestResults := make([]BloodTestResult, 0, len(patient.BloodTests))
+	for _, bt := range patient.BloodTests {
+		fields := make([]BloodTestFilledField, 0, len(bt.FilledFields))
+		for _, field := range bt.FilledFields {
+			fields = append(fields, BloodTestFilledField{
+				BloodTestFieldId: field.Id,
+				Name:             bloodTestFieldNames[field.Id],
+				Unit:             bloodTestFieldUnits[field.Id],
+				MinValue:         0,
+				MaxValue:         0,
+				ValueNumber:      field.ValueNumber,
+				ValueString:      field.ValueString,
+			})
+		}
+
+		bloodTestResults = append(bloodTestResults, BloodTestResult{
+			BloodTestId:  bt.BloodTestId,
+			Name:         bloodTestNames[bt.BloodTestId],
+			FilledFields: fields,
+		})
+	}
+
+	outPatient := Patient{
+		Id:          patient.Id,
+		PublicId:    patient.PublicId,
+		NationalId:  patient.NationalId,
+		Nationality: patient.NationalId,
+		FirstName:   patient.FirstName,
+		LastName:    patient.LastName,
+		FatherName:  patient.FatherName,
+		MotherName:  patient.MotherName,
+		PlaceOfBirth: Address{
+			Id:          patient.PlaceOfBirth.Id,
+			Governorate: patient.PlaceOfBirth.Governorate,
+			Suburb:      patient.PlaceOfBirth.Suburb,
+			Street:      patient.PlaceOfBirth.Street,
+		},
+		DateOfBirth: patient.DateOfBirth,
+		Residency: Address{
+			Id:          patient.Residency.Id,
+			Governorate: patient.Residency.Governorate,
+			Suburb:      patient.Residency.Suburb,
+			Street:      patient.Residency.Street,
+		},
+		Gender:      patient.Gender,
+		PhoneNumber: patient.PhoneNumber,
+		BATScore:    patient.BATScore,
+		Viri:        viruses,
+		BloodTests:  bloodTestResults,
+	}
+
+	return GetPatientPayload{
+		Data: outPatient,
 	}, nil
 }

@@ -51,6 +51,10 @@ type Patient struct {
 	BloodTests   []BloodTestResult `json:"blood_tests"`
 }
 
+func (p Patient) FullName() string {
+	return p.FirstName + " " + p.LastName
+}
+
 type ListAllPatientsParams struct {
 	RequestContext
 }
@@ -85,10 +89,9 @@ type GetPatientPayload struct {
 }
 
 func (a *Actions) GetPatient(params GetPatientParams) (Patient, error) {
-	return Patient{}, nil
 	payload, err := makeRequest[any, GetPatientPayload](makeRequestConfig[any]{
 		method:   http.MethodGet,
-		endpoint: "/v1/patient/all",
+		endpoint: "/v1/patient/" + strconv.Itoa(params.PatientId),
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},
