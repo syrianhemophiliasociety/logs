@@ -216,15 +216,6 @@ func (p *pagesHandler) HandlePatientsPage(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	patients, err := p.usecases.ListAllPatients(actions.ListAllPatientsParams{
-		RequestContext: ctx,
-	})
-	if err != nil {
-		components.GenericError("Something went wrong").
-			Render(r.Context(), w)
-		return
-	}
-
 	bloodTests, err := p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
 		RequestContext: ctx,
 	})
@@ -246,7 +237,7 @@ func (p *pagesHandler) HandlePatientsPage(w http.ResponseWriter, r *http.Request
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavPatients)
 		w.Header().Set("HX-Push-Url", "/patients")
-		pages.Patients(patients, bloodTests, viruses).Render(r.Context(), w)
+		pages.Patients(bloodTests, viruses).Render(r.Context(), w)
 		return
 	}
 
@@ -254,7 +245,7 @@ func (p *pagesHandler) HandlePatientsPage(w http.ResponseWriter, r *http.Request
 		Title:    i18n.StringsCtx(r.Context()).NavPatients,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Patients(patients, bloodTests, viruses)).Render(r.Context(), w)
+	}, pages.Patients(bloodTests, viruses)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request) {

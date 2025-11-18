@@ -51,6 +51,7 @@ templ allViruses(viruses []actions.Virus) {
 templ newVirus() {
 	<form
 		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+		hx-encoding="application/json"
 		hx-post="/api/virus"
 		hx-ext="json-enc"
 		hx-target="#status-msg"

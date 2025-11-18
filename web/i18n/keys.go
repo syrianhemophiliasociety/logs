@@ -19,6 +19,7 @@ type Keys struct {
 	And  string
 	Or   string
 	With string
+	For  string
 
 	LoginUsername      string
 	LoginPassword      string
@@ -115,6 +116,10 @@ type Keys struct {
 	Diagnosis              string
 	PatientSonOf           string
 	PatientDaughterOf      string
+	FindPatients           string
+	CheckupOnPatients      string
+	PatientProfile         string
+	PatientAddBloodTest    string
 
 	NationalitySyrian      string
 	NationalityPalestinian string

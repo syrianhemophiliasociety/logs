@@ -54,6 +54,7 @@ templ allMedicines(medicines []actions.Medicine) {
 templ newMedicine() {
 	<form
 		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+		hx-encoding="application/json"
 		hx-post="/api/medicine"
 		hx-ext="json-enc"
 		hx-target="#status-msg"

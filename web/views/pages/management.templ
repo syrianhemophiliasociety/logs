@@ -54,6 +54,7 @@ templ allAccounts(accounts []actions.Account) {
 templ newAccount() {
 	<form
 		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+		hx-encoding="application/json"
 		hx-post="/api/account"
 		hx-ext="json-enc"
 		hx-target="#status-msg"

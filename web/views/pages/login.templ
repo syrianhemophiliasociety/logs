@@ -67,6 +67,7 @@ templ Login() {
 templ loginForm() {
 	<form
 		class={ "flex", "flex-col", "gap-y-[15px]", "lg:gap-y-[25px]" }
+		hx-encoding="application/json"
 		hx-post="/api/login/username"
 		hx-ext="json-enc"
 		hx-target="#replaceable-login-form"
