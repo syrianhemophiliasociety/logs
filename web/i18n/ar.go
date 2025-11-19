@@ -108,7 +108,7 @@ var arabic = Keys{
 	FindPatients:            "ابحث عن المرضى",
 	CheckupOnPatients:       "مراجعة المرضى",
 	PatientProfile:          "الملف الشخصي",
-	PatientAddBloodTest:     "تسجيل فحص الدم",
+	PatientAddBloodTest:     "تسجيل نتيجة فحص الدم",
 	NationalitySyrian:       "سوري",
 	NationalityPalestinian:  "فلسطيني",
 	NationalityIraqi:        "عراقي",

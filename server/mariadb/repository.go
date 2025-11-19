@@ -465,6 +465,8 @@ func (r *Repository) GetPatientById(id uint) (models.Patient, error) {
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Patient)).
+			Preload("Residency").
+			Preload("PlaceOfBirth").
 			First(&patient, "id = ?", id).
 			Error,
 	)

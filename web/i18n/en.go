@@ -108,7 +108,7 @@ var english = Keys{
 	FindPatients:            "Find patients",
 	CheckupOnPatients:       "Check-up on patients",
 	PatientProfile:          "Profile",
-	PatientAddBloodTest:     "Add blood test",
+	PatientAddBloodTest:     "Add blood test result",
 	NationalitySyrian:       "Syrian",
 	NationalityPalestinian:  "Palestinian",
 	NationalityIraqi:        "Iraqi",

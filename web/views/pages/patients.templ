@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
@@ -27,9 +26,9 @@ templ Patients(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 }
 
 templ patientSearch() {
-	<div class={ "flex", "gap-10", "w-full" }>
+	<div class={ "flex", "gap-10", "w-full", "h-full" }>
 		<form
-			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", "w-1/4" }
+			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-full", "overflow-y-scroll", "w-1/4" }
 			hx-encoding="application/json"
 			hx-post="/api/patient/find"
 			hx-ext="json-enc"
@@ -91,49 +90,6 @@ templ patientSearch() {
 			</button>
 		</form>
 		<div class={ "w-3/4" } id="status-msg"></div>
-	</div>
-}
-
-func bloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
-	return fmt.Sprintf("blood_test_result_value-%d-%s-%d-%s", bt.Id, actions.Slugify(bt.Name), bt.Id, actions.Slugify(field.Name))
-}
-
-templ bloodTest(bt actions.BloodTest) {
-	<div id={ fmt.Sprintf("%s-%d", bt.Name, bt.Id) } class={ "flex", "flex-col", "gap-1" }>
-		<span class={ "text-xl", "font-bold", }>{ bt.Name }</span>
-		for i := 0; i < len(bt.Fields); i++ {
-			<div class={ "flex", "gap-10", "justify-between" }>
-				@components.Input(components.InputOptions{
-					Id:          bloodTestFormId(bt, bt.Fields[i]),
-					Name:        bloodTestFormId(bt, bt.Fields[i]),
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       bt.Fields[i].Name,
-					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i].Unit),
-					Class:       []string{"!min-w-[230px]"},
-				})
-				if len(bt.Fields)-i != 1 {
-					@components.Input(components.InputOptions{
-						Id:          bloodTestFormId(bt, bt.Fields[i+1]),
-						Name:        bloodTestFormId(bt, bt.Fields[i+1]),
-						Type:        components.InputTypeText,
-						Required:    true,
-						Autofocus:   false,
-						Title:       bt.Fields[i+1].Name,
-						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i+1].Unit),
-						Class:       []string{"!min-w-[230px]"},
-					})
-					{{ i++ }}
-				}
-			</div>
-		}
-		<button
-			type="button"
-			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-fit" , "text-accent" }
-			_={ "on click remove #" + fmt.Sprintf("%s-%d", bt.Name, bt.Id) }
-		>{ i18n.StringsCtx(ctx).RemoveBloodTest }</button>
-		<hr class={ "my-3" }/>
 	</div>
 }
 
@@ -304,25 +260,6 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
 				})
 			</div>
-			<meta/>AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-			<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				for _, virus := range viruses {
-					@components.Input(components.InputOptions{
-						Id:          fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
-						Name:        fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
-						Type:        components.InputTypeCheckbox,
-						Required:    false,
-						Autofocus:   false,
-						Title:       virus.Name,
-						Placeholder: i18n.StringsCtx(ctx).EnterStreet,
-					})
-				}
-			</div>
-			<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).Diagnosis }</span>
-			for _, bt := range bloodTests {
-				@bloodTest(bt)
-			}
 		</div>
 		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
 			{ i18n.StringsCtx(ctx).FormsSubmit }

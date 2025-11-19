@@ -329,7 +329,7 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		Id:          patient.Id,
 		PublicId:    patient.PublicId,
 		NationalId:  patient.NationalId,
-		Nationality: patient.NationalId,
+		Nationality: patient.Nationality,
 		FirstName:   patient.FirstName,
 		LastName:    patient.LastName,
 		FatherName:  patient.FatherName,

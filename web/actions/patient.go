@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+//================
+// Types
+//================
+
 type BloodTestFilledField struct {
 	BloodTestFieldId uint   `json:"blood_test_field_id"`
 	Name             string `json:"name"`
@@ -55,6 +59,10 @@ func (p Patient) FullName() string {
 	return p.FirstName + " " + p.LastName
 }
 
+//==================
+// Get patient by id
+//==================
+
 type GetPatientParams struct {
 	RequestContext
 	PatientId int
@@ -79,7 +87,11 @@ func (a *Actions) GetPatient(params GetPatientParams) (Patient, error) {
 	return payload.Data, nil
 }
 
-type patientRequest struct {
+//================
+// Create patient
+//================
+
+type PatientRequest struct {
 	FirstName               string `json:"first_name"`
 	LastName                string `json:"last_name"`
 	FatherName              string `json:"father_name"`
@@ -95,13 +107,6 @@ type patientRequest struct {
 	ResidencyGovernorate    string `json:"residency_governorate"`
 	ResidencySuburb         string `json:"residency_suburb"`
 	ResidencyStreet         string `json:"residency_street"`
-}
-
-type PatientRequest struct {
-	patientRequest
-
-	Viruses    []Virus
-	BloodTests []BloodTestResult
 }
 
 func (p PatientRequest) IntoPatient() Patient {
@@ -127,20 +132,106 @@ func (p PatientRequest) IntoPatient() Patient {
 		Gender:      p.Gender == "male",
 		PhoneNumber: p.PhoneNumber,
 		BATScore:    0,
-		Viri:        p.Viruses,
-		BloodTests:  p.BloodTests,
 	}
 }
 
-func (p *PatientRequest) UnmarshalJSON(payload []byte) error {
-	var pr patientRequest
-	err := json.Unmarshal(payload, &pr)
+type CreatePatientParams struct {
+	RequestContext
+	NewPatient PatientRequest
+}
+
+type CreatePatientPayload struct{}
+
+func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
+	payload, err := makeRequest[map[string]any, CreatePatientPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: "/v1/patient",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"new_patient": params.NewPatient.IntoPatient(),
+		},
+	})
 	if err != nil {
-		return err
+		return CreatePatientPayload{}, err
 	}
 
+	return payload, nil
+}
+
+//================
+// Find patient
+//================
+
+type FindPatientsParams struct {
+	RequestContext
+	PublicId     string  `json:"public_id"`
+	NationalId   string  `json:"national_id"`
+	FirstName    string  `json:"first_name"`
+	LastName     string  `json:"last_name"`
+	FatherName   string  `json:"father_name"`
+	MotherName   string  `json:"mother_name"`
+	PlaceOfBirth Address `json:"place_of_birth"`
+	Residency    Address `json:"residency"`
+	PhoneNumber  string  `json:"phone_number"`
+}
+
+type FindPatientsPayload struct {
+	Data []Patient `json:"data"`
+}
+
+func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
+	if params.FirstName == "" {
+		params.FirstName = " "
+	}
+	if params.LastName == "" {
+		params.LastName = " "
+	}
+	if params.FatherName == "" {
+		params.FatherName = " "
+	}
+	if params.MotherName == "" {
+		params.MotherName = " "
+	}
+	if params.NationalId == "" {
+		params.NationalId = " "
+	}
+	if params.PhoneNumber == "" {
+		params.PhoneNumber = " "
+	}
+	if params.PublicId == "" {
+		params.PublicId = " "
+	}
+
+	payload, err := makeRequest[any, FindPatientsPayload](makeRequestConfig[any]{
+		method: http.MethodGet,
+		endpoint: fmt.Sprintf(
+			"/v1/patients/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
+			params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return payload.Data, nil
+}
+
+//================================================
+// Create patient non personal details
+//================================================
+
+type PatientNonPersonalDetails struct {
+	Viruses    []Virus
+	BloodTests []BloodTestResult
+}
+
+func (p *PatientNonPersonalDetails) UnmarshalJSON(payload []byte) error {
 	var data map[string]any
-	err = json.Unmarshal(payload, &data)
+	err := json.Unmarshal(payload, &data)
 	if err != nil {
 		return err
 	}
@@ -209,89 +300,7 @@ func (p *PatientRequest) UnmarshalJSON(payload []byte) error {
 		})
 	}
 
-	(*p).patientRequest = pr
 	(*p).Viruses = viruses
 
 	return nil
-}
-
-type CreatePatientParams struct {
-	RequestContext
-	NewPatient PatientRequest
-}
-
-type CreatePatientPayload struct{}
-
-func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
-	payload, err := makeRequest[map[string]any, CreatePatientPayload](makeRequestConfig[map[string]any]{
-		method:   http.MethodPost,
-		endpoint: "/v1/patient",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: map[string]any{
-			"new_patient": params.NewPatient.IntoPatient(),
-		},
-	})
-	if err != nil {
-		return CreatePatientPayload{}, err
-	}
-
-	return payload, nil
-}
-
-type FindPatientsParams struct {
-	RequestContext
-	PublicId     string  `json:"public_id"`
-	NationalId   string  `json:"national_id"`
-	FirstName    string  `json:"first_name"`
-	LastName     string  `json:"last_name"`
-	FatherName   string  `json:"father_name"`
-	MotherName   string  `json:"mother_name"`
-	PlaceOfBirth Address `json:"place_of_birth"`
-	Residency    Address `json:"residency"`
-	PhoneNumber  string  `json:"phone_number"`
-}
-
-type FindPatientsPayload struct {
-	Data []Patient `json:"data"`
-}
-
-func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
-	if params.FirstName == "" {
-		params.FirstName = " "
-	}
-	if params.LastName == "" {
-		params.LastName = " "
-	}
-	if params.FatherName == "" {
-		params.FatherName = " "
-	}
-	if params.MotherName == "" {
-		params.MotherName = " "
-	}
-	if params.NationalId == "" {
-		params.NationalId = " "
-	}
-	if params.PhoneNumber == "" {
-		params.PhoneNumber = " "
-	}
-	if params.PublicId == "" {
-		params.PublicId = " "
-	}
-
-	payload, err := makeRequest[any, FindPatientsPayload](makeRequestConfig[any]{
-		method: http.MethodGet,
-		endpoint: fmt.Sprintf(
-			"/v1/patients/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
-			params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return payload.Data, nil
 }
