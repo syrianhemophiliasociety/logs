@@ -165,18 +165,19 @@ templ patientBloodTests(bloodTests []actions.BloodTestResult) {
 			<br/>
 			{ btField.Name } { btField.ValueString }
 		}
+		<br/>
 	}
 }
 
 func newPatientBloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
-	return fmt.Sprintf("blood_test_result_value-%d-%s-%d-%s", bt.Id, actions.Slugify(bt.Name), bt.Id, actions.Slugify(field.Name))
+	return fmt.Sprintf("blood_test_result_value#%d#%s#%d#%s", bt.Id, actions.Slugify(bt.Name), field.Id, actions.Slugify(field.Name))
 }
 
-templ newPatientBloodTest(bt actions.BloodTest) {
+templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 	<form
 		class={ "", "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post="/api/patient/blood-test"
+		hx-post={ fmt.Sprintf("/api/patient/%s/blood-test", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"
@@ -216,14 +217,14 @@ templ newPatientBloodTest(bt actions.BloodTest) {
 	</form>
 }
 
-func mapBloodTestsToView(bts []actions.BloodTest) []components.SelectContent {
+func mapBloodTestsToView(patient actions.Patient, bts []actions.BloodTest) []components.SelectContent {
 	bloodTestsViews := make([]components.SelectContent, 0, len(bts))
 	for _, bt := range bts {
 		bloodTestsViews = append(bloodTestsViews, components.SelectContent{
 			Title:     bt.Name,
 			TitleId:   unidecode.Unidecode(bt.Name),
 			GroupName: "blood-tests",
-			Content:   newPatientBloodTest(bt),
+			Content:   newPatientBloodTest(patient, bt),
 		})
 	}
 
@@ -235,7 +236,7 @@ templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.Bl
 		components.SelectContentsParams{
 			Title:    i18n.StringsCtx(ctx).EnterBloodTest,
 			TitleId:  "patient-blood-tests",
-			Contents: mapBloodTestsToView(bloodTests),
+			Contents: mapBloodTestsToView(patient, bloodTests),
 		},
 	)
 	<div id="status-msg"></div>

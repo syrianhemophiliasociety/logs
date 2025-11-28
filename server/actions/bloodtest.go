@@ -141,7 +141,7 @@ func mapModelBloodTest(bt models.BloodTest) BloodTest {
 	btFields := make([]BloodTestField, 0, len(bt.Fields))
 	for _, field := range bt.Fields {
 		btFields = append(btFields, BloodTestField{
-
+			Id:       field.Id,
 			Name:     field.Name,
 			Unit:     field.Unit,
 			MinValue: field.MinValue,

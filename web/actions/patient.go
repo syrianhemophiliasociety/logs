@@ -235,10 +235,10 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 		return err
 	}
 
-	const bloodTestResultFieldValue = "blood_test_result_value-"
+	const bloodTestResultFieldValue = "blood_test_result_value#"
 
 	getBloodTestMeta := func(key string) (name, fieldName string, id, fieldId int) {
-		stuff := strings.Split(strings.TrimPrefix(key, bloodTestResultFieldValue), "-")
+		stuff := strings.Split(strings.TrimPrefix(key, bloodTestResultFieldValue), "#")
 		id, _ = strconv.Atoi(stuff[0])
 		fieldId, _ = strconv.Atoi(stuff[2])
 		name = stuff[1]
@@ -287,6 +287,7 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 
 type CreatePatientBloodTestParams struct {
 	RequestContext
+	PatientId        string
 	PatientBloodTest BloodTestResult
 }
 
@@ -301,6 +302,7 @@ func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (C
 			"Authorization": params.SessionToken,
 		},
 		body: map[string]any{
+			"patient_id":         params.PatientId,
 			"patient_blood_test": params.PatientBloodTest,
 		},
 	})

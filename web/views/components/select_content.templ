@@ -2,6 +2,7 @@ package components
 
 import "strings"
 import "fmt"
+import "shs-web/actions"
 
 type SelectContent struct {
 	Title     string
@@ -11,7 +12,7 @@ type SelectContent struct {
 }
 
 func (t SelectContent) id() string {
-	return fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId))
+	return actions.Slugify(fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId)))
 }
 
 func selectContentClickActionHS(currentTabIndex int, selectContents []SelectContent) string {

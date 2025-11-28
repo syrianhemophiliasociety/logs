@@ -148,10 +148,10 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(btr.FilledFields))
 		for _, field := range btr.FilledFields {
 			bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
-				BloodTestId:      btr.BloodTestId,
-				BloodTestFieldId: field.BloodTestFieldId,
-				ValueNumber:      field.ValueNumber,
-				ValueString:      field.ValueString,
+				BloodTestResultId: btr.BloodTestId,
+				BloodTestFieldId:  field.BloodTestFieldId,
+				ValueNumber:       field.ValueNumber,
+				ValueString:       field.ValueString,
 			})
 		}
 
@@ -176,6 +176,47 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}
 
 	return CreatePatientPayload{}, nil
+}
+
+type CreatePatientBloodTestParams struct {
+	ActionContext
+	PatientPublicId string          `json:"patient_id"`
+	BloodTest       BloodTestResult `json:"patient_blood_test"`
+}
+
+type CreatePatientBloodTestPayload struct {
+}
+
+func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (CreatePatientBloodTestPayload, error) {
+	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	if err != nil {
+		return CreatePatientBloodTestPayload{}, err
+	}
+
+	patient, err := a.app.GetPatientByPublicId(params.PatientPublicId)
+	if err != nil {
+		return CreatePatientBloodTestPayload{}, err
+	}
+
+	bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(params.BloodTest.FilledFields))
+	for _, field := range params.BloodTest.FilledFields {
+		bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
+			BloodTestFieldId: field.BloodTestFieldId,
+			ValueNumber:      field.ValueNumber,
+			ValueString:      field.ValueString,
+		})
+	}
+
+	_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+		BloodTestId:  params.BloodTest.BloodTestId,
+		PatientId:    patient.Id,
+		FilledFields: bloodTestResultFields,
+	})
+	if err != nil {
+		return CreatePatientBloodTestPayload{}, err
+	}
+
+	return CreatePatientBloodTestPayload{}, nil
 }
 
 type FindPatientsParams struct {
@@ -309,8 +350,8 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		for _, field := range bt.FilledFields {
 			fields = append(fields, BloodTestFilledField{
 				BloodTestFieldId: field.Id,
-				Name:             bloodTestFieldNames[field.Id],
-				Unit:             bloodTestFieldUnits[field.Id],
+				Name:             bloodTestFieldNames[field.BloodTestFieldId],
+				Unit:             bloodTestFieldUnits[field.BloodTestFieldId],
 				MinValue:         0,
 				MaxValue:         0,
 				ValueNumber:      field.ValueNumber,

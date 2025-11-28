@@ -54,11 +54,11 @@ type BloodTestField struct {
 }
 
 type BloodTestFilledField struct {
-	Id               uint `gorm:"primaryKey;autoIncrement"`
-	BloodTestId      uint
-	BloodTestFieldId uint
-	ValueNumber      uint
-	ValueString      string
+	Id                uint `gorm:"primaryKey;autoIncrement"`
+	BloodTestResultId uint
+	BloodTestFieldId  uint
+	ValueNumber       uint
+	ValueString       string
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
@@ -91,7 +91,7 @@ type BloodTestResult struct {
 	Id           uint                   `gorm:"primaryKey;autoIncrement"`
 	BloodTestId  uint                   `gorm:"not null"`
 	PatientId    uint                   `gorm:"not null"`
-	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestFieldId"`
+	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestResultId"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

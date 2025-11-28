@@ -83,6 +83,8 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	patientId := r.PathValue("id")
+
 	var reqBody actions.PatientBloodTests
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
@@ -93,6 +95,7 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 
 	_, err = v.usecases.CreatePatientBloodTest(actions.CreatePatientBloodTestParams{
 		RequestContext:   ctx,
+		PatientId:        patientId,
 		PatientBloodTest: reqBody.BloodTests[0],
 	})
 	if err != nil {
