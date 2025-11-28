@@ -1,0 +1,70 @@
+package components
+
+import "strings"
+import "fmt"
+
+type SelectContent struct {
+	Title     string
+	TitleId   string
+	GroupName string
+	Content   templ.Component
+}
+
+func (t SelectContent) id() string {
+	return fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId))
+}
+
+func selectContentClickActionHS(currentTabIndex int, selectContents []SelectContent) string {
+	hsAction := strings.Builder{}
+	hsAction.WriteString("on click\n")
+
+	for i, tab := range selectContents {
+		if i == currentTabIndex {
+			fmt.Fprintf(&hsAction, "remove .hidden from #%s\n", tab.id())
+			fmt.Fprintf(&hsAction, "show #%s with *display\n", tab.id())
+		} else {
+			fmt.Fprintf(&hsAction, "hide #%s with *display\n", tab.id())
+		}
+	}
+
+	hsAction.WriteString("end")
+
+	return hsAction.String()
+}
+
+type SelectContentsParams struct {
+	Title    string
+	TitleId  string
+	Contents []SelectContent
+}
+
+templ SelectContents(params SelectContentsParams) {
+	<div class={ "flex", "flex-col",  "h-11/12", "w-fit", "gap-5" }>
+		<!-- select contents options -->
+		<label class={ "text-secondary", "text-xl", "font-bold", } for={ params.TitleId }>{ params.Title }</label>
+		<select id={ params.TitleId }>
+			for i, tab := range params.Contents {
+				<option
+					value={ tab.id() }
+					name="tab"
+					id={ tab.id() + "-option" }
+					if i == 0 {
+						selected="true"
+					}
+					_={ selectContentClickActionHS(i, params.Contents) }
+				>{ tab.Title }</option>
+			}
+		</select>
+		<!-- select contents content -->
+		<div class={ "h-full", "flex", "justify-start", "items-start", "gap-8", "w-full", "flex-col" }>
+			for i, selectContent := range params.Contents {
+				<div
+					id={ selectContent.id() }
+					class={ "contents", templ.KV("hidden", i!=0) }
+				>
+					@selectContent.Content
+				</div>
+			}
+		</div>
+	</div>
+}

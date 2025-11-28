@@ -38,6 +38,14 @@ templ patientSearch() {
 			data-loading-class-remove="hidden"
 		>
 			@components.Input(components.InputOptions{
+				Id:          "public_id",
+				Name:        "public_id",
+				Type:        components.InputTypeText,
+				Autofocus:   true,
+				Title:       i18n.StringsCtx(ctx).PatientId,
+				Placeholder: i18n.StringsCtx(ctx).EnterPatientId,
+			})
+			@components.Input(components.InputOptions{
 				Id:          "first_name",
 				Name:        "first_name",
 				Type:        components.InputTypeText,

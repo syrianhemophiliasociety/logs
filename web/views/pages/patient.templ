@@ -2,6 +2,7 @@ package pages
 
 import (
 	"fmt"
+	"github.com/mozillazg/go-unidecode"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
@@ -21,13 +22,25 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).NavBloodTests,
 				TitleId:   "blood-tests",
 				GroupName: "PatientPage",
-				Content:   patientBloodTests(patient),
+				Content:   patientBloodTests(patient.BloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).PatientAddBloodTest,
 				TitleId:   "add-blood-tests",
 				GroupName: "PatientPage",
 				Content:   addPatientBloodTestResult(patient, bloodTests),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).NavViruses,
+				TitleId:   "viruses",
+				GroupName: "PatientPage",
+				Content:   patientViruses(patient, patient.Viri),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).PatientAddVirus,
+				TitleId:   "add-viruses",
+				GroupName: "PatientPage",
+				Content:   addPatientVirus(patient, viruses),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCheckup,
@@ -43,6 +56,10 @@ templ patientProfile(patient actions.Patient) {
 	<div class={ "w-full", "flex", "flex-col", "gap-5" }>
 		<table class={ "w-1/3" }>
 			<tbody>
+				<tr>
+					<td><b>{ i18n.StringsCtx(ctx).PatientId }</b></td>
+					<td>{ patient.PublicId }</td>
+				</tr>
 				<tr>
 					<td><b>{ i18n.StringsCtx(ctx).PatientFirstName }</b></td>
 					<td>{ patient.FirstName }</td>
@@ -141,68 +158,99 @@ templ patientProfile(patient actions.Patient) {
 	</div>
 }
 
-templ patientBloodTests(patient actions.Patient) {
-	blood tests
+templ patientBloodTests(bloodTests []actions.BloodTestResult) {
+	for _, bt := range bloodTests {
+		{ bt.Name }
+		for _, btField := range bt.FilledFields {
+			<br/>
+			{ btField.Name } { btField.ValueString }
+		}
+	}
 }
 
-func bloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
+func newPatientBloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
 	return fmt.Sprintf("blood_test_result_value-%d-%s-%d-%s", bt.Id, actions.Slugify(bt.Name), bt.Id, actions.Slugify(field.Name))
 }
 
-templ bloodTest(bt actions.BloodTest) {
-	<div id={ fmt.Sprintf("%s-%d", bt.Name, bt.Id) } class={ "flex", "flex-col", "gap-1" }>
-		<span class={ "text-xl", "font-bold", }>{ bt.Name }</span>
-		for i := 0; i < len(bt.Fields); i++ {
-			<div class={ "flex", "gap-10", "justify-between" }>
-				@components.Input(components.InputOptions{
-					Id:          bloodTestFormId(bt, bt.Fields[i]),
-					Name:        bloodTestFormId(bt, bt.Fields[i]),
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       bt.Fields[i].Name,
-					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i].Unit),
-					Class:       []string{"!min-w-[230px]"},
-				})
-				if len(bt.Fields)-i != 1 {
-					@components.Input(components.InputOptions{
-						Id:          bloodTestFormId(bt, bt.Fields[i+1]),
-						Name:        bloodTestFormId(bt, bt.Fields[i+1]),
-						Type:        components.InputTypeText,
-						Required:    true,
-						Autofocus:   false,
-						Title:       bt.Fields[i+1].Name,
-						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i+1].Unit),
-						Class:       []string{"!min-w-[230px]"},
-					})
-					{{ i++ }}
-				}
-			</div>
-		}
-		<button
-			type="button"
-			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-fit" , "text-accent" }
-			_={ "on click remove #" + fmt.Sprintf("%s-%d", bt.Name, bt.Id) }
-		>{ i18n.StringsCtx(ctx).RemoveBloodTest }</button>
-		<hr class={ "my-3" }/>
-	</div>
-}
-
-templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.BloodTest) {
+templ newPatientBloodTest(bt actions.BloodTest) {
 	<form
-		class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }
+		class={ "", "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post="/api/patient/find"
+		hx-post="/api/patient/blood-test"
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
 	>
-		for _, bt := range bloodTests {
-			@bloodTest(bt)
+		for i := 0; i < len(bt.Fields); i++ {
+			<div class={ "flex", "gap-10", "justify-between" }>
+				@components.Input(components.InputOptions{
+					Id:          newPatientBloodTestFormId(bt, bt.Fields[i]),
+					Name:        newPatientBloodTestFormId(bt, bt.Fields[i]),
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       bt.Fields[i].Name,
+					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i].Unit),
+					Class:       []string{"!min-w-[250px]"},
+				})
+				if len(bt.Fields)-i != 1 {
+					@components.Input(components.InputOptions{
+						Id:          newPatientBloodTestFormId(bt, bt.Fields[i+1]),
+						Name:        newPatientBloodTestFormId(bt, bt.Fields[i+1]),
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       bt.Fields[i+1].Name,
+						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i+1].Unit),
+						Class:       []string{"!min-w-[250px]"},
+					})
+					{{ i++ }}
+				}
+			</div>
 		}
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
 	</form>
+}
+
+func mapBloodTestsToView(bts []actions.BloodTest) []components.SelectContent {
+	bloodTestsViews := make([]components.SelectContent, 0, len(bts))
+	for _, bt := range bts {
+		bloodTestsViews = append(bloodTestsViews, components.SelectContent{
+			Title:     bt.Name,
+			TitleId:   unidecode.Unidecode(bt.Name),
+			GroupName: "blood-tests",
+			Content:   newPatientBloodTest(bt),
+		})
+	}
+
+	return bloodTestsViews
+}
+
+templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.BloodTest) {
+	@components.SelectContents(
+		components.SelectContentsParams{
+			Title:    i18n.StringsCtx(ctx).EnterBloodTest,
+			TitleId:  "patient-blood-tests",
+			Contents: mapBloodTestsToView(bloodTests),
+		},
+	)
+	<div id="status-msg"></div>
+}
+
+templ patientViruses(patient actions.Patient, viruses []actions.Virus) {
+	<div>
+		<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
+		<div class={ "flex",  "justify-between", "gap-10" }>
+			for _, virus := range viruses {
+				<br/>
+				{ virus.Name }
+			}
+		</div>
+	</div>
 }
 
 templ addPatientVirus(patient actions.Patient, viruses []actions.Virus) {

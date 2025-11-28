@@ -57,7 +57,7 @@ type Patient struct {
 	PhoneNumber  string            `json:"phone_number"`
 	BATScore     uint              `json:"bat_score"`
 	Viri         []Virus           `json:"viruses"`
-	BloodTests   []BloodTestResult `json:"blood_tests"`
+	BloodTests   []BloodTestResult `json:"blood_test_results"`
 }
 
 type CreatePatientParams struct {
@@ -260,7 +260,7 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 
 type GetPatientParams struct {
 	ActionContext
-	PatientId uint
+	PublicId string
 }
 
 type GetPatientPayload struct {
@@ -273,7 +273,7 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		return GetPatientPayload{}, err
 	}
 
-	patient, err := a.app.GetPatientById(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PublicId)
 	if err != nil {
 		return GetPatientPayload{}, err
 	}
@@ -299,7 +299,7 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		bloodTestNames[bt.Id] = bt.Name
 		for _, field := range bt.Fields {
 			bloodTestFieldNames[field.Id] = field.Name
-			bloodTestFieldUnits[field.Id] = (field.Unit)
+			bloodTestFieldUnits[field.Id] = field.Unit
 		}
 	}
 

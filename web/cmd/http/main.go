@@ -102,6 +102,7 @@ func main() {
 
 	apisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
 	apisHandler.HandleFunc("POST /patient/find", authMiddleware.AuthApi(patientApi.HandleFindPatients))
+	apisHandler.HandleFunc("POST /patient/blood-test", authMiddleware.AuthApi(patientApi.HandleAddPatientBloodTest))
 
 	// apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 

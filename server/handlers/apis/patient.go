@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"shs/actions"
 	"shs/log"
-	"strconv"
 )
 
 type patientApi struct {
@@ -77,15 +76,9 @@ func (e *patientApi) HandleGetPatient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	patientId, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {
-		handleErrorResponse(w, err)
-		return
-	}
-
 	params := actions.GetPatientParams{
 		ActionContext: ctx,
-		PatientId:     uint(patientId),
+		PublicId:      r.PathValue("id"),
 	}
 
 	payload, err := e.usecases.GetPatient(params)

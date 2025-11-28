@@ -32,6 +32,7 @@ type Repository interface {
 
 	CreatePatient(patient models.Patient) (models.Patient, error)
 	GetPatientById(id uint) (models.Patient, error)
+	GetPatientByPublicId(publicId string) (models.Patient, error)
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)
 	FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error)
 

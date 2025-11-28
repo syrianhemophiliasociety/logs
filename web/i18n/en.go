@@ -5,6 +5,7 @@ import "fmt"
 var english = Keys{
 	Title:                   "Syrian Hemophilia Society",
 	Description:             "A patient care follow up platform for Syrian Hemophilia Society.",
+	Hello:                   "Hello",
 	ErrorSomethingWentWrong: "Something went wrong",
 	MessageSuccess:          "Success",
 	ChooseTheme:             "Theme",
@@ -109,6 +110,10 @@ var english = Keys{
 	CheckupOnPatients:       "Check-up on patients",
 	PatientProfile:          "Profile",
 	PatientAddBloodTest:     "Add blood test result",
+	PatientAddVirus:         "Add virus",
+	PatientId:               "ID",
+	EnterPatientId:          "Enter ID",
+	EnterBloodTest:          "Choose blood test",
 	NationalitySyrian:       "Syrian",
 	NationalityPalestinian:  "Palestinian",
 	NationalityIraqi:        "Iraqi",

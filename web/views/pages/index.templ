@@ -1,7 +1,13 @@
 package pages
 
+import (
+	"shs-web/i18n"
+	"shs-web/views/helpers"
+)
+
 templ Index() {
 	<div class={ "p-20" }>
+		<h1>{ i18n.StringsCtx(ctx).Hello }&nbsp;{ helpers.AccountCtx(ctx).DisplayName }&nbsp;👋</h1>
 		<img
 			src="/assets/web-app-manifest-512x512.png"
 			alt="SyrianHemophiliaSocietyLogs Logo"

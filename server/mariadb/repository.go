@@ -482,6 +482,29 @@ func (r *Repository) GetPatientById(id uint) (models.Patient, error) {
 	return patient, nil
 }
 
+func (r *Repository) GetPatientByPublicId(publicId string) (models.Patient, error) {
+	var patient models.Patient
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			Preload("Residency").
+			Preload("PlaceOfBirth").
+			First(&patient, "public_id = ?", publicId).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Patient{}, &app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	return patient, nil
+}
+
 func (r *Repository) FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error) {
 	return nil, errors.New("not inmplemented")
 }

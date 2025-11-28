@@ -5,6 +5,7 @@ import "fmt"
 var arabic = Keys{
 	Title:                   "الجمعية السورية لمرضى الناعور",
 	Description:             "منصة متابعة رعاية المرضى للجمعية السورية لمرضى الناعور",
+	Hello:                   "مرحبا",
 	ErrorSomethingWentWrong: "حدث خطأ ما",
 	MessageSuccess:          "تمت العملية بنجاح",
 	ChooseTheme:             "اختر لون الواجهة",
@@ -109,6 +110,10 @@ var arabic = Keys{
 	CheckupOnPatients:       "مراجعة المرضى",
 	PatientProfile:          "الملف الشخصي",
 	PatientAddBloodTest:     "تسجيل نتيجة فحص الدم",
+	PatientAddVirus:         "تسجيل فيروس",
+	PatientId:               "الرقم التعريفي",
+	EnterPatientId:          "الرقم التعريفي",
+	EnterBloodTest:          "اختر تحليل الدم",
 	NationalitySyrian:       "سوري",
 	NationalityPalestinian:  "فلسطيني",
 	NationalityIraqi:        "عراقي",

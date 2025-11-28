@@ -12,4 +12,5 @@ func New(cache Cache) *Actions {
 
 type RequestContext struct {
 	SessionToken string
+	Account      Account
 }

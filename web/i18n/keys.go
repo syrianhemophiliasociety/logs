@@ -8,6 +8,7 @@ import (
 type Keys struct {
 	Title       string
 	Description string
+	Hello       string
 
 	ErrorSomethingWentWrong string
 	MessageSuccess          string
@@ -120,6 +121,10 @@ type Keys struct {
 	CheckupOnPatients      string
 	PatientProfile         string
 	PatientAddBloodTest    string
+	PatientAddVirus        string
+	PatientId              string
+	EnterPatientId         string
+	EnterBloodTest         string
 
 	NationalitySyrian      string
 	NationalityPalestinian string

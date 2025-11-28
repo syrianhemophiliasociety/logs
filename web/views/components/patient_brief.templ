@@ -4,19 +4,22 @@ import (
 	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
-	"strconv"
 )
 
 templ PatientsBrief(patients []actions.Patient) {
 	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
 		for _, patient := range patients {
-			@JustLink("/patient/"+strconv.Itoa(int(patient.Id)), "Patient page", patientBrief(patient))
+			@JustLink("/patient/"+patient.PublicId, "Patient page", patientBrief(patient))
 		}
 	</div>
 }
 
 templ patientBrief(patient actions.Patient) {
 	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+		<span
+			_="on click call event.stopImmediatePropagation() then call event.stopPropagation()"
+			class="min-w-20 text-xl font-bold text-secondary"
+		>{ patient.PublicId }</span>
 		<span class="min-w-20 text-xl font-bold text-secondary">{ patient.FullName() }</span>
 		<span class="min-w-20 text-xl text-secondary">
 			if patient.Gender {

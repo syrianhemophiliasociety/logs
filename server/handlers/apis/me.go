@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"encoding/json"
 	"net/http"
 	"shs/actions"
 )
@@ -16,11 +17,18 @@ func NewMeApi(usecases *actions.Actions) *meApi {
 }
 
 func (u *meApi) HandleAuthCheck(w http.ResponseWriter, r *http.Request) {
-	_, err := parseContext(r.Context())
+	ctx, err := parseContext(r.Context())
 	if err != nil {
 		handleErrorResponse(w, err)
 		return
 	}
+
+	_ = json.NewEncoder(w).Encode(actions.Account{
+		Id:          ctx.Account.Id,
+		DisplayName: ctx.Account.DisplayName,
+		Username:    ctx.Account.Username,
+		Type:        string(ctx.Account.Type),
+	})
 }
 
 func (m *meApi) HandleLogout(w http.ResponseWriter, r *http.Request) {

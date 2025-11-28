@@ -52,7 +52,7 @@ type Patient struct {
 	PhoneNumber  string            `json:"phone_number"`
 	BATScore     uint              `json:"bat_score"`
 	Viri         []Virus           `json:"viruses"`
-	BloodTests   []BloodTestResult `json:"blood_tests"`
+	BloodTests   []BloodTestResult `json:"blood_test_results"`
 }
 
 func (p Patient) FullName() string {
@@ -224,12 +224,11 @@ func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
 // Create patient non personal details
 //================================================
 
-type PatientNonPersonalDetails struct {
-	Viruses    []Virus
+type PatientBloodTests struct {
 	BloodTests []BloodTestResult
 }
 
-func (p *PatientNonPersonalDetails) UnmarshalJSON(payload []byte) error {
+func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 	var data map[string]any
 	err := json.Unmarshal(payload, &data)
 	if err != nil {
@@ -237,7 +236,6 @@ func (p *PatientNonPersonalDetails) UnmarshalJSON(payload []byte) error {
 	}
 
 	const bloodTestResultFieldValue = "blood_test_result_value-"
-	const virusPrefix = "virus-"
 
 	getBloodTestMeta := func(key string) (name, fieldName string, id, fieldId int) {
 		stuff := strings.Split(strings.TrimPrefix(key, bloodTestResultFieldValue), "-")
@@ -276,6 +274,51 @@ func (p *PatientNonPersonalDetails) UnmarshalJSON(payload []byte) error {
 		})
 	}
 
+	for id, fields := range bloodTestsFields {
+		p.BloodTests = append(p.BloodTests, BloodTestResult{
+			BloodTestId:  id,
+			Name:         bloodTestNames[id],
+			FilledFields: fields,
+		})
+	}
+
+	return nil
+}
+
+type CreatePatientBloodTestParams struct {
+	RequestContext
+	PatientBloodTest BloodTestResult
+}
+
+type CreatePatientBloodTestPayload struct {
+}
+
+func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (CreatePatientBloodTestPayload, error) {
+	return makeRequest[map[string]any, CreatePatientBloodTestPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: "/v1/patient/bloodtest",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"patient_blood_test": params.PatientBloodTest,
+		},
+	})
+}
+
+type PatientViruses struct {
+	Viruses []Virus
+}
+
+func (p *PatientViruses) UnmarshalJSON(payload []byte) error {
+	var data map[string]any
+	err := json.Unmarshal(payload, &data)
+	if err != nil {
+		return err
+	}
+
+	const virusPrefix = "virus-"
+
 	viruses := make([]Virus, 0)
 	for k, v := range data {
 		if !strings.HasPrefix(k, virusPrefix) {
@@ -290,14 +333,6 @@ func (p *PatientNonPersonalDetails) UnmarshalJSON(payload []byte) error {
 				Name: virusStr[1],
 			})
 		}
-	}
-
-	for id, fields := range bloodTestsFields {
-		p.BloodTests = append(p.BloodTests, BloodTestResult{
-			BloodTestId:  id,
-			Name:         bloodTestNames[id],
-			FilledFields: fields,
-		})
 	}
 
 	(*p).Viruses = viruses

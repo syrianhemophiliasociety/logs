@@ -18,7 +18,8 @@ const (
 // Context keys
 const (
 	CtxSessionTokenKey = "session-token"
-	AccountType        = "account-type"
+	CtxAccountKey      = "account"
+	CtxAccountTypeKey  = "account-type"
 )
 
 var noAuthPaths = []string{"/login", "/signup"}
@@ -38,9 +39,11 @@ func New(usecases *actions.Actions) *Middleware {
 func (a *Middleware) AuthPage(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		htmxRedirect := contenttype.IsNoLayoutPage(r)
-		sessionToken, err := a.authenticate(r)
+		sessionToken, account, err := a.authenticate(r)
 		authed := err == nil
 		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxAccountKey, account)
+		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
 
 		switch {
 		case authed && slices.Contains(noAuthPaths, r.URL.Path):
@@ -68,12 +71,14 @@ func (a *Middleware) AuthPage(h http.HandlerFunc) http.HandlerFunc {
 // OptionalAuthPage authenticates a page's handler optionally (without redirection).
 func (a *Middleware) OptionalAuthPage(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, err := a.authenticate(r)
+		sessionToken, account, err := a.authenticate(r)
 		if err != nil {
 			h(w, r)
 			return
 		}
 		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxAccountKey, account)
+		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
 		h(w, r.WithContext(ctx))
 	}
 }
@@ -81,12 +86,14 @@ func (a *Middleware) OptionalAuthPage(h http.HandlerFunc) http.HandlerFunc {
 // AuthApi authenticates an API's handler.
 func (a *Middleware) AuthApi(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, err := a.authenticate(r)
+		sessionToken, account, err := a.authenticate(r)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxAccountKey, account)
+		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
 		h(w, r.WithContext(ctx))
 	}
 }
@@ -94,21 +101,28 @@ func (a *Middleware) AuthApi(h http.HandlerFunc) http.HandlerFunc {
 // OptionalAuthApi authenticates a page's handler optionally (without 401).
 func (a *Middleware) OptionalAuthApi(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessionToken, err := a.authenticate(r)
+		sessionToken, account, err := a.authenticate(r)
 		if err != nil {
 			h(w, r)
 			return
 		}
 		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxAccountKey, account)
+		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
 		h(w, r.WithContext(ctx))
 	}
 }
 
-func (a *Middleware) authenticate(r *http.Request) (string, error) {
+func (a *Middleware) authenticate(r *http.Request) (string, actions.Account, error) {
 	sessionToken, err := r.Cookie(SessionTokenKey)
 	if err != nil {
-		return "", err
+		return "", actions.Account{}, err
 	}
 
-	return sessionToken.Value, a.usecases.CheckAuth(sessionToken.Value)
+	account, err := a.usecases.CheckAuth(sessionToken.Value)
+	if err != nil {
+		return "", actions.Account{}, err
+	}
+
+	return sessionToken.Value, account, nil
 }
