@@ -17,6 +17,9 @@ templ RouteLink(title, path string, isMobile bool) {
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
 		data-loading-path={ path + "?no_layout=true" }
+		_="on htmx:afterRequest
+            call Router.updateActiveNavLink()
+        end"
 	>
 		{ title }
 	</a>

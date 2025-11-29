@@ -150,5 +150,5 @@ div.nav-link a:hover,
 }
 
 .tabs input[type="radio"]:checked + label {
-  background-color: var(--color-secondary-trans-20);
+  background-color: var(--color-accent-trans-20);
 }

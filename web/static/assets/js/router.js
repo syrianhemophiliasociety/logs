@@ -11,31 +11,38 @@ const links = [
     ],
   },
   {
-    check: (l) => l === "/about",
+    check: (l) => l.startsWith("/patient"),
     elements: [
-      document.getElementById("/about"),
-      document.getElementById("/about?mobile"),
+      document.getElementById("/patients"),
+      document.getElementById("/patients?mobile"),
     ],
   },
   {
-    check: (l) => l === "/profile",
+    check: (l) => l === "/blood-tests",
     elements: [
-      document.getElementById("/profile"),
-      document.getElementById("/profile?mobile"),
+      document.getElementById("/blood-tests"),
+      document.getElementById("/blood-tests?mobile"),
     ],
   },
   {
-    check: (l) => l.startsWith("/playlist"),
+    check: (l) => l === "/viruses",
     elements: [
-      document.getElementById("/playlists"),
-      document.getElementById("/playlists?mobile"),
+      document.getElementById("/viruses"),
+      document.getElementById("/viruses?mobile"),
     ],
   },
   {
-    check: (l) => l.startsWith("/library/favorites"),
+    check: (l) => l === "/medicines",
     elements: [
-      document.getElementById("/library/favorites"),
-      document.getElementById("/library/favorites?mobile"),
+      document.getElementById("/medicines"),
+      document.getElementById("/medicines?mobile"),
+    ],
+  },
+  {
+    check: (l) => l === "/management",
+    elements: [
+      document.getElementById("/management"),
+      document.getElementById("/management?mobile"),
     ],
   },
 ];
@@ -49,10 +56,6 @@ function updateActiveNavLink() {
     }
   }
 }
-
-window.addEventListener("load", () => {
-  updateActiveNavLink();
-});
 
 /**
  * @param {string} path the requested path to update.
@@ -75,6 +78,30 @@ async function updateMainContent(path) {
     });
 }
 
+function updateSearchQuery(key, value) {
+  const query = new URLSearchParams(location.search);
+  query.set(key, value);
+
+  if (history.pushState) {
+    const newurl = `${location.protocol}//${location.host}${location.pathname}?${query.toString()}`;
+    window.history.pushState({ path: newurl }, "", newurl);
+  }
+}
+
+function removeSearchQuery(key) {
+  const query = new URLSearchParams(location.search);
+  query.delete(key);
+
+  if (history.pushState) {
+    const newurl = `${location.protocol}//${location.host}${location.pathname}?${query.toString()}`;
+    window.history.pushState({ path: newurl }, "", newurl);
+  }
+}
+
+window.addEventListener("load", () => {
+  updateActiveNavLink();
+});
+
 window.addEventListener("popstate", async (e) => {
   const mainContentsEl = document.getElementById("main-contents");
   if (!!mainContentsEl && !!e.target.location.pathname) {
@@ -94,4 +121,9 @@ document.addEventListener("htmx:afterRequest", function (e) {
   }
 });
 
-window.Router = { updateActiveNavLink, updateMainContent };
+window.Router = {
+  updateActiveNavLink,
+  updateMainContent,
+  updateSearchQuery,
+  removeSearchQuery,
+};

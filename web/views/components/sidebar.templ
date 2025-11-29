@@ -1,6 +1,7 @@
 package components
 
 import "shs-web/i18n"
+import "shs-web/views/helpers"
 
 templ Sidebar() {
 	<div class={ "w-[200px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
@@ -18,20 +19,27 @@ templ Sidebar() {
 			<nav class={ "p-10" }>
 				<ul class={ "list-none", "flex", "flex-col", "gap-x-5" }>
 					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
+						@RouteLink(i18n.StringsCtx(ctx).NavHome, "/", false)
 					</li>
-					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
-					</li>
-					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
-					</li>
-					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)
-					</li>
-					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false)
-					</li>
+					if helpers.AccountTypeCtx(ctx).Admin() || helpers.AccountTypeCtx(ctx).Secritary() || helpers.AccountTypeCtx(ctx).SuperAdmin() {
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
+						</li>
+					}
+					if helpers.AccountTypeCtx(ctx).Admin()  || helpers.AccountTypeCtx(ctx).SuperAdmin() {
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
+						</li>
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
+						</li>
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)
+						</li>
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false)
+						</li>
+					}
 				</ul>
 			</nav>
 		</div>

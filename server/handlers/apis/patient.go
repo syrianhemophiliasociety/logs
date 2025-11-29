@@ -101,6 +101,7 @@ func (e *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) 
 
 	findParams := actions.FindPatientsParams{
 		ActionContext: ctx,
+		PublicId:      r.PathValue("public_id"),
 		FirstName:     r.PathValue("first_name"),
 		LastName:      r.PathValue("last_name"),
 		FatherName:    r.PathValue("father_name"),

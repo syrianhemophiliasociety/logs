@@ -19,11 +19,31 @@ func AccountCtx(ctx context.Context) actions.Account {
 	return account
 }
 
-func AccountTypeCtx(ctx context.Context) string {
-	accountType, ok := ctx.Value(auth.CtxAccountTypeKey).(string)
+type accountType struct {
+	t string
+}
+
+func (a accountType) Admin() bool {
+	return a.t == "admin"
+}
+
+func (a accountType) SuperAdmin() bool {
+	return a.t == "superadmin"
+}
+
+func (a accountType) Secritary() bool {
+	return a.t == "secritary"
+}
+
+func (a accountType) Patient() bool {
+	return a.t == "patient"
+}
+
+func AccountTypeCtx(ctx context.Context) accountType {
+	t, ok := ctx.Value(auth.CtxAccountTypeKey).(string)
 	if !ok {
-		return "N/A"
+		return accountType{"N/A"}
 	}
 
-	return accountType
+	return accountType{t}
 }

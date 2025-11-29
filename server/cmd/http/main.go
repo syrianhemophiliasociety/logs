@@ -91,7 +91,7 @@ func main() {
 	v1ApisHandler.HandleFunc("POST /patient/virus", authMiddleware.AuthApi(patientApi.HandleCreatePatientVirus))
 	v1ApisHandler.HandleFunc("GET /patient/{id}", authMiddleware.AuthApi(patientApi.HandleGetPatient))
 	v1ApisHandler.HandleFunc(
-		"GET /patients/first-name/{first_name}/last-name/{last_name}/father-name/{father_name}/mother-name/{mother_name}/national-id/{national_id}/phone-number/{phone_number}",
+		"GET /patients/public-id/{public_id}/first-name/{first_name}/last-name/{last_name}/father-name/{father_name}/mother-name/{mother_name}/national-id/{national_id}/phone-number/{phone_number}",
 		authMiddleware.AuthApi(patientApi.HandleFindPatients))
 
 	applicationHandler := http.NewServeMux()

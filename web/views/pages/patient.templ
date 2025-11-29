@@ -15,31 +15,31 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).PatientProfile,
 				TitleId:   "profile",
-				GroupName: "PatientPage",
+				GroupName: "Patient",
 				Content:   patientProfile(patient),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).NavBloodTests,
 				TitleId:   "blood-tests",
-				GroupName: "PatientPage",
+				GroupName: "Patient",
 				Content:   patientBloodTests(patient.BloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).NavViruses,
 				TitleId:   "viruses",
-				GroupName: "PatientPage",
+				GroupName: "Patient",
 				Content:   patientViruses(patient, patient.Viri),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).PatientAddBloodTest,
 				TitleId:   "add-blood-tests",
-				GroupName: "PatientPage",
+				GroupName: "Patient",
 				Content:   addPatientBloodTestResult(patient, bloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCheckup,
 				TitleId:   "checkup",
-				GroupName: "Patients",
+				GroupName: "Patient",
 				Content:   patientCheckup(),
 			},
 		)

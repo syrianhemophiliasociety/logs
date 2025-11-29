@@ -12,29 +12,44 @@ type TabContent struct {
 }
 
 func (t TabContent) id() string {
-	return actions.Slugify(fmt.Sprintf("%s-%s-tab", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId)))
+	return actions.Slugify(fmt.Sprintf("%s-%s", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId)))
 }
 
 func tabClickActionHS(currentTabIndex int, tabs []TabContent) string {
-	hsAction := strings.Builder{}
-	hsAction.WriteString("on click\n")
+	hsAction := new(strings.Builder)
+	fmt.Fprintln(hsAction, "on click")
 
 	for i, tab := range tabs {
 		if i == currentTabIndex {
-			fmt.Fprintf(&hsAction, "remove .hidden from #%s\n", tab.id())
-			fmt.Fprintf(&hsAction, "show #%s with *display\n", tab.id())
+			fmt.Fprintf(hsAction, "remove .hidden from #%s\n", tab.id())
+			fmt.Fprintf(hsAction, "show #%s with *display\n", tab.id())
+			fmt.Fprintf(hsAction, "call Router.updateSearchQuery('tab','%s')", tab.id())
 		} else {
-			fmt.Fprintf(&hsAction, "hide #%s with *display\n", tab.id())
+			fmt.Fprintf(hsAction, "hide #%s with *display\n", tab.id())
 		}
 	}
 
-	hsAction.WriteString("end")
+	fmt.Fprintln(hsAction, "end")
+
+	fmt.Fprintf(hsAction, `on load
+make a URLSearchParams from location.search called query
+then set activeTab to query's get('tab')
+then if activeTab and activeTab.startsWith('%s') then
+    if activeTab is "%s" then
+        call me.click()
+        set @checked to me
+    end
+else
+end
+end`, strings.ToLower(tabs[currentTabIndex].GroupName), tabs[currentTabIndex].id())
 
 	return hsAction.String()
 }
 
 templ Tabs(tabs ...TabContent) {
-	<div class={ "flex", "flex-col",  "h-11/12", "w-full", "gap-5" }>
+	<div
+		class={ "flex", "flex-col",  "h-11/12", "w-full", "gap-5" }
+	>
 		<!-- tabs blyat -->
 		<div class={ "flex", "justify-start", "items-center", "gap-x-8", "w-full", "tabs" }>
 			for i, tab := range tabs {

@@ -207,8 +207,8 @@ func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
 	payload, err := makeRequest[any, FindPatientsPayload](makeRequestConfig[any]{
 		method: http.MethodGet,
 		endpoint: fmt.Sprintf(
-			"/v1/patients/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
-			params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
+			"/v1/patients/public-id/%s/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
+			params.PublicId, params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},
