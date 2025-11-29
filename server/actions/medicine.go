@@ -21,7 +21,7 @@ type CreateMedicinePayload struct {
 }
 
 func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return CreateMedicinePayload{}, err
 	}
@@ -55,7 +55,7 @@ type DeleteMedicinePayload struct {
 }
 
 func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return DeleteMedicinePayload{}, err
 	}

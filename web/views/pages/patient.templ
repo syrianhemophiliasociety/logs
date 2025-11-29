@@ -6,9 +6,10 @@ import (
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"strconv"
 )
 
-templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus) {
+templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatient } { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
 		@components.Tabs(
@@ -40,7 +41,7 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).TabsCheckup,
 				TitleId:   "checkup",
 				GroupName: "Patient",
-				Content:   patientCheckup(),
+				Content:   patientCheckup(patient, allMedicine),
 			},
 		)
 	</div>
@@ -237,36 +238,74 @@ templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.Bl
 }
 
 templ patientViruses(patient actions.Patient, viruses []actions.Virus) {
-	<div>
-		<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
-		<div class={ "flex",  "justify-between", "gap-10" }>
-			for _, virus := range viruses {
-				<br/>
-				{ virus.Name }
-			}
-		</div>
+	<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
+	<div class={ "flex",  "justify-between", "gap-10" }>
+		for _, virus := range viruses {
+			<br/>
+			{ virus.Name }
+		}
 	</div>
 }
 
-templ addPatientVirus(patient actions.Patient, viruses []actions.Virus) {
-	<div>
-		<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
-		<div class={ "flex",  "justify-between", "gap-10" }>
-			for _, virus := range viruses {
-				@components.Input(components.InputOptions{
-					Id:          fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
-					Name:        fmt.Sprintf("virus-%d-%s", virus.Id, actions.Slugify(virus.Name)),
-					Type:        components.InputTypeCheckbox,
-					Required:    false,
-					Autofocus:   false,
-					Title:       virus.Name,
-					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
-				})
-			}
-		</div>
-	</div>
+templ medicineInCheckUp(medicines []actions.Medicine) {
+	{{
+	options := make([]components.SelectOption, 0, len(medicines))
+	for _, m := range medicines {
+		options = append(options, components.SelectOption{
+			Name:  m.Name,
+			Value: strconv.Itoa(int(m.Id)),
+		})
+	}
+	}}
+	@components.Select(components.SelectParams{
+		Id:          "medicine_id",
+		Name:        i18n.StringsCtx(ctx).CheckUpPrescribedMedicines,
+		Placeholder: i18n.StringsCtx(ctx).EnterCheckUpPrescribedMedicines,
+		Options:     options,
+	})
 }
 
-templ patientCheckup() {
-	Patient checkup
+templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
+	<form
+		class={ "", "flex", "flex-col", "gap-5" }
+		hx-encoding="application/json"
+		hx-post={ fmt.Sprintf("/api/patient/%s/checkup", patient.PublicId) }
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+	>
+		<div class={ "flex", "flex-col", "gap-5", "justify-between" }>
+			@components.Select(components.SelectParams{
+				Id:          "visit_reason",
+				Name:        i18n.StringsCtx(ctx).CheckUpVisitReason,
+				Required:    true,
+				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpVisitReason,
+				Options: []components.SelectOption{
+					// TODO: translate
+					{Name: "Surgery", Value: "surgery"},
+					{Name: "Joint evaluation", Value: "joint_evaluation"},
+					{Name: "Joint injection", Value: "joint_injection"},
+					{Name: "Hemelibra", Value: "hemelibra"},
+					{Name: "Pafilaxes", Value: "pafilaxes"},
+				},
+			})
+			<div id="prescribed_medicines">
+				<div id="single_medicine">
+					@medicineInCheckUp(allMedicine)
+				</div>
+			</div>
+			<button
+				type="button"
+				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+				_="on click put #single_medicine's outerHTML at the end of #prescribed_medicines"
+			>
+				{ i18n.StringsCtx(ctx).CheckUpAddPrescribedMedicine }
+			</button>
+		</div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+	</form>
 }

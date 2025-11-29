@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"slices"
+	"time"
+)
 
 type AccountType string
 
@@ -20,4 +24,16 @@ type Account struct {
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
+}
+
+func (a Account) CheckType(accountTypes ...AccountType) error {
+	if a.Type == AccountTypeSuperAdmin {
+		return nil
+	}
+
+	if slices.Contains(accountTypes, a.Type) {
+		return nil
+	}
+
+	return errors.New("invalid account type")
 }

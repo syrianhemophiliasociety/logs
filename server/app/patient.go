@@ -32,7 +32,16 @@ func (a *App) GetPatientById(id uint) (models.Patient, error) {
 	return patient, nil
 }
 
-func (a *App) GetPatientByPublicId(publicId string) (models.Patient, error) {
+func (a *App) GetMinimalPatientByPublicId(publicId string) (models.Patient, error) {
+	patient, err := a.repo.GetPatientByPublicId(publicId)
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	return patient, nil
+}
+
+func (a *App) GetFullPatientByPublicId(publicId string) (models.Patient, error) {
 	patient, err := a.repo.GetPatientByPublicId(publicId)
 	if err != nil {
 		return models.Patient{}, err

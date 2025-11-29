@@ -128,6 +128,12 @@ type Keys struct {
 	EnterPatientId         string
 	EnterBloodTest         string
 
+	CheckUpVisitReason              string
+	EnterCheckUpVisitReason         string
+	CheckUpPrescribedMedicines      string
+	EnterCheckUpPrescribedMedicines string
+	CheckUpAddPrescribedMedicine    string
+
 	NationalitySyrian      string
 	NationalityPalestinian string
 	NationalityIraqi       string

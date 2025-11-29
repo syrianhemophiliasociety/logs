@@ -70,7 +70,7 @@ type CreatePatientPayload struct {
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return CreatePatientPayload{}, err
 	}
@@ -189,12 +189,12 @@ type CreatePatientBloodTestPayload struct {
 }
 
 func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (CreatePatientBloodTestPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return CreatePatientBloodTestPayload{}, err
 	}
 
-	patient, err := a.app.GetPatientByPublicId(params.PatientPublicId)
+	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
 		return CreatePatientBloodTestPayload{}, err
 	}
@@ -323,12 +323,12 @@ type GetPatientPayload struct {
 }
 
 func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeSuperAdmin, models.AccountTypeAdmin, models.AccountTypeSecritary)
+	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
 	if err != nil {
 		return GetPatientPayload{}, err
 	}
 
-	patient, err := a.app.GetPatientByPublicId(params.PublicId)
+	patient, err := a.app.GetFullPatientByPublicId(params.PublicId)
 	if err != nil {
 		return GetPatientPayload{}, err
 	}

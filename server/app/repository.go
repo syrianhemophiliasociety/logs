@@ -29,6 +29,7 @@ type Repository interface {
 	CreateMedicine(medicine models.Medicine) (models.Medicine, error)
 	DeleteMedicine(id uint) error
 	ListAllMedicines() ([]models.Medicine, error)
+	ListMedicinesByIds(ids []uint) ([]models.Medicine, error)
 
 	CreatePatient(patient models.Patient) (models.Patient, error)
 	GetPatientById(id uint) (models.Patient, error)

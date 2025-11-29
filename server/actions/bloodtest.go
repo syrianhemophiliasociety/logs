@@ -28,7 +28,7 @@ type CreateBloodTestPayload struct {
 }
 
 func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTestPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return CreateBloodTestPayload{}, err
 	}
@@ -75,7 +75,7 @@ type DeleteBloodTestPayload struct {
 }
 
 func (a *Actions) DeleteBloodTest(params DeleteBloodTestParams) (DeleteBloodTestPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return DeleteBloodTestPayload{}, err
 	}
@@ -98,7 +98,7 @@ type GetBloodTestPayload struct {
 }
 
 func (a *Actions) GetBloodTest(params GetBloodTestParams) (GetBloodTestPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return GetBloodTestPayload{}, err
 	}

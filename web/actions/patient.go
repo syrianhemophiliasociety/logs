@@ -2,6 +2,7 @@ package actions
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -340,4 +341,78 @@ func (p *PatientViruses) UnmarshalJSON(payload []byte) error {
 	(*p).Viruses = viruses
 
 	return nil
+}
+
+//================================
+// Check-up visits
+//================================
+
+type CreateCheckUpRequest struct {
+	VisitReason           string
+	PrescribedMedicineIds []uint
+}
+
+func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
+	var data map[string]any
+	err := json.Unmarshal(payload, &data)
+	if err != nil {
+		return err
+	}
+
+	var ok bool
+	(*v).VisitReason, ok = data["visit_reason"].(string)
+	if !ok {
+		return errors.New("missing visit_reason")
+	}
+
+	const medicineIdsKey = "medicine_id"
+	switch data[medicineIdsKey].(type) {
+	case string:
+		mIdInt, err := strconv.Atoi(data[medicineIdsKey].(string))
+		if err != nil {
+			return err
+		}
+		(*v).PrescribedMedicineIds = []uint{uint(mIdInt)}
+
+	case []any:
+		for _, mId := range data[medicineIdsKey].([]any) {
+			mIdStr, ok := mId.(string)
+			if !ok {
+				return errors.New("invalid medicine_id type")
+			}
+			mIdInt, err := strconv.Atoi(mIdStr)
+			if err != nil {
+				return err
+			}
+			(*v).PrescribedMedicineIds = append((*v).PrescribedMedicineIds, uint(mIdInt))
+		}
+
+	default:
+		return errors.New("invalid blood_test_id value")
+	}
+
+	return nil
+}
+
+type CreatePatientCheckUpParams struct {
+	RequestContext
+	PatientId      string
+	CheckUpRequest CreateCheckUpRequest
+}
+
+type CreatePatientCheckUpPayload struct {
+}
+
+func (a *Actions) CreatePatientCheckUp(params CreatePatientCheckUpParams) (CreatePatientCheckUpPayload, error) {
+	return makeRequest[map[string]any, CreatePatientCheckUpPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: "/v1/patient/" + params.PatientId + "/checkup",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"visit_reason":            params.CheckUpRequest.VisitReason,
+			"prescribed_medicine_ids": params.CheckUpRequest.PrescribedMedicineIds,
+		},
+	})
 }

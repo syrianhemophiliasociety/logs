@@ -24,7 +24,7 @@ type CreateSecritaryAccountPayload struct {
 }
 
 func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (CreateSecritaryAccountPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
 	if err != nil {
 		return CreateSecritaryAccountPayload{}, err
 	}
@@ -48,7 +48,7 @@ type CreateAdminAccountPayload struct {
 }
 
 func (a *Actions) CreateAdminAccount(params CreateAdminAccountParams) (CreateAdminAccountPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeSuperAdmin)
 	if err != nil {
 		return CreateAdminAccountPayload{}, err
 	}
@@ -72,7 +72,7 @@ type DeleteAccountPayload struct {
 }
 
 func (a *Actions) DeleteAccount(params DeleteAccountParams) (DeleteAccountPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return DeleteAccountPayload{}, err
 	}
@@ -94,7 +94,7 @@ type ListAllAccountsPayload struct {
 }
 
 func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccountsPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeSuperAdmin, models.AccountTypeAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return ListAllAccountsPayload{}, err
 	}

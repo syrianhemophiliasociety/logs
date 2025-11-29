@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"errors"
 	"shs/app/models"
 	"time"
 
@@ -82,14 +81,4 @@ func (a *Actions) LoginWithUsername(params LoginWithUsernameParams) (LoginWithUs
 
 func (a *Actions) InvalidateAuthenticatedAccount(token string) error {
 	return a.cache.InvalidateAuthenticatedAccount(token)
-}
-
-func checkAccountType(account models.Account, accountTypes ...models.AccountType) error {
-	for _, accountType := range accountTypes {
-		if account.Type == accountType {
-			return nil
-		}
-	}
-
-	return errors.New("invalid account type")
 }

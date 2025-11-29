@@ -418,12 +418,12 @@ func (r *Repository) DeleteMedicine(id uint) error {
 }
 
 func (r *Repository) ListAllMedicines() ([]models.Medicine, error) {
-	var viri []models.Medicine
+	var medicines []models.Medicine
 
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Medicine)).
-			Find(&viri).
+			Find(&medicines).
 			Error,
 	)
 	if _, ok := err.(*ErrRecordNotFound); ok {
@@ -435,7 +435,29 @@ func (r *Repository) ListAllMedicines() ([]models.Medicine, error) {
 		return nil, err
 	}
 
-	return viri, nil
+	return medicines, nil
+}
+
+func (r *Repository) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
+	var medicines []models.Medicine
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Medicine)).
+			Where("id IN ?", ids).
+			Find(&medicines).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "medicine",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return medicines, nil
 }
 
 func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, error) {

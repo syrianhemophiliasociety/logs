@@ -106,3 +106,35 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 
 	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
 }
+
+func (v *patientApi) HandleAddPatientCheckUp(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	var reqBody actions.CreateCheckUpRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.CreatePatientCheckUp(actions.CreatePatientCheckUpParams{
+		RequestContext: ctx,
+		PatientId:      patientId,
+		CheckUpRequest: reqBody,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+}

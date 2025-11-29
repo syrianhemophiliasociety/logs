@@ -18,7 +18,7 @@ type CreateVirusPayload struct {
 }
 
 func (a *Actions) CreateVirus(params CreateVirusParams) (CreateVirusPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return CreateVirusPayload{}, err
 	}
@@ -50,7 +50,7 @@ type DeleteVirusPayload struct {
 }
 
 func (a *Actions) DeleteVirus(params DeleteVirusParams) (DeleteVirusPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return DeleteVirusPayload{}, err
 	}
@@ -73,7 +73,7 @@ type ListAllViriPayload struct {
 }
 
 func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, error) {
-	err := checkAccountType(params.Account, models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin)
 	if err != nil {
 		return ListAllViriPayload{}, err
 	}

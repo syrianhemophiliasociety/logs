@@ -2,14 +2,14 @@ package models
 
 import "time"
 
-type VisitReason uint
+type VisitReason string
 
 const (
-	VisitReasonSurgery VisitReason = 1 << iota
-	VisitReasonJointEvaluation
-	VisitReasonJointInjection
-	VisitReasonHemelibra
-	VisitReasonPafilaxes
+	VisitReasonSurgery         VisitReason = "surgery"
+	VisitReasonJointEvaluation VisitReason = "joint_evaluation"
+	VisitReasonJointInjection  VisitReason = "joint_injection"
+	VisitReasonHemelibra       VisitReason = "hemelibra"
+	VisitReasonPafilaxes       VisitReason = "pafilaxes"
 )
 
 type Visit struct {
