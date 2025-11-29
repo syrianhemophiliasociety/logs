@@ -42,6 +42,8 @@ var arabic = Keys{
 	FormsFind:               "ابحث",
 	Virus:                   "الفيروس",
 	EnterVirusName:          "أدخل اسم الفيروس",
+	VirusBloodTest:          "فحص الدم المشخص",
+	EnterVirusBloodTest:     "اختر فحص الدم المشخص",
 	Medicine:                "الدواء",
 	EnterMedicineName:       "أدخل اسم الدواء",
 	MedicineDose:            "الجرعة",

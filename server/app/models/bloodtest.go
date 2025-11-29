@@ -9,20 +9,35 @@ import (
 type BlootTestUnit string
 
 const (
-	BlootTestUnitSecond     BlootTestUnit = "second"
-	BlootTestUnitGram       BlootTestUnit = "g"
+	BlootTestUnitSecond BlootTestUnit = "second"
+	BlootTestUnitMinute BlootTestUnit = "minute"
+
 	BlootTestUnitPercentage BlootTestUnit = "%"
 	BlootTestUnitCell       BlootTestUnit = "cell"
-	BlootTestUnitML         BlootTestUnit = "mL"
 	BlootTestUnitBU         BlootTestUnit = "BU"
 
+	BlootTestUnitGram                   BlootTestUnit = "g"
+	BlootTestUnitPicoGram               BlootTestUnit = "pg"
 	BlootTestUnitGramPerDeciLiter       BlootTestUnit = "g/dL"
 	BlootTestUnitGramPerLiter           BlootTestUnit = "g/L"
 	BlootTestUnitGramPerCubicCentimeter BlootTestUnit = "g/cm^3"
+	BlootTestUnitMilligramPerDeciLiter  BlootTestUnit = "mg/dL"
+	BlootTestUnitMicroUnitPerMilliLiter BlootTestUnit = "mcU/mL"
+	BlootTestUnitMicroGramPerDeciLiter  BlootTestUnit = "mcg/dL"
+	BlootTestUnitNanoGramPerDeciLiter   BlootTestUnit = "ng/dL"
+	BlootTestUnitPicoGramPerDeciLiter   BlootTestUnit = "pg/dL"
 
-	BlootTestUnitCellPerCubicMilliLiter BlootTestUnit = "cell/mm^3"
+	BlootTestUnitML         BlootTestUnit = "mL"
+	BlootTestUnitFemtoLiter BlootTestUnit = "fL"
 
 	BlootTestUnitInternationalUnitPerDeciLiter BlootTestUnit = "IU/dL"
+	BlootTestUnitUnitPerLiter                  BlootTestUnit = "U/L"
+
+	BlootTestUnitCellPerCubicMilliLiter         BlootTestUnit = "cell/mm^3"
+	BlootTestUnitThousandCellPerCubicMillimeter BlootTestUnit = "10^3 cell/mm^3"
+	BlootTestUnitMillionCellPerCubicMillimeter  BlootTestUnit = "10^6 cell/mm^3"
+
+	BlootTestUnitRatioOrIndex BlootTestUnit = "-"
 )
 
 func BloodTestUnits() []BlootTestUnit {

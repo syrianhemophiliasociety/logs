@@ -50,8 +50,10 @@ type Keys struct {
 	FormsNewField string
 	FormsFind     string
 
-	Virus          string
-	EnterVirusName string
+	Virus               string
+	EnterVirusName      string
+	VirusBloodTest      string
+	EnterVirusBloodTest string
 
 	Medicine          string
 	EnterMedicineName string

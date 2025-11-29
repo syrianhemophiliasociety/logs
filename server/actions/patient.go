@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"shs/app"
 	"shs/app/models"
 	"shs/log"
 	"shs/nanoid"
@@ -242,12 +243,25 @@ func (p *FindPatientsParams) clean() {
 	p.PhoneNumber = strings.TrimSpace(p.PhoneNumber)
 }
 
+func (p *FindPatientsParams) empty() bool {
+	return p.PublicId == "" && p.NationalId == "" &&
+		p.FirstName == "" && p.LastName == "" &&
+		p.FatherName == "" && p.MotherName == "" &&
+		p.PhoneNumber == ""
+}
+
 type FindPatientsPayload struct {
 	Data []Patient `json:"data"`
 }
 
 func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, error) {
 	params.clean()
+
+	if params.empty() {
+		return FindPatientsPayload{}, app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
 
 	patients, err := a.app.FindPatientsByIndexFields(models.PatientIndexFields{
 		PublicId:     params.PublicId,

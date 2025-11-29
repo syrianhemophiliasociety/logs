@@ -28,7 +28,7 @@ func (v *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var reqBody actions.Virus
+	var reqBody actions.CreateVirusRequest
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)

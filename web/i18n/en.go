@@ -42,6 +42,8 @@ var english = Keys{
 	FormsFind:               "Find",
 	Virus:                   "Virus",
 	EnterVirusName:          "Enter virus' name",
+	VirusBloodTest:          "Identifying blood test",
+	EnterVirusBloodTest:     "Choose identifying blood test",
 	Medicine:                "Medicine",
 	EnterMedicineName:       "Enter medicine's name",
 	MedicineDose:            "Dose",

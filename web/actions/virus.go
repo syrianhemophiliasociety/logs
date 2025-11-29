@@ -1,8 +1,11 @@
 package actions
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type Virus struct {
@@ -33,9 +36,56 @@ func (a *Actions) ListAllViruses(params ListAllVirusesParams) ([]Virus, error) {
 	return payload.Data, nil
 }
 
+type CreateVirusRequest struct {
+	Name         string `json:"name"`
+	BloodTestIds []uint `json:"blood_test_ids"`
+}
+
+func (v *CreateVirusRequest) UnmarshalJSON(payload []byte) error {
+	var data map[string]any
+	err := json.Unmarshal(payload, &data)
+	if err != nil {
+		return err
+	}
+
+	var ok bool
+	(*v).Name, ok = data["name"].(string)
+	if !ok {
+		return errors.New("missing name")
+	}
+
+	const bloodTestKey = "blood_test_id"
+	switch data[bloodTestKey].(type) {
+	case string:
+		btIdInt, err := strconv.Atoi(data[bloodTestKey].(string))
+		if err != nil {
+			return err
+		}
+		(*v).BloodTestIds = []uint{uint(btIdInt)}
+
+	case []any:
+		for _, btId := range data[bloodTestKey].([]any) {
+			btIdStr, ok := btId.(string)
+			if !ok {
+				return errors.New("invalid blood_test_id type")
+			}
+			btIdInt, err := strconv.Atoi(btIdStr)
+			if err != nil {
+				return err
+			}
+			(*v).BloodTestIds = append((*v).BloodTestIds, uint(btIdInt))
+		}
+
+	default:
+		return errors.New("invalid blood_test_id value")
+	}
+
+	return nil
+}
+
 type CreateVirusParams struct {
 	RequestContext
-	NewVirus Virus `json:"new_virus"`
+	NewVirus CreateVirusRequest `json:"new_virus"`
 }
 
 type CreateVirusPayload struct {

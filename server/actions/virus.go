@@ -3,8 +3,10 @@ package actions
 import "shs/app/models"
 
 type Virus struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
+	Id           uint   `json:"id"`
+	Name         string `json:"name"`
+	BloodTestIds []uint `json:"blood_test_ids"`
+	// TODO: expose blood tests as a whole
 }
 
 type CreateVirusParams struct {
@@ -21,8 +23,16 @@ func (a *Actions) CreateVirus(params CreateVirusParams) (CreateVirusPayload, err
 		return CreateVirusPayload{}, err
 	}
 
+	identifyingBloodTests := make([]models.BloodTest, 0, len(params.NewVirus.BloodTestIds))
+	for _, btId := range params.NewVirus.BloodTestIds {
+		identifyingBloodTests = append(identifyingBloodTests, models.BloodTest{
+			Id: btId,
+		})
+	}
+
 	_, err = a.app.CreateVirus(models.Virus{
-		Name: params.NewVirus.Name,
+		Name:                  params.NewVirus.Name,
+		IdentifyingBloodTests: identifyingBloodTests,
 	})
 	if err != nil {
 		return CreateVirusPayload{}, err

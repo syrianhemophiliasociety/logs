@@ -333,6 +333,7 @@ func (r *Repository) ListAllViri() ([]models.Virus, error) {
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Virus)).
+			Preload("IdentifyingBloodTests").
 			Find(&viri).
 			Error,
 	)

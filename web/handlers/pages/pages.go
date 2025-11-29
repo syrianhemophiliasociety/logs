@@ -101,10 +101,19 @@ func (p *pagesHandler) HandleVirusesPage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	bloodTests, err := p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavViruses)
 		w.Header().Set("HX-Push-Url", "/viruses")
-		pages.Viruses(viruses).Render(r.Context(), w)
+		pages.Viruses(viruses, bloodTests).Render(r.Context(), w)
 		return
 	}
 
@@ -112,7 +121,7 @@ func (p *pagesHandler) HandleVirusesPage(w http.ResponseWriter, r *http.Request)
 		Title:    i18n.StringsCtx(r.Context()).NavViruses,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Viruses(viruses)).Render(r.Context(), w)
+	}, pages.Viruses(viruses, bloodTests)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandleMedicinesPage(w http.ResponseWriter, r *http.Request) {
