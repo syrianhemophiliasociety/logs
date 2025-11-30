@@ -208,7 +208,7 @@ func (p *PatientCardGenerator) Generate(rtl bool) error {
 	}
 
 	p.lastDrawnAt.X += 35 * rtlMultiplier
-	p.lastDrawnAt.Y = 200
+	p.lastDrawnAt.Y = 250
 
 	oldX := p.lastDrawnAt.X
 	if err := p.drawText("Patient ID: ", true, p.lastDrawnAt); err != nil {
@@ -245,16 +245,6 @@ func (p *PatientCardGenerator) Generate(rtl bool) error {
 		return err
 	}
 	if err := p.drawText(p.patient.Nationality, false, p.lastDrawnAt); err != nil {
-		return err
-	}
-
-	p.lastDrawnAt.Y += 50
-	p.lastDrawnAt.X = oldX
-
-	if err := p.drawText("National ID: ", true, p.lastDrawnAt); err != nil {
-		return err
-	}
-	if err := p.drawText(p.patient.NationalId, false, p.lastDrawnAt); err != nil {
 		return err
 	}
 
