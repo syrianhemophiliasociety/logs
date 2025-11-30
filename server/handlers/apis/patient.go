@@ -67,6 +67,24 @@ func (e *patientApi) HandleCreatePatientBloodTest(w http.ResponseWriter, r *http
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
+func (e *patientApi) HandleListLastPatients(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListLastPatients(actions.ListLastPatientsParams{
+		ActionContext: ctx,
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
 func (e *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
@@ -171,6 +189,25 @@ func (e *patientApi) HandleGetPatientLastVisit(w http.ResponseWriter, r *http.Re
 
 	payload, err := e.usecases.GetPatientLastVisit(actions.GetPatientLastVisitParams{
 		ActionContext: ctx,
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleListPatientVisits(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListPatientVisits(actions.ListPatientVisitsParams{
+		ActionContext: ctx,
+		PatientId:     r.PathValue("id"),
 	})
 	if err != nil {
 		handleErrorResponse(w, err)

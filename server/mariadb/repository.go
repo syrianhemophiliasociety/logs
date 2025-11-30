@@ -585,6 +585,29 @@ func (r *Repository) FindPatientsByFields(patientIndexFields models.PatientIndex
 	return patients, nil
 }
 
+func (r *Repository) ListLastPatients(limit int) ([]models.Patient, error) {
+	var patients []models.Patient
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			Order("created_at DESC").
+			Limit(limit).
+			Find(&patients).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return patients, nil
+}
+
 func (r *Repository) ListMedicinesForVisit(visitId uint) ([]models.Medicine, error) {
 	return nil, errors.New("not implemented")
 }
@@ -605,6 +628,50 @@ func (r *Repository) CreatePatientVisit(visit models.Visit) (models.Visit, error
 	)
 	if _, ok := err.(*ErrRecordExists); ok {
 		return models.Visit{}, &app.ErrExists{
+			ResourceName: "visit",
+		}
+	}
+	if err != nil {
+		return models.Visit{}, err
+	}
+
+	return visit, nil
+}
+
+func (r *Repository) ListPatientVisits(patientId uint) ([]models.Visit, error) {
+	var visits []models.Visit
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Visit)).
+			Where("patient_id = ?", patientId).
+			Find(&visits).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "visit",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return visits, nil
+}
+
+func (r *Repository) GetPatientVisit(visitId uint) (models.Visit, error) {
+	var visit models.Visit
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Visit)).
+			Where("id = ?", visitId).
+			First(&visit).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Visit{}, &app.ErrNotFound{
 			ResourceName: "visit",
 		}
 	}

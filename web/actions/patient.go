@@ -60,6 +60,18 @@ func (p Patient) FullName() string {
 	return p.FirstName + " " + p.LastName
 }
 
+type PrescribedMedicine struct {
+	Medicine
+	PrescribedMedicineId uint      `json:"prescribed_medicine_id"`
+	UsedAt               time.Time `json:"used_at"`
+}
+
+type Visit struct {
+	Reason             string               `json:"reason"`
+	VisitedAt          time.Time            `json:"visited_at"`
+	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
+}
+
 //==================
 // Get patient by id
 //==================
@@ -210,6 +222,33 @@ func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
 		endpoint: fmt.Sprintf(
 			"/v1/patients/public-id/%s/first-name/%s/last-name/%s/father-name/%s/mother-name/%s/national-id/%s/phone-number/%s",
 			params.PublicId, params.FirstName, params.LastName, params.FatherName, params.MotherName, params.NationalId, params.PhoneNumber),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return payload.Data, nil
+}
+
+//================
+// ListLast patient
+//================
+
+type ListLastPatientsParams struct {
+	RequestContext
+}
+
+type ListLastPatientsPayload struct {
+	Data []Patient `json:"data"`
+}
+
+func (a *Actions) ListLastPatients(params ListLastPatientsParams) ([]Patient, error) {
+	payload, err := makeRequest[any, ListLastPatientsPayload](makeRequestConfig[any]{
+		method:   http.MethodGet,
+		endpoint: "/v1/patients/last",
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},
@@ -444,12 +483,6 @@ func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (Generat
 // Patient Medications
 //================================
 
-type PrescribedMedicine struct {
-	Medicine
-	PrescribedMedicineId uint      `json:"prescribed_medicine_id"`
-	UsedAt               time.Time `json:"used_at"`
-}
-
 type GetPatientLastVisitParams struct {
 	RequestContext
 }
@@ -468,4 +501,33 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 			"Authorization": params.SessionToken,
 		},
 	})
+}
+
+//================================
+// Patient Visits
+//================================
+
+type ListPatientVisitsParams struct {
+	RequestContext
+	PatientId string
+}
+
+type ListPatientVisitsPayload struct {
+	Data []Visit `json:"data"`
+}
+
+func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) ([]Visit, error) {
+	payload, err := makeRequest[any, ListPatientVisitsPayload](makeRequestConfig[any]{
+		method:   http.MethodGet,
+		endpoint: "/v1/patient/" + params.PatientId + "/visits",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return payload.Data, nil
 }

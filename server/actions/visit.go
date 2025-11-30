@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type Visit struct {
+	Reason             string               `json:"reason"`
+	VisitedAt          time.Time            `json:"visited_at"`
+	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
+}
+
 type CreatePatientVisitParams struct {
 	ActionContext
 	PatientId             string
@@ -165,4 +171,43 @@ type UseMedicineForVisitPayload struct {
 
 func (a *Actions) UseMedicineForVisit(params UseMedicineForVisitParams) (UseMedicineForVisitPayload, error) {
 	return UseMedicineForVisitPayload{}, nil
+}
+
+type ListPatientVisitsParams struct {
+	ActionContext
+	PatientId string
+}
+
+type ListPatientVisitsPayload struct {
+	Data []Visit `json:"data"`
+}
+
+func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatientVisitsPayload, error) {
+	err := params.Account.CheckType(models.AccountTypePatient)
+	if err != nil {
+		return ListPatientVisitsPayload{}, err
+	}
+
+	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	if err != nil {
+		return ListPatientVisitsPayload{}, err
+	}
+
+	visits, err := a.app.ListPatientVisits(patient.Id)
+	if err != nil {
+		return ListPatientVisitsPayload{}, err
+	}
+
+	outVisits := make([]Visit, 0, len(visits))
+	for _, visit := range visits {
+		outVisits = append(outVisits, Visit{
+			Reason:             string(visit.Reason),
+			VisitedAt:          visit.CreatedAt,
+			PrescribedMedicine: []PrescribedMedicine{},
+		})
+	}
+
+	return ListPatientVisitsPayload{
+		Data: outVisits,
+	}, nil
 }

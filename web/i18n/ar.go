@@ -36,6 +36,7 @@ var arabic = Keys{
 	TabsSearch:              "البحث",
 	TabsCreate:              "أنشئ",
 	TabsCheckup:             "المراجعة",
+	TabsVisits:              "الزيارات",
 	FormsSubmit:             "أرسل المحتوى",
 	FormsDelete:             "احذف المحتوى",
 	FormsNewField:           "حقل جديد",

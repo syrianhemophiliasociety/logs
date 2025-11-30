@@ -7,9 +7,10 @@ import (
 	"shs-web/i18n"
 	"shs-web/views/components"
 	"strconv"
+	"time"
 )
 
-templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine) {
+templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine, visits []actions.Visit) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatient } { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
 		@components.Tabs(
@@ -36,6 +37,12 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				TitleId:   "add-blood-tests",
 				GroupName: "Patient",
 				Content:   addPatientBloodTestResult(patient, bloodTests),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsVisits,
+				TitleId:   "visits",
+				GroupName: "Patient",
+				Content:   patientVisits(patient, visits),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsCheckup,
@@ -326,4 +333,16 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 			{ i18n.StringsCtx(ctx).FormsSubmit }
 		</button>
 	</form>
+}
+
+templ patientVisits(patient actions.Patient, visits []actions.Visit) {
+	<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+		for _, visit := range visits {
+			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+				<span class={ "font-bold", "text-lg" }>
+					{ visit.VisitedAt.Format(time.DateOnly) }
+				</span>
+			</div>
+		}
+	</div>
 }

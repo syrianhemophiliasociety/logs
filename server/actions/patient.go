@@ -265,6 +265,11 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 		}
 	}
 
+	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
+	if err != nil {
+		return FindPatientsPayload{}, err
+	}
+
 	patients, err := a.app.FindPatientsByIndexFields(models.PatientIndexFields{
 		PublicId:     params.PublicId,
 		NationalId:   params.NationalId,
@@ -311,6 +316,60 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 	}
 
 	return FindPatientsPayload{
+		Data: outPatients,
+	}, nil
+}
+
+type ListLastPatientsParams struct {
+	ActionContext
+}
+
+type ListLastPatientsPayload struct {
+	Data []Patient `json:"data"`
+}
+
+func (a *Actions) ListLastPatients(params ListLastPatientsParams) (ListLastPatientsPayload, error) {
+	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
+	if err != nil {
+		return ListLastPatientsPayload{}, err
+	}
+
+	patients, err := a.app.ListLastPatients(50)
+	if err != nil {
+		return ListLastPatientsPayload{}, err
+	}
+
+	outPatients := make([]Patient, 0, len(patients))
+	for _, patient := range patients {
+		outPatients = append(outPatients, Patient{
+			Id:          patient.Id,
+			PublicId:    patient.PublicId,
+			NationalId:  patient.NationalId,
+			Nationality: patient.NationalId,
+			FirstName:   patient.FirstName,
+			LastName:    patient.LastName,
+			FatherName:  patient.FatherName,
+			MotherName:  patient.MotherName,
+			PlaceOfBirth: Address{
+				Id:          patient.PlaceOfBirth.Id,
+				Governorate: patient.PlaceOfBirth.Governorate,
+				Suburb:      patient.PlaceOfBirth.Suburb,
+				Street:      patient.PlaceOfBirth.Street,
+			},
+			DateOfBirth: patient.DateOfBirth,
+			Residency: Address{
+				Id:          patient.Residency.Id,
+				Governorate: patient.Residency.Governorate,
+				Suburb:      patient.Residency.Suburb,
+				Street:      patient.Residency.Street,
+			},
+			Gender:      patient.Gender,
+			PhoneNumber: patient.PhoneNumber,
+			BATScore:    patient.BATScore,
+		})
+	}
+
+	return ListLastPatientsPayload{
 		Data: outPatients,
 	}, nil
 }

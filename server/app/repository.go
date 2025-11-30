@@ -36,8 +36,11 @@ type Repository interface {
 	GetPatientByPublicId(publicId string) (models.Patient, error)
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)
 	FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error)
+	ListLastPatients(limit int) ([]models.Patient, error)
 
 	CreatePatientVisit(visit models.Visit) (models.Visit, error)
+	ListPatientVisits(patientId uint) ([]models.Visit, error)
+	GetPatientVisit(visitId uint) (models.Visit, error)
 	CreatePrescribedMedicine(pm models.PrescribedMedicine) (models.PrescribedMedicine, error)
 	GetPatientLastVisit(patientId uint) (models.Visit, error)
 	ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error)
