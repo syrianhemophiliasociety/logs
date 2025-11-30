@@ -439,3 +439,33 @@ func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (Generat
 		},
 	})
 }
+
+//================================
+// Patient Medications
+//================================
+
+type PrescribedMedicine struct {
+	Medicine
+	PrescribedMedicineId uint      `json:"prescribed_medicine_id"`
+	UsedAt               time.Time `json:"used_at"`
+}
+
+type GetPatientLastVisitParams struct {
+	RequestContext
+}
+
+type GetPatientLastVisitPayload struct {
+	Patient            Patient              `json:"patient"`
+	VisitedAt          time.Time            `json:"visited_at"`
+	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
+}
+
+func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPatientLastVisitPayload, error) {
+	return makeRequest[any, GetPatientLastVisitPayload](makeRequestConfig[any]{
+		method:   http.MethodGet,
+		endpoint: "/v1/patient/last-visit",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+}

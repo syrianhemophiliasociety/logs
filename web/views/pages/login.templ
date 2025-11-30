@@ -83,6 +83,11 @@ templ loginForm() {
 				Autofocus:   true,
 				Title:       i18n.StringsCtx(ctx).LoginUsername,
 				Placeholder: i18n.StringsCtx(ctx).LoginEnterUsername,
+				HyperScript: `on load
+make a URLSearchParams from location.search called query
+set my value to query's get('username')
+end
+`,
 			})
 			@components.Input(components.InputOptions{
 				Id:          "password",

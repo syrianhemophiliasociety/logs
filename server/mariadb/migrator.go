@@ -26,6 +26,7 @@ func Migrate() error {
 		new(models.Address),
 		new(models.Patient),
 		new(models.PatientUseMedicine),
+		new(models.PrescribedMedicine),
 	)
 	if err != nil {
 		return err

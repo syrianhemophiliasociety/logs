@@ -26,6 +26,11 @@ templ Sidebar() {
 							@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
 						</li>
 					}
+					if helpers.AccountTypeCtx(ctx).Patient() {
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", false)
+						</li>
+					}
 					if helpers.AccountTypeCtx(ctx).Admin()  || helpers.AccountTypeCtx(ctx).SuperAdmin() {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)

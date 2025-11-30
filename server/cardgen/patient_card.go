@@ -198,7 +198,7 @@ func (p *PatientCardGenerator) drawText(text string, bold bool, drawAt image.Poi
 }
 
 func (p *PatientCardGenerator) Generate(rtl bool) error {
-	if err := p.generateQrCode("", rtl); err != nil {
+	if err := p.generateQrCode("https://logs.syrianhemophiliasociety.com/login?username="+p.patient.PublicId, rtl); err != nil {
 		return err
 	}
 

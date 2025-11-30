@@ -36,6 +36,7 @@ type InputOptions struct {
 	Autofocus   bool
 	Class       []string
 	Placeholder string
+	HyperScript string
 }
 
 templ Input(options InputOptions) {
@@ -52,6 +53,9 @@ templ Input(options InputOptions) {
 			placeholder={ options.Placeholder }
 			if options.Autofocus {
 				autofocus
+			}
+			if options.HyperScript != "" {
+				_={ options.HyperScript }
 			}
 		/>
 	</div>

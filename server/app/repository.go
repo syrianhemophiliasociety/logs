@@ -37,10 +37,11 @@ type Repository interface {
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)
 	FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error)
 
-	ListMedicinesForVisit(visitId uint) ([]models.Medicine, error)
-	UseMedicine(patientId, medicineId uint) error
-
 	CreatePatientVisit(visit models.Visit) (models.Visit, error)
+	CreatePrescribedMedicine(pm models.PrescribedMedicine) (models.PrescribedMedicine, error)
+	GetPatientLastVisit(patientId uint) (models.Visit, error)
+	ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error)
+	UseMedicineForVisit(prescribedMedicineId, visitId uint) error
 
 	CreateAddress(address models.Address) (models.Address, error)
 	GetAllAddresses() ([]models.Address, error)

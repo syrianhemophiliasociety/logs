@@ -1,0 +1,35 @@
+package pages
+
+import "shs-web/actions"
+import "shs-web/views/components"
+import "fmt"
+import "shs-web/i18n"
+import "strconv"
+
+templ patientMedForm(medicine actions.PrescribedMedicine) {
+	{ medicine.Name }
+	<button>use</button>
+}
+
+templ patientMedsSelect(meds []actions.PrescribedMedicine) {
+	{{
+	contents := make([]components.SelectContent, 0, len(meds))
+	for _, med := range meds {
+		contents = append(contents, components.SelectContent{
+			Title:   fmt.Sprintf("%s %d%s", med.Name, med.Dose, med.Unit),
+			TitleId: strconv.Itoa(int(med.PrescribedMedicineId)),
+			Content: patientMedForm(med),
+		})
+	}
+	}}
+	@components.SelectContents(components.SelectContentsParams{
+		Title:    i18n.StringsCtx(ctx).Medicine,
+		TitleId:  "medicine",
+		Contents: contents,
+	})
+}
+
+templ PatientMedicine(patientVisit actions.GetPatientLastVisitPayload) {
+	Meds for { patientVisit.Patient.FullName() }
+	@patientMedsSelect(patientVisit.PrescribedMedicine)
+}

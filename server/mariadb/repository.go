@@ -615,6 +615,101 @@ func (r *Repository) CreatePatientVisit(visit models.Visit) (models.Visit, error
 	return visit, nil
 }
 
+func (r *Repository) CreatePrescribedMedicine(pm models.PrescribedMedicine) (models.PrescribedMedicine, error) {
+	pm.CreatedAt = time.Now().UTC()
+	pm.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PrescribedMedicine)).
+			Create(&pm).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.PrescribedMedicine{}, &app.ErrExists{
+			ResourceName: "prescribed_medicine",
+		}
+	}
+	if err != nil {
+		return models.PrescribedMedicine{}, err
+	}
+
+	return pm, nil
+}
+
+func (r *Repository) GetPatientLastVisit(patientId uint) (models.Visit, error) {
+	var visits []models.Visit
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Visit)).
+			Where("patient_id = ?", patientId).
+			Order("created_at DESC").
+			Limit(1).
+			Find(&visits).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Visit{}, &app.ErrNotFound{
+			ResourceName: "visit",
+		}
+	}
+	if err != nil {
+		return models.Visit{}, err
+	}
+
+	if len(visits) == 0 {
+		return models.Visit{}, &app.ErrNotFound{
+			ResourceName: "visit",
+		}
+	}
+
+	return visits[0], nil
+}
+
+func (r *Repository) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error) {
+	var prescribedMeds []models.PrescribedMedicine
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PrescribedMedicine)).
+			Where("visit_id = ?", visitId).
+			Find(&prescribedMeds).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "prescribed_medicine",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return prescribedMeds, nil
+}
+
+func (r *Repository) UseMedicineForVisit(prescribedMedicineId, visitId uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PrescribedMedicine)).
+			Where("id = ? AND visit_id = ?", prescribedMedicineId, visitId).
+			Update("used_at", time.Now().UTC()).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "prescribed_medicine",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) CreateAddress(address models.Address) (models.Address, error) {
 	address.CreatedAt = time.Now().UTC()
 	address.UpdatedAt = time.Now().UTC()

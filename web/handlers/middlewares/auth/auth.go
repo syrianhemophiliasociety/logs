@@ -7,6 +7,7 @@ import (
 	"shs-web/handlers/middlewares/clienthash"
 	"shs-web/handlers/middlewares/contenttype"
 	"slices"
+	"strings"
 )
 
 // Cookie keys
@@ -41,13 +42,20 @@ func (a *Middleware) AuthPage(h http.HandlerFunc) http.HandlerFunc {
 		htmxRedirect := contenttype.IsNoLayoutPage(r)
 		sessionToken, account, err := a.authenticate(r)
 		authed := err == nil
+		isPatient := account.Type == "patient"
 		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
 		ctx = context.WithValue(ctx, CtxAccountKey, account)
 		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
 
+		homePath := "/"
+		patientHome := "/patient/medications"
+		if isPatient {
+			homePath = patientHome
+		}
+
 		switch {
 		case authed && slices.Contains(noAuthPaths, r.URL.Path):
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			http.Redirect(w, r, homePath, http.StatusTemporaryRedirect)
 		case !authed && slices.Contains(noAuthPaths, r.URL.Path):
 			h(w, r.WithContext(ctx))
 		case !authed && htmxRedirect:
@@ -63,6 +71,10 @@ func (a *Middleware) AuthPage(h http.HandlerFunc) http.HandlerFunc {
 			}
 			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		default:
+			if isPatient && !strings.Contains(r.URL.Path, patientHome) {
+				http.Redirect(w, r, homePath, http.StatusTemporaryRedirect)
+				return
+			}
 			h(w, r.WithContext(ctx))
 		}
 	}

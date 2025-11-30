@@ -161,3 +161,21 @@ func (e *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) 
 
 	_ = json.NewEncoder(w).Encode(payload)
 }
+
+func (e *patientApi) HandleGetPatientLastVisit(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.GetPatientLastVisit(actions.GetPatientLastVisitParams{
+		ActionContext: ctx,
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}

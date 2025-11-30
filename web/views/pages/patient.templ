@@ -158,7 +158,7 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 			data-loading-target="#loading"
 			data-loading-class-remove="hidden"
 			type="submit"
-			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-fit" , "text-accent" }
 		>
 			{ "Generate Card" }
 		</button>
@@ -166,14 +166,20 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 }
 
 templ patientBloodTests(bloodTests []actions.BloodTestResult) {
-	for _, bt := range bloodTests {
-		{ bt.Name }
-		for _, btField := range bt.FilledFields {
-			<br/>
-			{ btField.Name } { btField.ValueString }
+	<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+		for _, bt := range bloodTests {
+			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+				<span class={ "font-bold", "text-lg" }>
+					{ bt.Name }
+				</span>
+				for _, btField := range bt.FilledFields {
+					<br/>
+					<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
+				}
+				<br/>
+			</div>
 		}
-		<br/>
-	}
+	</div>
 }
 
 func newPatientBloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {

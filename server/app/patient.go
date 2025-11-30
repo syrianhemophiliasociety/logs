@@ -72,10 +72,14 @@ func (a *App) FindPatientsByIndexFields(fields models.PatientIndexFields) ([]mod
 	return a.repo.FindPatientsByFields(fields)
 }
 
-func (a *App) ListMedicinesForVisit(visitId uint) ([]models.Medicine, error) {
-	return a.repo.ListMedicinesForVisit(visitId)
+func (a *App) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error) {
+	return a.repo.ListPatientVisitPrescribedMedicine(visitId)
 }
 
-func (a *App) UseMedicine(patientId, medicineId uint) error {
-	return a.repo.UseMedicine(patientId, medicineId)
+func (a *App) UseMedicineForVisit(prescribedMedicineId, visitId uint) error {
+	return a.repo.UseMedicineForVisit(prescribedMedicineId, visitId)
+}
+
+func (a *App) GetPatientLastVisit(patientId uint) (models.Visit, error) {
+	return a.repo.GetPatientLastVisit(patientId)
 }

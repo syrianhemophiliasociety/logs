@@ -75,6 +75,7 @@ func main() {
 	pagesHandler.HandleFunc("GET /management", contenttype.Html(authMiddleware.AuthPage(pages.HandleManagementPage)))
 	pagesHandler.HandleFunc("GET /patients", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientsPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
+	pagesHandler.HandleFunc("GET /patient/medications", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientMedicationsPage)))
 
 	usernameLoginApi := apis.NewUsernameLoginApi(usecases)
 	logoutApi := apis.NewLogoutApi(usecases)
