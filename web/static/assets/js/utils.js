@@ -153,6 +153,14 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function downloadFileBase64(b64, downloadName) {
+  let a = document.createElement("a");
+
+  a.href = "data:image/png;base64," + b64;
+  a.download = downloadName;
+  a.click();
+}
+
 window.Utils = {
   showLoading,
   hideLoading,
@@ -165,4 +173,5 @@ window.Utils = {
   setCookie,
   retryer,
   sleep,
+  downloadFileBase64,
 };

@@ -1,8 +1,10 @@
 package actions
 
 import (
+	"encoding/base64"
 	"shs/app"
 	"shs/app/models"
+	"shs/cardgen"
 	"shs/log"
 	"shs/nanoid"
 	"slices"
@@ -411,5 +413,47 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 
 	return GetPatientPayload{
 		Data: outPatient,
+	}, nil
+}
+
+type GeneratePatientCardParams struct {
+	ActionContext
+	PatientId string
+}
+
+type GeneratePatientCardPayload struct {
+	ImageBase64 string `json:"image_base_64"`
+}
+
+func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (GeneratePatientCardPayload, error) {
+	err := params.Account.CheckType(models.AccountTypeSecritary, models.AccountTypeSuperAdmin)
+	if err != nil {
+		return GeneratePatientCardPayload{}, err
+	}
+
+	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	if err != nil {
+		return GeneratePatientCardPayload{}, err
+	}
+
+	patientCard := cardgen.NewBuffer(nil)
+	generator, err := cardgen.New(patientCard, patient)
+	if err != nil {
+		return GeneratePatientCardPayload{}, err
+	}
+
+	err = generator.Generate(false)
+	if err != nil {
+		return GeneratePatientCardPayload{}, err
+	}
+	err = generator.Finalize()
+	if err != nil {
+		return GeneratePatientCardPayload{}, err
+	}
+
+	b64Img := base64.StdEncoding.EncodeToString(patientCard.Bytes())
+
+	return GeneratePatientCardPayload{
+		ImageBase64: b64Img,
 	}, nil
 }

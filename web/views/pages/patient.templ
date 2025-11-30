@@ -150,6 +150,18 @@ templ patientProfile(patient actions.Patient) {
 				</tr>
 			</tbody>
 		</table>
+		<button
+			_={ fmt.Sprintf(`on click
+fetch /api/patient/%s/card
+then call Utils.downloadFileBase64(result, "%s Card.png")
+`, patient.PublicId, patient.FullName()) }
+			data-loading-target="#loading"
+			data-loading-class-remove="hidden"
+			type="submit"
+			class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+		>
+			{ "Generate Card" }
+		</button>
 	</div>
 }
 

@@ -107,7 +107,7 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
 }
 
-func (v *patientApi) HandleAddPatientCheckUp(w http.ResponseWriter, r *http.Request) {
+func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -137,4 +137,27 @@ func (v *patientApi) HandleAddPatientCheckUp(w http.ResponseWriter, r *http.Requ
 	}
 
 	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+}
+
+func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	payload, err := v.usecases.GeneratePatientCard(actions.GeneratePatientCardParams{
+		RequestContext: ctx,
+		PatientId:      patientId,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	w.Write([]byte(payload.ImageBase64))
 }

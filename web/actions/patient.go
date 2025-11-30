@@ -416,3 +416,26 @@ func (a *Actions) CreatePatientCheckUp(params CreatePatientCheckUpParams) (Creat
 		},
 	})
 }
+
+//================
+// Patient Card
+//================
+
+type GeneratePatientCardParams struct {
+	RequestContext
+	PatientId string
+}
+
+type GeneratePatientCardPayload struct {
+	ImageBase64 string `json:"image_base_64"`
+}
+
+func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (GeneratePatientCardPayload, error) {
+	return makeRequest[any, GeneratePatientCardPayload](makeRequestConfig[any]{
+		method:   http.MethodGet,
+		endpoint: "/v1/patient/" + params.PatientId + "/card",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+}

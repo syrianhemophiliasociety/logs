@@ -89,6 +89,7 @@ func main() {
 	v1ApisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
 	v1ApisHandler.HandleFunc("POST /patient/bloodtest", authMiddleware.AuthApi(patientApi.HandleCreatePatientBloodTest))
 	v1ApisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCheckUp))
+	v1ApisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
 	v1ApisHandler.HandleFunc("GET /patient/{id}", authMiddleware.AuthApi(patientApi.HandleGetPatient))
 	v1ApisHandler.HandleFunc(
 		"GET /patients/public-id/{public_id}/first-name/{first_name}/last-name/{last_name}/father-name/{father_name}/mother-name/{mother_name}/national-id/{national_id}/phone-number/{phone_number}",
