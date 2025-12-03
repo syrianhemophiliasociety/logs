@@ -28,9 +28,8 @@ type CreateBloodTestPayload struct {
 }
 
 func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTestPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return CreateBloodTestPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteBloodTest) {
+		return CreateBloodTestPayload{}, ErrPermissionDenied{}
 	}
 
 	bloodTestFields := make([]models.BloodTestField, 0, len(params.BloodTest.Fields))
@@ -47,7 +46,7 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 		Fields: bloodTestFields,
 	}
 
-	_, err = a.app.CreateBloodTest(bloodTest)
+	_, err := a.app.CreateBloodTest(bloodTest)
 	if err != nil {
 		return CreateBloodTestPayload{}, err
 	}
@@ -75,12 +74,11 @@ type DeleteBloodTestPayload struct {
 }
 
 func (a *Actions) DeleteBloodTest(params DeleteBloodTestParams) (DeleteBloodTestPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return DeleteBloodTestPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteBloodTest) {
+		return DeleteBloodTestPayload{}, ErrPermissionDenied{}
 	}
 
-	err = a.app.DeleteBloodTest(params.BloodTestId)
+	err := a.app.DeleteBloodTest(params.BloodTestId)
 	if err != nil {
 		return DeleteBloodTestPayload{}, err
 	}
@@ -98,9 +96,8 @@ type GetBloodTestPayload struct {
 }
 
 func (a *Actions) GetBloodTest(params GetBloodTestParams) (GetBloodTestPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return GetBloodTestPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadBloodTest) {
+		return GetBloodTestPayload{}, ErrPermissionDenied{}
 	}
 
 	bt, err := a.app.GetBloodTest(params.BloodTestId)
@@ -122,6 +119,10 @@ type ListAllBloodTestsPayload struct {
 }
 
 func (a *Actions) ListAllBloodTests(params ListAllBloodTestsParams) (ListAllBloodTestsPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadBloodTest) {
+		return ListAllBloodTestsPayload{}, ErrPermissionDenied{}
+	}
+
 	bloodTests, err := a.app.ListAllBloodTests()
 	if err != nil {
 		return ListAllBloodTestsPayload{}, err

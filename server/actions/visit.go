@@ -22,9 +22,8 @@ type CreatePatientVisitPayload struct {
 }
 
 func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePatientVisitPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
-	if err != nil {
-		return CreatePatientVisitPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteOtherVisits) {
+		return CreatePatientVisitPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
@@ -80,9 +79,8 @@ type GetPatientLastVisitPayload struct {
 }
 
 func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPatientLastVisitPayload, error) {
-	err := params.Account.CheckType(models.AccountTypePatient)
-	if err != nil {
-		return GetPatientLastVisitPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadOtherVisits) {
+		return GetPatientLastVisitPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetMinimalPatientByPublicId(params.Account.Username)
@@ -183,9 +181,8 @@ type ListPatientVisitsPayload struct {
 }
 
 func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatientVisitsPayload, error) {
-	err := params.Account.CheckType(models.AccountTypePatient)
-	if err != nil {
-		return ListPatientVisitsPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadOtherVisits) {
+		return ListPatientVisitsPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)

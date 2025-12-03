@@ -2,11 +2,27 @@ package actions
 
 import "shs/app/models"
 
+const (
+	patientPermissions = models.AccountPermissionReadOwnVisit | models.AccountPermissionWriteOwnVisit
+
+	secritaryPermissions = models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
+		models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
+		models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits |
+		models.AccountPermissionReadBloodTest
+
+	adminPermissions = secritaryPermissions |
+		models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
+		models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
+		models.AccountPermissionReadMedicine | models.AccountPermissionWriteBloodTest |
+		models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus
+)
+
 type Account struct {
-	Id          uint   `json:"id"`
-	DisplayName string `json:"display_name"`
-	Username    string `json:"username"`
-	Type        string `json:"type"`
+	Id          uint                      `json:"id"`
+	DisplayName string                    `json:"display_name"`
+	Username    string                    `json:"username"`
+	Type        string                    `json:"type"`
+	Permissions models.AccountPermissions `json:"permissions"`
 }
 
 type createAccountParams struct {
@@ -24,16 +40,16 @@ type CreateSecritaryAccountPayload struct {
 }
 
 func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (CreateSecritaryAccountPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSuperAdmin)
-	if err != nil {
-		return CreateSecritaryAccountPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return CreateSecritaryAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	_, err = a.app.CreateAccount(models.Account{
+	_, err := a.app.CreateAccount(models.Account{
 		DisplayName: params.NewAccount.DisplayName,
 		Username:    params.NewAccount.Username,
 		Password:    params.NewAccount.Password,
 		Type:        models.AccountTypeSecritary,
+		Permissions: secritaryPermissions,
 	})
 
 	return CreateSecritaryAccountPayload{}, err
@@ -48,16 +64,16 @@ type CreateAdminAccountPayload struct {
 }
 
 func (a *Actions) CreateAdminAccount(params CreateAdminAccountParams) (CreateAdminAccountPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeSuperAdmin)
-	if err != nil {
-		return CreateAdminAccountPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteAdmins) {
+		return CreateAdminAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	_, err = a.app.CreateAccount(models.Account{
+	_, err := a.app.CreateAccount(models.Account{
 		DisplayName: params.NewAccount.DisplayName,
 		Username:    params.NewAccount.Username,
 		Password:    params.NewAccount.Password,
 		Type:        models.AccountTypeAdmin,
+		Permissions: adminPermissions,
 	})
 
 	return CreateAdminAccountPayload{}, err
@@ -72,9 +88,13 @@ type DeleteAccountPayload struct {
 }
 
 func (a *Actions) DeleteAccount(params DeleteAccountParams) (DeleteAccountPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
+	account, err := a.app.GetAccountById(params.AccountId)
 	if err != nil {
 		return DeleteAccountPayload{}, err
+	}
+
+	if account.Type == models.AccountTypeAdmin && !params.Account.HasPermission(models.AccountPermissionWriteAdmins) {
+		return DeleteAccountPayload{}, ErrPermissionDenied{}
 	}
 
 	err = a.app.DeleteAccount(params.AccountId)
@@ -94,12 +114,12 @@ type ListAllAccountsPayload struct {
 }
 
 func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccountsPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return ListAllAccountsPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadAccounts) {
+		return ListAllAccountsPayload{}, ErrPermissionDenied{}
 	}
 
 	var accounts []models.Account
+	var err error
 	switch params.Account.Type {
 	case models.AccountTypeAdmin:
 		accounts, err = a.app.ListAllAccountsForAdmin()
@@ -117,6 +137,7 @@ func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccounts
 			DisplayName: account.DisplayName,
 			Username:    account.Username,
 			Type:        string(account.Type),
+			Permissions: account.Permissions,
 		})
 	}
 

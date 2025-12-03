@@ -73,9 +73,8 @@ type CreatePatientPayload struct {
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return CreatePatientPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return CreatePatientPayload{}, ErrPermissionDenied{}
 	}
 
 	newPatient := models.Patient{
@@ -174,6 +173,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		Username:    newPatient.PublicId,
 		Password:    newPatient.NationalId,
 		Type:        models.AccountTypePatient,
+		Permissions: patientPermissions,
 	})
 	if err != nil {
 		return CreatePatientPayload{}, err
@@ -194,9 +194,8 @@ type CreatePatientBloodTestPayload struct {
 }
 
 func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (CreatePatientBloodTestPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return CreatePatientBloodTestPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return CreatePatientBloodTestPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
@@ -268,9 +267,8 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 		}
 	}
 
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
-	if err != nil {
-		return FindPatientsPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
+		return FindPatientsPayload{}, ErrPermissionDenied{}
 	}
 
 	patients, err := a.app.FindPatientsByIndexFields(models.PatientIndexFields{
@@ -332,9 +330,8 @@ type ListLastPatientsPayload struct {
 }
 
 func (a *Actions) ListLastPatients(params ListLastPatientsParams) (ListLastPatientsPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
-	if err != nil {
-		return ListLastPatientsPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
+		return ListLastPatientsPayload{}, ErrPermissionDenied{}
 	}
 
 	patients, err := a.app.ListLastPatients(50)
@@ -387,9 +384,8 @@ type GetPatientPayload struct {
 }
 
 func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
-	if err != nil {
-		return GetPatientPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
+		return GetPatientPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetFullPatientByPublicId(params.PublicId)
@@ -488,9 +484,8 @@ type GeneratePatientCardPayload struct {
 }
 
 func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (GeneratePatientCardPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeSecritary, models.AccountTypeSuperAdmin)
-	if err != nil {
-		return GeneratePatientCardPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
+		return GeneratePatientCardPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)

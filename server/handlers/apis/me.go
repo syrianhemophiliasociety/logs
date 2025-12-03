@@ -28,6 +28,7 @@ func (u *meApi) HandleAuthCheck(w http.ResponseWriter, r *http.Request) {
 		DisplayName: ctx.Account.DisplayName,
 		Username:    ctx.Account.Username,
 		Type:        string(ctx.Account.Type),
+		Permissions: ctx.Account.Permissions,
 	})
 }
 

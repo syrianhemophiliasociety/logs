@@ -18,9 +18,8 @@ type CreateVirusPayload struct {
 }
 
 func (a *Actions) CreateVirus(params CreateVirusParams) (CreateVirusPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return CreateVirusPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteVirus) {
+		return CreateVirusPayload{}, ErrPermissionDenied{}
 	}
 
 	identifyingBloodTests := make([]models.BloodTest, 0, len(params.NewVirus.BloodTestIds))
@@ -30,7 +29,7 @@ func (a *Actions) CreateVirus(params CreateVirusParams) (CreateVirusPayload, err
 		})
 	}
 
-	_, err = a.app.CreateVirus(models.Virus{
+	_, err := a.app.CreateVirus(models.Virus{
 		Name:                  params.NewVirus.Name,
 		IdentifyingBloodTests: identifyingBloodTests,
 	})
@@ -50,12 +49,11 @@ type DeleteVirusPayload struct {
 }
 
 func (a *Actions) DeleteVirus(params DeleteVirusParams) (DeleteVirusPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return DeleteVirusPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteVirus) {
+		return DeleteVirusPayload{}, ErrPermissionDenied{}
 	}
 
-	err = a.app.DeleteVirus(params.VirusId)
+	err := a.app.DeleteVirus(params.VirusId)
 	if err != nil {
 		return DeleteVirusPayload{}, err
 	}
@@ -73,9 +71,8 @@ type ListAllViriPayload struct {
 }
 
 func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
-	if err != nil {
-		return ListAllViriPayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionReadVirus) {
+		return ListAllViriPayload{}, ErrPermissionDenied{}
 	}
 
 	viri, err := a.app.ListAllViri()

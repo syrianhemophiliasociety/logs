@@ -61,8 +61,16 @@ func Migrate() error {
 		Username:    config.Env().SuperAdmin.Username,
 		Password:    string(hashedPassword),
 		Type:        models.AccountTypeSuperAdmin,
-		CreatedAt:   time.Now().UTC(),
-		UpdatedAt:   time.Now().UTC(),
+		Permissions: models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
+			models.AccountPermissionReadAdmins | models.AccountPermissionWriteAdmins |
+			models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
+			models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
+			models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
+			models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
+			models.AccountPermissionReadOwnVisit | models.AccountPermissionWriteOwnVisit |
+			models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	})
 
 	return nil

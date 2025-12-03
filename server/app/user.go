@@ -10,6 +10,10 @@ func (a *App) GetAccountByUsername(username string) (models.Account, error) {
 	return a.repo.GetAccountByUsername(username)
 }
 
+func (a *App) GetAccountById(id uint) (models.Account, error) {
+	return a.repo.GetAccount(id)
+}
+
 func (a *App) CreateAccount(account models.Account) (models.Account, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(account.Password), bcrypt.DefaultCost)
 	if err != nil {

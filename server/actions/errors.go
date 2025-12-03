@@ -55,3 +55,21 @@ func (e ErrInvalidVerificationToken) ExtraData() map[string]any {
 func (e ErrInvalidVerificationToken) ExposeToClients() bool {
 	return true
 }
+
+type ErrPermissionDenied struct{}
+
+func (e ErrPermissionDenied) Error() string {
+	return "permission-denied"
+}
+
+func (e ErrPermissionDenied) ClientStatusCode() int {
+	return http.StatusUnauthorized
+}
+
+func (e ErrPermissionDenied) ExtraData() map[string]any {
+	return nil
+}
+
+func (e ErrPermissionDenied) ExposeToClients() bool {
+	return true
+}

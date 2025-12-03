@@ -21,12 +21,11 @@ type CreateMedicinePayload struct {
 }
 
 func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return CreateMedicinePayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return CreateMedicinePayload{}, ErrPermissionDenied{}
 	}
 
-	_, err = a.app.CreateMedicine(models.Medicine{
+	_, err := a.app.CreateMedicine(models.Medicine{
 		Name: params.NewMedicine.Name,
 		Dose: params.NewMedicine.Dose,
 		Unit: params.NewMedicine.Unit,
@@ -55,9 +54,8 @@ type DeleteMedicinePayload struct {
 }
 
 func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
-	if err != nil {
-		return DeleteMedicinePayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return DeleteMedicinePayload{}, ErrPermissionDenied{}
 	}
 
 	return DeleteMedicinePayload{}, a.app.DeleteMedicine(params.MedicineId)
@@ -72,6 +70,10 @@ type ListAllMedicinePayload struct {
 }
 
 func (a *Actions) ListAllMedicine(params ListAllMedicineParams) (ListAllMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadMedicine) {
+		return ListAllMedicinePayload{}, ErrPermissionDenied{}
+	}
+
 	medicines, err := a.app.ListAllMedicines()
 	if err != nil {
 		return ListAllMedicinePayload{}, err
