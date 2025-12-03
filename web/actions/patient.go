@@ -153,7 +153,9 @@ type CreatePatientParams struct {
 	NewPatient PatientRequest
 }
 
-type CreatePatientPayload struct{}
+type CreatePatientPayload struct {
+	Id string `json:"id"`
+}
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
 	payload, err := makeRequest[map[string]any, CreatePatientPayload](makeRequestConfig[map[string]any]{

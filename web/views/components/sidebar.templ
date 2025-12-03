@@ -25,6 +25,9 @@ templ Sidebar() {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
 						</li>
+						<li>
+							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
+						</li>
 					}
 					if helpers.AccountTypeCtx(ctx).Patient() {
 						<li>
@@ -34,9 +37,6 @@ templ Sidebar() {
 					if helpers.AccountTypeCtx(ctx).Admin()  || helpers.AccountTypeCtx(ctx).SuperAdmin() {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
-						</li>
-						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
 						</li>
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)

@@ -35,7 +35,7 @@ func (v *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	_, err = v.usecases.CreatePatient(actions.CreatePatientParams{
+	payload, err := v.usecases.CreatePatient(actions.CreatePatientParams{
 		RequestContext: ctx,
 		NewPatient:     reqBody,
 	})
@@ -45,7 +45,7 @@ func (v *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	w.Header().Set("HX-Redirect", "/patient/"+payload.Id)
 }
 
 func (v *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) {

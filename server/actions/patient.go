@@ -69,6 +69,7 @@ type CreatePatientParams struct {
 }
 
 type CreatePatientPayload struct {
+	PatientPublicId string `json:"id"`
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
@@ -178,7 +179,9 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		return CreatePatientPayload{}, err
 	}
 
-	return CreatePatientPayload{}, nil
+	return CreatePatientPayload{
+		PatientPublicId: newPatient.PublicId,
+	}, nil
 }
 
 type CreatePatientBloodTestParams struct {

@@ -26,9 +26,9 @@ templ Patients(bloodTests []actions.BloodTest, viruses []actions.Virus, lastPati
 }
 
 templ patientSearch(lastPatients []actions.Patient) {
-	<div class={ "flex", "gap-10", "w-full", "h-full" }>
+	<div class={ "flex", "gap-5", "w-full", "h-full" }>
 		<form
-			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-full", "overflow-y-scroll", "w-1/4" }
+			class={ "flex" , "flex-col" , "gap-y-3" , "h-full", "overflow-y-scroll", "w-1/4" }
 			hx-encoding="application/json"
 			hx-post="/api/patient/find"
 			hx-ext="json-enc"

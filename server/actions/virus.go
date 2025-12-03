@@ -73,7 +73,7 @@ type ListAllViriPayload struct {
 }
 
 func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, error) {
-	err := params.Account.CheckType(models.AccountTypeAdmin)
+	err := params.Account.CheckType(models.AccountTypeAdmin, models.AccountTypeSecritary)
 	if err != nil {
 		return ListAllViriPayload{}, err
 	}
