@@ -4,6 +4,7 @@ import (
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 	"strconv"
 )
 
@@ -44,58 +45,62 @@ templ allAccounts(accounts []actions.Account) {
 }
 
 templ newAccount() {
-	<form
-		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
-		hx-encoding="application/json"
-		hx-post="/api/account"
-		hx-ext="json-enc"
-		hx-target="#status-msg"
-		hx-swap="innerHTML"
-		data-loading-target="#loading"
-		data-loading-class-remove="hidden"
-	>
-		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
-			@components.Input(components.InputOptions{
-				Id:          "display_name",
-				Name:        "display_name",
-				Type:        components.InputTypeText,
-				Required:    true,
-				Autofocus:   true,
-				Title:       i18n.StringsCtx(ctx).Account,
-				Placeholder: i18n.StringsCtx(ctx).EnterAccountDisplayName,
-			})
-			@components.Input(components.InputOptions{
-				Id:          "username",
-				Name:        "username",
-				Type:        components.InputTypeText,
-				Required:    true,
-				Autofocus:   false,
-				Title:       i18n.StringsCtx(ctx).AccountUsername,
-				Placeholder: i18n.StringsCtx(ctx).EnterAccountUsername,
-			})
-			@components.Input(components.InputOptions{
-				Id:          "password",
-				Name:        "password",
-				Type:        components.InputTypePassword,
-				Required:    true,
-				Autofocus:   false,
-				Title:       i18n.StringsCtx(ctx).AccountPassword,
-				Placeholder: i18n.StringsCtx(ctx).EnterAccountPassword,
-			})
-			@components.Select(components.SelectParams{
-				Id:          "type",
-				Name:        i18n.StringsCtx(ctx).AccountType,
-				Placeholder: i18n.StringsCtx(ctx).EnterAccountType,
-				Required:    true,
-				Options: []components.SelectOption{
-					{Name: i18n.StringsCtx(ctx).AccountTypeSecritary, Value: "secritary"},
-					{Name: i18n.StringsCtx(ctx).AccountTypeAdmin, Value: "admin"},
-				},
-			})
-			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
-				{ i18n.StringsCtx(ctx).FormsSubmit }
-			</button>
-		</div>
-		<div id="status-msg"></div>
-	</form>
+	if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionWriteAccounts) {
+		@components.WritePermissionDenied(i18n.StringsCtx(ctx).Accounts)
+	} else {
+		<form
+			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+			hx-encoding="application/json"
+			hx-post="/api/account"
+			hx-ext="json-enc"
+			hx-target="#status-msg"
+			hx-swap="innerHTML"
+			data-loading-target="#loading"
+			data-loading-class-remove="hidden"
+		>
+			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+				@components.Input(components.InputOptions{
+					Id:          "display_name",
+					Name:        "display_name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).Account,
+					Placeholder: i18n.StringsCtx(ctx).EnterAccountDisplayName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "username",
+					Name:        "username",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).AccountUsername,
+					Placeholder: i18n.StringsCtx(ctx).EnterAccountUsername,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "password",
+					Name:        "password",
+					Type:        components.InputTypePassword,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).AccountPassword,
+					Placeholder: i18n.StringsCtx(ctx).EnterAccountPassword,
+				})
+				@components.Select(components.SelectParams{
+					Id:          "type",
+					Name:        i18n.StringsCtx(ctx).AccountType,
+					Placeholder: i18n.StringsCtx(ctx).EnterAccountType,
+					Required:    true,
+					Options: []components.SelectOption{
+						{Name: i18n.StringsCtx(ctx).AccountTypeSecritary, Value: "secritary"},
+						{Name: i18n.StringsCtx(ctx).AccountTypeAdmin, Value: "admin"},
+					},
+				})
+				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
+					{ i18n.StringsCtx(ctx).FormsSubmit }
+				</button>
+			</div>
+			<div id="status-msg"></div>
+		</form>
+	}
 }

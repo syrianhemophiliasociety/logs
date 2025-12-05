@@ -36,8 +36,17 @@ func accountTokenKey(sessionToken string) string {
 	return fmt.Sprintf("%saccount-session-token:%s", keyPrefix, sessionToken)
 }
 
+func accountIdToTokenKey(accountId uint) string {
+	return fmt.Sprintf("%saccount-id-to-token:%d", keyPrefix, accountId)
+}
+
 func (c *Cache) SetAuthenticatedAccount(sessionToken string, account models.Account) error {
 	accountJson, err := json.Marshal(account)
+	if err != nil {
+		return err
+	}
+
+	err = c.client.Set(context.Background(), accountIdToTokenKey(account.Id), sessionToken, accountSessionTokenTtlDays*time.Hour*24).Err()
 	if err != nil {
 		return err
 	}
@@ -72,6 +81,35 @@ func (c *Cache) GetAuthenticatedAccount(sessionToken string) (models.Account, er
 
 func (c *Cache) InvalidateAuthenticatedAccount(sessionToken string) error {
 	err := c.client.Del(context.Background(), accountTokenKey(sessionToken)).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Cache) InvalidateAuthenticatedAccountById(accountId uint) error {
+	res := c.client.Get(context.Background(), accountIdToTokenKey(accountId))
+	if res == nil {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	sessionToken, err := res.Result()
+	if err == redis.Nil {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	} else if err != nil {
+		return err
+	}
+
+	err = c.client.Del(context.Background(), accountIdToTokenKey(accountId)).Err()
+	if err != nil {
+		return err
+	}
+
+	err = c.client.Del(context.Background(), accountTokenKey(sessionToken)).Err()
 	if err != nil {
 		return err
 	}

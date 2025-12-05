@@ -11,16 +11,19 @@ type Keys struct {
 	Hello       string
 
 	ErrorSomethingWentWrong string
+	ErrorPermissionDenied   string
 	MessageSuccess          string
 	ChooseTheme             string
 	DarkTheme               string
 	LightTheme              string
 	ChooseLanguage          string
 
-	And  string
-	Or   string
-	With string
-	For  string
+	And    string
+	Or     string
+	With   string
+	For    string
+	On     string
+	Denied string
 
 	LoginUsername      string
 	LoginPassword      string
@@ -88,6 +91,8 @@ type Keys struct {
 	EnterAccountPassword     string
 	AccountPermissions       string
 	EnterAccountPermissions  string
+	PermissionRead           string
+	PermissionWrite          string
 	AccountType              string
 	EnterAccountType         string
 	AccountTypeSecritary     string

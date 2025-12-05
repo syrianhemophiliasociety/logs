@@ -8,7 +8,8 @@ const (
 	secritaryPermissions = models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
 		models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
 		models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits |
-		models.AccountPermissionReadBloodTest
+		models.AccountPermissionReadBloodTest |
+		models.AccountPermissionReadVirus
 
 	adminPermissions = secritaryPermissions |
 		models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
@@ -161,6 +162,11 @@ func (a *Actions) UpdateAccount(params UpdateAccountParams) (UpdateAccountPayloa
 		Password:    params.NewAccount.Password,
 		Permissions: params.NewAccount.Permissions,
 	})
+	if err != nil {
+		return UpdateAccountPayload{}, err
+	}
+
+	err = a.cache.InvalidateAuthenticatedAccountById(params.AccountId)
 	if err != nil {
 		return UpdateAccountPayload{}, err
 	}

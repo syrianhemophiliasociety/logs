@@ -56,7 +56,7 @@ func Migrate() error {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(config.Env().SuperAdmin.Password), bcrypt.DefaultCost)
 
-	_ = dbConn.Create(&models.Account{
+	superMechman := models.Account{
 		DisplayName: "Super Admin!",
 		Username:    config.Env().SuperAdmin.Username,
 		Password:    string(hashedPassword),
@@ -66,11 +66,11 @@ func Migrate() error {
 			models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
 			models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
 			models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
-			models.AccountPermissionReadOwnVisit | models.AccountPermissionWriteOwnVisit |
 			models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
-	})
+	}
+	_ = dbConn.Create(&superMechman)
 
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 )
 
 templ Patients(bloodTests []actions.BloodTest, viruses []actions.Virus, lastPatients []actions.Patient) {
@@ -103,175 +104,179 @@ templ patientSearch(lastPatients []actions.Patient) {
 }
 
 templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
-	<form
-		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", }
-		hx-encoding="application/json"
-		hx-post="/api/patient"
-		hx-ext="json-enc"
-		hx-target="#status-msg"
-		hx-swap="innerHTML"
-		data-loading-target="#loading"
-		data-loading-class-remove="hidden"
-	>
-		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Input(components.InputOptions{
-					Id:          "first_name",
-					Name:        "first_name",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   true,
-					Title:       i18n.StringsCtx(ctx).PatientFirstName,
-					Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "last_name",
-					Name:        "last_name",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).PatientLastName,
-					Placeholder: i18n.StringsCtx(ctx).EnterPatientLastName,
-				})
+	if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionWritePatient) {
+		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavPatients)
+	} else {
+		<form
+			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", }
+			hx-encoding="application/json"
+			hx-post="/api/patient"
+			hx-ext="json-enc"
+			hx-target="#status-msg"
+			hx-swap="innerHTML"
+			data-loading-target="#loading"
+			data-loading-class-remove="hidden"
+		>
+			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "first_name",
+						Name:        "first_name",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   true,
+						Title:       i18n.StringsCtx(ctx).PatientFirstName,
+						Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "last_name",
+						Name:        "last_name",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).PatientLastName,
+						Placeholder: i18n.StringsCtx(ctx).EnterPatientLastName,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "father_name",
+						Name:        "father_name",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).PatientFatherName,
+						Placeholder: i18n.StringsCtx(ctx).EnterPatientFatherName,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "mother_name",
+						Name:        "mother_name",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).PatientMotherName,
+						Placeholder: i18n.StringsCtx(ctx).EnterPatientMotherName,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Select(components.SelectParams{
+						Id:          "nationality",
+						Name:        i18n.StringsCtx(ctx).Nationality,
+						Placeholder: i18n.StringsCtx(ctx).EnterNationality,
+						Required:    true,
+						Options: []components.SelectOption{
+							{Name: i18n.StringsCtx(ctx).NationalitySyrian, Value: "syrian"},
+							{Name: i18n.StringsCtx(ctx).NationalityPalestinian, Value: "palestinian"},
+							{Name: i18n.StringsCtx(ctx).NationalityIraqi, Value: "iraqi"},
+							{Name: i18n.StringsCtx(ctx).NationalityEgyptian, Value: "egyptian"},
+						},
+					})
+					@components.Input(components.InputOptions{
+						Id:          "national_id",
+						Name:        "national_id",
+						Type:        components.InputTypeText,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).NationalId,
+						Placeholder: i18n.StringsCtx(ctx).EnterNationalId,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Select(components.SelectParams{
+						Id:          "gender",
+						Name:        i18n.StringsCtx(ctx).Gender,
+						Placeholder: i18n.StringsCtx(ctx).EnterGender,
+						Required:    true,
+						Options: []components.SelectOption{
+							{Name: i18n.StringsCtx(ctx).GenderMale, Value: "male"},
+							{Name: i18n.StringsCtx(ctx).GenderFemale, Value: "female"},
+						},
+					})
+					@components.Input(components.InputOptions{
+						Id:          "phone_number",
+						Name:        "phone_number",
+						Type:        components.InputTypeTel,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).PhoneNumber,
+						Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "date_of_birth",
+						Name:        "date_of_birth",
+						Type:        components.InputTypeDate,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).DateOfBirth,
+						Placeholder: i18n.StringsCtx(ctx).EnterDateOfBirth,
+					})
+				</div>
+				<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "place_of_birth_governorate",
+						Name:        "place_of_birth_governorate",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Governorate,
+						Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "place_of_birth_suburb",
+						Name:        "place_of_birth_suburb",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Suburb,
+						Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "place_of_birth_street",
+						Name:        "place_of_birth_street",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Street,
+						Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+					})
+				</div>
+				<p class={ "text-md" }>{ i18n.StringsCtx(ctx).Residency }</p>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "residency_governorate",
+						Name:        "residency_governorate",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Governorate,
+						Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "residency_suburb",
+						Name:        "residency_suburb",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Suburb,
+						Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+					})
+					@components.Input(components.InputOptions{
+						Id:          "residency_street",
+						Name:        "residency_street",
+						Type:        components.InputTypeText,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).Street,
+						Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+					})
+				</div>
 			</div>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Input(components.InputOptions{
-					Id:          "father_name",
-					Name:        "father_name",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).PatientFatherName,
-					Placeholder: i18n.StringsCtx(ctx).EnterPatientFatherName,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "mother_name",
-					Name:        "mother_name",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).PatientMotherName,
-					Placeholder: i18n.StringsCtx(ctx).EnterPatientMotherName,
-				})
-			</div>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Select(components.SelectParams{
-					Id:          "nationality",
-					Name:        i18n.StringsCtx(ctx).Nationality,
-					Placeholder: i18n.StringsCtx(ctx).EnterNationality,
-					Required:    true,
-					Options: []components.SelectOption{
-						{Name: i18n.StringsCtx(ctx).NationalitySyrian, Value: "syrian"},
-						{Name: i18n.StringsCtx(ctx).NationalityPalestinian, Value: "palestinian"},
-						{Name: i18n.StringsCtx(ctx).NationalityIraqi, Value: "iraqi"},
-						{Name: i18n.StringsCtx(ctx).NationalityEgyptian, Value: "egyptian"},
-					},
-				})
-				@components.Input(components.InputOptions{
-					Id:          "national_id",
-					Name:        "national_id",
-					Type:        components.InputTypeText,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).NationalId,
-					Placeholder: i18n.StringsCtx(ctx).EnterNationalId,
-				})
-			</div>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Select(components.SelectParams{
-					Id:          "gender",
-					Name:        i18n.StringsCtx(ctx).Gender,
-					Placeholder: i18n.StringsCtx(ctx).EnterGender,
-					Required:    true,
-					Options: []components.SelectOption{
-						{Name: i18n.StringsCtx(ctx).GenderMale, Value: "male"},
-						{Name: i18n.StringsCtx(ctx).GenderFemale, Value: "female"},
-					},
-				})
-				@components.Input(components.InputOptions{
-					Id:          "phone_number",
-					Name:        "phone_number",
-					Type:        components.InputTypeTel,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).PhoneNumber,
-					Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
-				})
-			</div>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Input(components.InputOptions{
-					Id:          "date_of_birth",
-					Name:        "date_of_birth",
-					Type:        components.InputTypeDate,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).DateOfBirth,
-					Placeholder: i18n.StringsCtx(ctx).EnterDateOfBirth,
-				})
-			</div>
-			<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Input(components.InputOptions{
-					Id:          "place_of_birth_governorate",
-					Name:        "place_of_birth_governorate",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Governorate,
-					Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "place_of_birth_suburb",
-					Name:        "place_of_birth_suburb",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Suburb,
-					Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "place_of_birth_street",
-					Name:        "place_of_birth_street",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Street,
-					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
-				})
-			</div>
-			<p class={ "text-md" }>{ i18n.StringsCtx(ctx).Residency }</p>
-			<div class={ "flex",  "justify-between", "gap-10" }>
-				@components.Input(components.InputOptions{
-					Id:          "residency_governorate",
-					Name:        "residency_governorate",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Governorate,
-					Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "residency_suburb",
-					Name:        "residency_suburb",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Suburb,
-					Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "residency_street",
-					Name:        "residency_street",
-					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).Street,
-					Placeholder: i18n.StringsCtx(ctx).EnterStreet,
-				})
-			</div>
-		</div>
-		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
-			{ i18n.StringsCtx(ctx).FormsSubmit }
-		</button>
-		<div id="status-msg"></div>
-	</form>
+			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
+				{ i18n.StringsCtx(ctx).FormsSubmit }
+			</button>
+			<div id="status-msg"></div>
+		</form>
+	}
 }

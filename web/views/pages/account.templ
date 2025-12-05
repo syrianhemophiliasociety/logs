@@ -142,6 +142,29 @@ templ accountPermissionsForm(account actions.Account) {
 		Title:       "Write visits",
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
+	//
+	// @components.Input(components.InputOptions{
+	// 	Id:          "permissions",
+	// 	Name:        "permissions",
+	// 	Type:        components.InputTypeCheckbox,
+	// 	Value:       strconv.Itoa(int(actions.AccountPermissionReadOwnVisit)),
+	// 	Checked:     account.HasPermission(actions.AccountPermissionReadOwnVisit),
+	// 	Required:    false,
+	// 	Autofocus:   false,
+	// 	Title:       "Read own visit",
+	// 	Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	// })
+	// @components.Input(components.InputOptions{
+	// 	Id:          "permissions",
+	// 	Name:        "permissions",
+	// 	Type:        components.InputTypeCheckbox,
+	// 	Value:       strconv.Itoa(int(actions.AccountPermissionWriteOwnVisit)),
+	// 	Checked:     account.HasPermission(actions.AccountPermissionWriteOwnVisit),
+	// 	Required:    false,
+	// 	Autofocus:   false,
+	// 	Title:       "Write visit",
+	// 	Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	// })
 }
 
 templ Account(account actions.Account) {

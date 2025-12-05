@@ -5,6 +5,7 @@ import (
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 )
 
 templ Medicines(medicines []actions.Medicine) {
@@ -52,49 +53,53 @@ templ allMedicines(medicines []actions.Medicine) {
 }
 
 templ newMedicine() {
-	<form
-		class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
-		hx-encoding="application/json"
-		hx-post="/api/medicine"
-		hx-ext="json-enc"
-		hx-target="#status-msg"
-		hx-swap="innerHTML"
-		data-loading-target="#loading"
-		data-loading-class-remove="hidden"
-	>
-		<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
-			@components.Input(components.InputOptions{
-				Id:          "name",
-				Name:        "name",
-				Type:        components.InputTypeText,
-				Required:    true,
-				Autofocus:   true,
-				Title:       i18n.StringsCtx(ctx).Medicine,
-				Placeholder: i18n.StringsCtx(ctx).EnterMedicineName,
-			})
-			@components.Input(components.InputOptions{
-				Id:          "dose",
-				Name:        "dose",
-				Type:        components.InputTypeNumber,
-				Required:    false,
-				Autofocus:   true,
-				Title:       i18n.StringsCtx(ctx).MedicineDose,
-				Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
-			})
-			@components.Select(components.SelectParams{
-				Id:          "unit",
-				Name:        i18n.StringsCtx(ctx).MedicineUnit,
-				Placeholder: i18n.StringsCtx(ctx).EnterMedicineUnit,
-				Required:    true,
-				Options: []components.SelectOption{
-					{Name: "mg", Value: "mg"},
-					{Name: "IU", Value: "IU"},
-				},
-			})
-			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
-				{ i18n.StringsCtx(ctx).FormsSubmit }
-			</button>
-		</div>
-		<div id="status-msg"></div>
-	</form>
+	if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionWriteMedicine) {
+		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavMedicine)
+	} else {
+		<form
+			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+			hx-encoding="application/json"
+			hx-post="/api/medicine"
+			hx-ext="json-enc"
+			hx-target="#status-msg"
+			hx-swap="innerHTML"
+			data-loading-target="#loading"
+			data-loading-class-remove="hidden"
+		>
+			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+				@components.Input(components.InputOptions{
+					Id:          "name",
+					Name:        "name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).Medicine,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineName,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "dose",
+					Name:        "dose",
+					Type:        components.InputTypeNumber,
+					Required:    false,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).MedicineDose,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
+				})
+				@components.Select(components.SelectParams{
+					Id:          "unit",
+					Name:        i18n.StringsCtx(ctx).MedicineUnit,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineUnit,
+					Required:    true,
+					Options: []components.SelectOption{
+						{Name: "mg", Value: "mg"},
+						{Name: "IU", Value: "IU"},
+					},
+				})
+				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+					{ i18n.StringsCtx(ctx).FormsSubmit }
+				</button>
+			</div>
+			<div id="status-msg"></div>
+		</form>
+	}
 }

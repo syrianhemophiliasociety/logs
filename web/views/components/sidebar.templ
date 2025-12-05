@@ -2,6 +2,7 @@ package components
 
 import "shs-web/i18n"
 import "shs-web/views/helpers"
+import "shs-web/actions"
 
 templ Sidebar() {
 	<div class={ "w-[200px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
@@ -21,26 +22,32 @@ templ Sidebar() {
 					<li>
 						@RouteLink(i18n.StringsCtx(ctx).NavHome, "/", false)
 					</li>
-					if helpers.AccountTypeCtx(ctx).Admin() || helpers.AccountTypeCtx(ctx).Secritary() || helpers.AccountTypeCtx(ctx).SuperAdmin() {
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
 						</li>
+					}
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadMedicine) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
 						</li>
 					}
-					if helpers.AccountTypeCtx(ctx).Patient() {
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOwnVisit) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", false)
 						</li>
 					}
-					if helpers.AccountTypeCtx(ctx).Admin()  || helpers.AccountTypeCtx(ctx).SuperAdmin() {
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
 						</li>
+					}
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadVirus) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)
 						</li>
+					}
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadAccounts) {
 						<li>
 							@RouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false)
 						</li>
