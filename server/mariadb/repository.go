@@ -94,13 +94,13 @@ func (r *Repository) CreateAccount(account models.Account) (models.Account, erro
 	return account, nil
 }
 
-func (r *Repository) ListAllAccounts(types []models.AccountType) ([]models.Account, error) {
+func (r *Repository) ListAllAccounts() ([]models.Account, error) {
 	var accounts []models.Account
 
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Account)).
-			Where("type IN ?", types).
+			Where("type NOT IN ?", []models.AccountType{models.AccountTypeSuperAdmin, models.AccountTypePatient}).
 			Find(&accounts).
 			Error,
 	)
@@ -133,7 +133,90 @@ func (r *Repository) DeleteAccount(id uint) error {
 	}
 
 	return nil
+}
 
+func (r *Repository) UpdateAccountPermissions(id uint, permissions models.AccountPermissions) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Where("id = ?", id).
+			Update("permissions", permissions).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) UpdateAccountDisplayName(id uint, name string) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Where("id = ?", id).
+			Update("display_name", name).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) UpdateAccountUsername(id uint, username string) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Where("id = ?", id).
+			Update("username", username).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) UpdateAccountPassword(id uint, password string) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Where("id = ?", id).
+			Update("password", password).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *Repository) CreateBloodTest(bt models.BloodTest) (models.BloodTest, error) {

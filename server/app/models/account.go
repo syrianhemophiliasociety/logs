@@ -19,21 +19,18 @@ type AccountPermissions uint64
 
 const (
 	AccountPermissionReadAccounts AccountPermissions = 1 << iota
-	AccountPermissionReadAdmins
-	AccountPermissionReadPatient
-	AccountPermissionReadMedicine
-	AccountPermissionReadVirus
-	AccountPermissionReadBloodTest
-	AccountPermissionReadOwnVisit
-	AccountPermissionReadOtherVisits
-
 	AccountPermissionWriteAccounts
-	AccountPermissionWriteAdmins
+	AccountPermissionReadPatient
 	AccountPermissionWritePatient
+	AccountPermissionReadMedicine
 	AccountPermissionWriteMedicine
+	AccountPermissionReadVirus
 	AccountPermissionWriteVirus
+	AccountPermissionReadBloodTest
 	AccountPermissionWriteBloodTest
+	AccountPermissionReadOwnVisit
 	AccountPermissionWriteOwnVisit
+	AccountPermissionReadOtherVisits
 	AccountPermissionWriteOtherVisits
 )
 

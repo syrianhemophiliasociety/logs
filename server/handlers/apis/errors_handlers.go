@@ -21,6 +21,8 @@ func handleErrorResponse(w http.ResponseWriter, err error) {
 	log.Errorf("error happened in api, %v\n", err)
 
 	if dankError, ok := err.(app.Error); ok {
+		log.Errorf("error extra data, %v\n", dankError.ExtraData())
+
 		if dankError.ExposeToClients() {
 			w.WriteHeader(dankError.ClientStatusCode())
 			_ = json.NewEncoder(w).Encode(errorResponse{

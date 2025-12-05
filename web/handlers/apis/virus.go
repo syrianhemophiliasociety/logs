@@ -46,7 +46,7 @@ func (v *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *virusApi) HandleDeleteVirus(w http.ResponseWriter, r *http.Request) {
@@ -70,5 +70,5 @@ func (v *virusApi) HandleDeleteVirus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }

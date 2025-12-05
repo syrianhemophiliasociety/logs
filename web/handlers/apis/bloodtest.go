@@ -62,7 +62,7 @@ func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Request) {
@@ -86,5 +86,5 @@ func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }

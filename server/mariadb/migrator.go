@@ -62,7 +62,6 @@ func Migrate() error {
 		Password:    string(hashedPassword),
 		Type:        models.AccountTypeSuperAdmin,
 		Permissions: models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
-			models.AccountPermissionReadAdmins | models.AccountPermissionWriteAdmins |
 			models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
 			models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
 			models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |

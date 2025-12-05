@@ -161,6 +161,10 @@ function downloadFileBase64(b64, downloadName) {
   a.click();
 }
 
+document.body.addEventListener("respDetails", function (evt) {
+  alert(evt.detail.value);
+});
+
 window.Utils = {
   showLoading,
   hideLoading,

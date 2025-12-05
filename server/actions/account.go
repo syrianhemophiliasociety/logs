@@ -25,10 +25,21 @@ type Account struct {
 	Permissions models.AccountPermissions `json:"permissions"`
 }
 
+func (a Account) FromModel(ma models.Account) Account {
+	return Account{
+		Id:          ma.Id,
+		DisplayName: ma.DisplayName,
+		Username:    ma.Username,
+		Type:        string(ma.Type),
+		Permissions: ma.Permissions,
+	}
+}
+
 type createAccountParams struct {
-	DisplayName string `json:"display_name"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
+	DisplayName string                    `json:"display_name"`
+	Username    string                    `json:"username"`
+	Password    string                    `json:"password"`
+	Permissions models.AccountPermissions `json:"permissions"`
 }
 
 type CreateSecritaryAccountParams struct {
@@ -37,6 +48,7 @@ type CreateSecritaryAccountParams struct {
 }
 
 type CreateSecritaryAccountPayload struct {
+	Id uint `json:"id"`
 }
 
 func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (CreateSecritaryAccountPayload, error) {
@@ -44,7 +56,7 @@ func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (C
 		return CreateSecritaryAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	_, err := a.app.CreateAccount(models.Account{
+	newAccount, err := a.app.CreateAccount(models.Account{
 		DisplayName: params.NewAccount.DisplayName,
 		Username:    params.NewAccount.Username,
 		Password:    params.NewAccount.Password,
@@ -52,7 +64,9 @@ func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (C
 		Permissions: secritaryPermissions,
 	})
 
-	return CreateSecritaryAccountPayload{}, err
+	return CreateSecritaryAccountPayload{
+		Id: newAccount.Id,
+	}, err
 }
 
 type CreateAdminAccountParams struct {
@@ -61,14 +75,15 @@ type CreateAdminAccountParams struct {
 }
 
 type CreateAdminAccountPayload struct {
+	Id uint `json:"id"`
 }
 
 func (a *Actions) CreateAdminAccount(params CreateAdminAccountParams) (CreateAdminAccountPayload, error) {
-	if !params.Account.HasPermission(models.AccountPermissionWriteAdmins) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
 		return CreateAdminAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	_, err := a.app.CreateAccount(models.Account{
+	newAccount, err := a.app.CreateAccount(models.Account{
 		DisplayName: params.NewAccount.DisplayName,
 		Username:    params.NewAccount.Username,
 		Password:    params.NewAccount.Password,
@@ -76,7 +91,33 @@ func (a *Actions) CreateAdminAccount(params CreateAdminAccountParams) (CreateAdm
 		Permissions: adminPermissions,
 	})
 
-	return CreateAdminAccountPayload{}, err
+	return CreateAdminAccountPayload{
+		Id: newAccount.Id,
+	}, err
+}
+
+type GetAccountParams struct {
+	ActionContext
+	AccountId uint
+}
+
+type GetAccountPayload struct {
+	Account Account `json:"data"`
+}
+
+func (a *Actions) GetAccount(params GetAccountParams) (GetAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return GetAccountPayload{}, ErrPermissionDenied{}
+	}
+
+	account, err := a.app.GetAccountById(params.AccountId)
+	if err != nil {
+		return GetAccountPayload{}, err
+	}
+
+	return GetAccountPayload{
+		Account: Account{}.FromModel(account),
+	}, nil
 }
 
 type DeleteAccountParams struct {
@@ -88,21 +129,43 @@ type DeleteAccountPayload struct {
 }
 
 func (a *Actions) DeleteAccount(params DeleteAccountParams) (DeleteAccountPayload, error) {
-	account, err := a.app.GetAccountById(params.AccountId)
-	if err != nil {
-		return DeleteAccountPayload{}, err
-	}
-
-	if account.Type == models.AccountTypeAdmin && !params.Account.HasPermission(models.AccountPermissionWriteAdmins) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
 		return DeleteAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	err = a.app.DeleteAccount(params.AccountId)
+	err := a.app.DeleteAccount(params.AccountId)
 	if err != nil {
 		return DeleteAccountPayload{}, err
 	}
 
 	return DeleteAccountPayload{}, nil
+}
+
+type UpdateAccountParams struct {
+	ActionContext
+	AccountId  uint
+	NewAccount createAccountParams `json:"new_account"`
+}
+
+type UpdateAccountPayload struct {
+}
+
+func (a *Actions) UpdateAccount(params UpdateAccountParams) (UpdateAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return UpdateAccountPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.UpdateAccount(params.AccountId, models.Account{
+		DisplayName: params.NewAccount.DisplayName,
+		Username:    params.NewAccount.Username,
+		Password:    params.NewAccount.Password,
+		Permissions: params.NewAccount.Permissions,
+	})
+	if err != nil {
+		return UpdateAccountPayload{}, err
+	}
+
+	return UpdateAccountPayload{}, nil
 }
 
 type ListAllAccountsParams struct {
@@ -118,14 +181,7 @@ func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccounts
 		return ListAllAccountsPayload{}, ErrPermissionDenied{}
 	}
 
-	var accounts []models.Account
-	var err error
-	switch params.Account.Type {
-	case models.AccountTypeAdmin:
-		accounts, err = a.app.ListAllAccountsForAdmin()
-	case models.AccountTypeSuperAdmin:
-		accounts, err = a.app.ListAllAccountsForSuperAdmin()
-	}
+	accounts, err := a.app.ListAllAccounts()
 	if err != nil {
 		return ListAllAccountsPayload{}, err
 	}

@@ -73,3 +73,25 @@ func (e ErrPermissionDenied) ExtraData() map[string]any {
 func (e ErrPermissionDenied) ExposeToClients() bool {
 	return true
 }
+
+type ErrValidation struct {
+	Field string
+}
+
+func (e ErrValidation) Error() string {
+	return "invalid-field"
+}
+
+func (e ErrValidation) ClientStatusCode() int {
+	return http.StatusUnauthorized
+}
+
+func (e ErrValidation) ExtraData() map[string]any {
+	return map[string]any{
+		"field_name": e.Field,
+	}
+}
+
+func (e ErrValidation) ExposeToClients() bool {
+	return true
+}

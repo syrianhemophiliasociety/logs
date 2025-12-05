@@ -39,6 +39,7 @@ type Keys struct {
 	NavMedicine   string
 	NavViruses    string
 	NavManagement string
+	NavAccount    string
 
 	TabsList    string
 	TabsSearch  string
@@ -50,6 +51,7 @@ type Keys struct {
 	FormsDelete   string
 	FormsNewField string
 	FormsFind     string
+	FormsUpdate   string
 
 	Virus               string
 	EnterVirusName      string
@@ -75,18 +77,22 @@ type Keys struct {
 	EnterBloodTestResultFieldValueFmt func(unit string) string
 	RemoveBloodTest                   string
 
-	Account                 string
-	Accounts                string
-	AccountUsername         string
-	EnterAccountUsername    string
-	AccountDisplayName      string
-	EnterAccountDisplayName string
-	AccountPassword         string
-	EnterAccountPassword    string
-	AccountType             string
-	EnterAccountType        string
-	AccountTypeSecritary    string
-	AccountTypeAdmin        string
+	Account                  string
+	Accounts                 string
+	AccountUsername          string
+	EnterAccountUsername     string
+	AccountDisplayName       string
+	EnterAccountDisplayName  string
+	AccountPassword          string
+	AccountPasswordUnchanged string
+	EnterAccountPassword     string
+	AccountPermissions       string
+	EnterAccountPermissions  string
+	AccountType              string
+	EnterAccountType         string
+	AccountTypeSecritary     string
+	AccountTypeAdmin         string
+	AccountDelete            string
 
 	Patient                string
 	PatientFirstName       string

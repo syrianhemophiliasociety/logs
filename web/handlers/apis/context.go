@@ -2,6 +2,7 @@ package apis
 
 import (
 	"context"
+	"net/http"
 	"shs-web/actions"
 	"shs-web/errors"
 	"shs-web/handlers/middlewares/auth"
@@ -16,4 +17,10 @@ func parseContext(ctx context.Context) (actions.RequestContext, error) {
 	return actions.RequestContext{
 		SessionToken: sessionToken,
 	}, nil
+}
+
+func respRawText(w http.ResponseWriter, msg string) error {
+	w.Header().Add("HX-Trigger", `{"respDetails": "`+msg+`"}`)
+	w.Write([]byte(msg))
+	return nil
 }

@@ -46,7 +46,7 @@ func (v *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Request) {
@@ -70,5 +70,5 @@ func (v *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }

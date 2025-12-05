@@ -39,7 +39,7 @@ const links = [
     ],
   },
   {
-    check: (l) => l === "/management",
+    check: (l) => l.startsWith("/management"),
     elements: [
       document.getElementById("/management"),
       document.getElementById("/management?mobile"),

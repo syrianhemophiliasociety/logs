@@ -73,6 +73,7 @@ func main() {
 	pagesHandler.HandleFunc("GET /medicines", contenttype.Html(authMiddleware.AuthPage(pages.HandleMedicinesPage)))
 	pagesHandler.HandleFunc("GET /blood-tests", contenttype.Html(authMiddleware.AuthPage(pages.HandleBloodTestsPage)))
 	pagesHandler.HandleFunc("GET /management", contenttype.Html(authMiddleware.AuthPage(pages.HandleManagementPage)))
+	pagesHandler.HandleFunc("GET /management/account/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandleAccountManagementPage)))
 	pagesHandler.HandleFunc("GET /patients", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientsPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}/visit/{visit_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
@@ -100,6 +101,7 @@ func main() {
 	apisHandler.HandleFunc("DELETE /blood-test/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
 
 	apisHandler.HandleFunc("POST /account", authMiddleware.AuthApi(accountApi.HandleCreateAccount))
+	apisHandler.HandleFunc("PUT /account/{id}", authMiddleware.AuthApi(accountApi.HandleUpdateAccount))
 	apisHandler.HandleFunc("DELETE /account/{id}", authMiddleware.AuthApi(accountApi.HandleDeleteAccount))
 
 	apisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))

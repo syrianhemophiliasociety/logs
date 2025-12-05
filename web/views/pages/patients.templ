@@ -49,7 +49,6 @@ templ patientSearch(lastPatients []actions.Patient) {
 				Id:          "first_name",
 				Name:        "first_name",
 				Type:        components.InputTypeText,
-				Autofocus:   true,
 				Title:       i18n.StringsCtx(ctx).PatientFirstName,
 				Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
 			})
@@ -172,7 +171,6 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 					Id:          "national_id",
 					Name:        "national_id",
 					Type:        components.InputTypeText,
-					Required:    true,
 					Autofocus:   false,
 					Title:       i18n.StringsCtx(ctx).NationalId,
 					Placeholder: i18n.StringsCtx(ctx).EnterNationalId,

@@ -32,6 +32,8 @@ type InputOptions struct {
 	Type        InputType
 	Name        string
 	Title       string
+	Value       string
+	Checked     bool
 	Required    bool
 	Autofocus   bool
 	Class       []string
@@ -40,7 +42,7 @@ type InputOptions struct {
 }
 
 templ Input(options InputOptions) {
-	<div class={ "flex", "flex-col" }>
+	<div class={ "flex", templ.KV( "flex-col", options.Type != InputTypeCheckbox) }>
 		<label class={ "text-secondary", "text-[16px]" } for={ options.Id }>{ options.Title }</label>
 		<input
 			id={ options.Id }
@@ -50,9 +52,15 @@ templ Input(options InputOptions) {
 			}
 			class={ "min-w-20", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary", options.Class }
 			name={ options.Name }
+			if options.Value != "" {
+				value={ options.Value }
+			}
 			placeholder={ options.Placeholder }
 			if options.Autofocus {
 				autofocus
+			}
+			if options.Checked {
+				checked="checked"
 			}
 			if options.HyperScript != "" {
 				_={ options.HyperScript }

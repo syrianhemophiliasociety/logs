@@ -89,6 +89,32 @@ func (e *accountApi) HandleListAllAccounts(w http.ResponseWriter, r *http.Reques
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
+func (e *accountApi) HandleGetAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.GetAccount(actions.GetAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to get account, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
 func (e *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
@@ -108,6 +134,40 @@ func (e *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request)
 	})
 	if err != nil {
 		log.Errorf("[ACCOUNT API]: Failed to delete account, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var params actions.UpdateAccountParams
+	err = json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.UpdateAccount(actions.UpdateAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+		NewAccount:    params.NewAccount,
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to update account, error: %s\n", err.Error())
 		handleErrorResponse(w, err)
 		return
 	}

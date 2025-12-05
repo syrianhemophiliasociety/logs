@@ -217,6 +217,45 @@ func (p *pagesHandler) HandleManagementPage(w http.ResponseWriter, r *http.Reque
 	}, pages.Management(accounts)).Render(r.Context(), w)
 }
 
+func (p *pagesHandler) HandleAccountManagementPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	account, err := p.usecases.GetAccount(actions.GetAccountParams{
+		RequestContext: ctx,
+		AccountId:      uint(id),
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavManagement)
+		w.Header().Set("HX-Push-Url", "/management/account/"+strconv.Itoa(int(account.Id)))
+		pages.Account(account).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavManagement,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Account(account)).Render(r.Context(), w)
+}
+
 func (p *pagesHandler) HandlePatientsPage(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {

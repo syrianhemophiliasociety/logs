@@ -104,7 +104,7 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.Request) {
@@ -136,7 +136,7 @@ func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	w.Write([]byte(i18n.StringsCtx(r.Context()).MessageSuccess))
+	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {

@@ -1,10 +1,10 @@
 package pages
 
 import (
-	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"strconv"
 )
 
 templ Management(accounts []actions.Account) {
@@ -28,25 +28,17 @@ templ Management(accounts []actions.Account) {
 	</div>
 }
 
+templ accountListItem(account actions.Account) {
+	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "gap-5", "items-center" }>
+		<span class="min-w-20 font-bold text-xl text-secondary">{ account.DisplayName }</span>
+		<span class="min-w-20 text-lg text-secondary">{ account.Type }</span>
+	</div>
+}
+
 templ allAccounts(accounts []actions.Account) {
 	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
 		for _, account := range accounts {
-			{ fmt.Sprint(account) }
-			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-				<span class="min-w-20 text-xl text-secondary">{ account.DisplayName }</span>
-				<button
-					class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
-					hx-delete={ fmt.Sprintf("/api/account/%d", account.Id) }
-					hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' account?",
-        account.Username) }
-					hx-trigger="click consume"
-					hx-target="closest div"
-					hx-swap="delete"
-				>
-					{ 
-        i18n.StringsCtx(ctx).FormsDelete }
-				</button>
-			</div>
+			@components.JustLink("/management/account/"+strconv.Itoa(int(account.Id)), "Account page", accountListItem(account))
 		}
 	</div>
 }

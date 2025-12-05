@@ -64,7 +64,9 @@ func main() {
 	v1ApisHandler.HandleFunc("GET /me/auth", authMiddleware.AuthApi(meApi.HandleAuthCheck))
 	v1ApisHandler.HandleFunc("GET /me/logout", authMiddleware.AuthApi(meApi.HandleLogout))
 
+	v1ApisHandler.HandleFunc("GET /account/{id}", authMiddleware.AuthApi(accountApi.HandleGetAccount))
 	v1ApisHandler.HandleFunc("DELETE /account/{id}", authMiddleware.AuthApi(accountApi.HandleDeleteAccount))
+	v1ApisHandler.HandleFunc("PUT /account/{id}", authMiddleware.AuthApi(accountApi.HandleUpdateAccount))
 	v1ApisHandler.HandleFunc("POST /account/admin", authMiddleware.AuthApi(accountApi.HandleCreateAdminAccount))
 	v1ApisHandler.HandleFunc("POST /account/secritary", authMiddleware.AuthApi(accountApi.HandleCreateSecritaryAccount))
 	v1ApisHandler.HandleFunc("GET /account/all", authMiddleware.AuthApi(accountApi.HandleListAllAccounts))
