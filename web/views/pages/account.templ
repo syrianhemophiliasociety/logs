@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
@@ -219,18 +218,7 @@ templ Account(account actions.Account) {
 			</form>
 			<div class={ "flex", "flex-col", "gap-3" }>
 				<span class="w-full text-xl text-secondary">{ i18n.StringsCtx(ctx).AccountDelete }</span>
-				<button
-					class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
-					hx-delete={ fmt.Sprintf("/api/account/%d", account.Id) }
-					hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' account?",
-        account.Username) }
-					hx-trigger="click consume"
-					hx-target="closest div"
-					hx-swap="delete"
-				>
-					{ 
-        i18n.StringsCtx(ctx).FormsDelete }
-				</button>
+				@components.DeleteButton("account", strconv.Itoa(int(account.Id)), account.Username, true)
 			</div>
 		</div>
 	</div>

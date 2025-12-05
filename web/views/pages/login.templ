@@ -2,6 +2,7 @@ package pages
 
 import "shs-web/views/components"
 import "shs-web/i18n"
+import "shs-web/views/icons"
 
 /*
    This page uses desktop design after lg (1024px)
@@ -100,9 +101,11 @@ end
 			})
 			<button
 				type="submit"
-				class={ "cursor-pointer", "bg-secondary", "rounded-[50px]", "p-[10px]", "px-[60px]", "w-full", "text-accent" }
+				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-full" , "text-accent",
+                "font-bold", "flex", "flex-row", "items-center", "justify-center", "gap-2" }
 			>
 				{ i18n.StringsCtx(ctx).Login }
+				@icons.Logout()
 			</button>
 		</div>
 	</form>

@@ -3,78 +3,88 @@ package components
 import "shs-web/i18n"
 import "shs-web/views/helpers"
 import "shs-web/actions"
+import "shs-web/views/icons"
 
 templ Sidebar() {
-	<div class={ "w-[200px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
-		<div class={ "flex", "justify-center", "items-center", "flex-row", "gap-1", "h-min" }>
+	<div class={ "min-w-[270px]", "w-[270px]", "max-w-[270px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
+		<div class={ "flex", "flex-col", "justify-center", "items-center", "gap-1", "h-min" }>
 			<img
-				width="40"
-				height="40"
+				width="120"
 				src="/assets/images/logo.webp"
 				alt="SyrianHemophiliaSocietyLogs Logo"
-				class={ "w-[40px]", "rounded-md" }
+				class={ "w-[120px]", "rounded-md" }
 			/>
-			<h1 class={ "text-xl" }>{ i18n.StringsCtx(ctx).Title }</h1>
+			<h1 class={ "text-2xl", "font-bold", "text-center" }>{ i18n.StringsCtx(ctx).Title }</h1>
 		</div>
-		<div>
-			<nav class={ "p-10" }>
-				<ul class={ "list-none", "flex", "flex-col", "gap-x-5" }>
+		<div class={ "w-full" }>
+			<nav class={ "p-5", "w-full" }>
+				<ul class={ "list-none", "flex", "flex-col", "gap-x-5", "max-w-60" }>
 					<li>
-						@RouteLink(i18n.StringsCtx(ctx).NavHome, "/", false)
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", false, icons.Home())
 					</li>
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false, icons.Patient())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadMedicine) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false, icons.Medicine())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOwnVisit) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", false, icons.Medicine())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false, icons.BloodTest())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadVirus) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false, icons.Virus())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadAccounts) {
 						<li>
-							@RouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false)
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false, icons.Management())
 						</li>
 					}
 				</ul>
 			</nav>
 		</div>
-		<div class={ "flex", "flex-col", "items-center", "justify-center", "p-10", "gap-y-5", "w-full" }>
-			<select _="on change window.Theme.changeTheme(event.target.value)" class={ "w-full" }>
-				<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseTheme }</option>
-				<option value="black">{ i18n.StringsCtx(ctx).DarkTheme }</option>
-				<option value="white">{ i18n.StringsCtx(ctx).LightTheme }</option>
-			</select>
-			<select _="on change window.Locale.changeLocale(event.target.value)" class={ "w-full" }>
-				<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseLanguage }</option>
-				for _, lang :=  range i18n.Languages() {
-					<option value={ lang.LocaleKey }>{ lang.DisplayName }</option>
-				}
-			</select>
+		<div class={ "flex", "flex-col", "items-center", "justify-center", "p-5", "gap-y-5", "w-full" }>
+			<div class={ "flex", "flex-row", "gap-3", "w-full" }>
+				@icons.Brush()
+				<select _="on change window.Theme.changeTheme(event.target.value)" class={ "w-full" }>
+					<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseTheme }</option>
+					<option value="black">{ i18n.StringsCtx(ctx).DarkTheme }</option>
+					<option value="white">{ i18n.StringsCtx(ctx).LightTheme }</option>
+				</select>
+			</div>
+			<div class={ "flex", "flex-row", "gap-3", "w-full" }>
+				@icons.Language()
+				<select _="on change window.Locale.changeLocale(event.target.value)" class={ "w-full" }>
+					<option selected="true" disabled="disabled">{ i18n.StringsCtx(ctx).ChooseLanguage }</option>
+					for _, lang :=  range i18n.Languages() {
+						<option value={ lang.LocaleKey }>{ lang.DisplayName }</option>
+					}
+				</select>
+			</div>
 			<button
-				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-full" , "text-accent" }
+				class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[5px]" , "w-full" , "text-accent",
+                "font-bold", "flex", "flex-row", "items-center", "justify-center", "gap-2" }
 				type="button"
 				hx-get="/api/logout"
 				hx-target="this"
 				hx-swap="none"
 				_="on htmx:afterRequest window.location.reload()"
-			>{ i18n.StringsCtx(ctx).Logout }</button>
+			>
+				{ i18n.StringsCtx(ctx).Logout }
+				@icons.Logout()
+			</button>
 		</div>
 	</div>
 }

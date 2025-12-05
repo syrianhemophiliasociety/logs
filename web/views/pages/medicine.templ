@@ -6,6 +6,7 @@ import (
 	"shs-web/i18n"
 	"shs-web/views/components"
 	"shs-web/views/helpers"
+	"strconv"
 )
 
 templ Medicines(medicines []actions.Medicine) {
@@ -35,18 +36,7 @@ templ allMedicines(medicines []actions.Medicine) {
 					<span class="w-20 text-lg text-secondary">{ medicine.Name }</span>
 					<span class="w-20 text-lg text-secondary">{ fmt.Sprintf("%d %s", medicine.Dose, medicine.Unit) }</span>
 				</div>
-				<button
-					class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500" }
-					hx-delete={ fmt.Sprintf("/api/medicine/%d", medicine.Id) }
-					hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' medicine?",
-        medicine.Name) }
-					hx-trigger="click consume"
-					hx-target="closest div"
-					hx-swap="delete"
-				>
-					{ 
-        i18n.StringsCtx(ctx).FormsDelete }
-				</button>
+				@components.DeleteButton("medicine", strconv.Itoa(int(medicine.Id)), medicine.Name, false)
 			</div>
 		}
 	</div>

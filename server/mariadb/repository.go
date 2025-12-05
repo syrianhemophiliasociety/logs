@@ -394,6 +394,20 @@ func (r *Repository) CreateVirus(virus models.Virus) (models.Virus, error) {
 func (r *Repository) DeleteVirus(id uint) error {
 	err := tryWrapDbError(
 		r.client.
+			Exec("DELETE FROM identifying_blood_tests WHERE virus_id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "virus",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
 			Model(new(models.Virus)).
 			Delete(&models.Virus{Id: id}, "id = ?", id).
 			Error,

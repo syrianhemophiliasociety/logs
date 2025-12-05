@@ -109,5 +109,5 @@ func (v *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	w.Header().Set("HX-Redirect", "/management")
 }

@@ -25,7 +25,7 @@ templ RouteLink(title, path string, isMobile bool) {
 	</a>
 }
 
-templ ImageRouteLink(path, title string, child templ.Component, isMobile bool) {
+templ ImageRouteLink(title, path string, isMobile bool, child templ.Component) {
 	<a
 		href={ templ.SafeURL(path) }
 		title={ title }
@@ -48,7 +48,10 @@ templ ImageRouteLink(path, title string, child templ.Component, isMobile bool) {
 			}
 			class={ "p-1", "rounded-md" }
 		>
-			@child
+			<div class={ "flex", "gap-x-3", "items-center", }>
+				@child
+				{ title }
+			</div>
 		</div>
 	</a>
 }
