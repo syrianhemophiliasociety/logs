@@ -135,6 +135,28 @@ func (e *patientApi) HandleGetPatient(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
+func (e *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	params := actions.DeletePatientParams{
+		ActionContext: ctx,
+		PublicId:      r.PathValue("id"),
+	}
+
+	payload, err := e.usecases.DeletePatient(params)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to delete patient: %+v, error: %s\n", params, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
 func (e *patientApi) HandleCheckUp(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {

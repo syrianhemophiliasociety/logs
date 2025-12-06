@@ -6,7 +6,6 @@ import (
 	"shs/app/models"
 	"shs/cardgen"
 	"shs/log"
-	"shs/nanoid"
 	"slices"
 	"strings"
 	"time"
@@ -78,7 +77,6 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}
 
 	newPatient := models.Patient{
-		PublicId:    nanoid.New(),
 		NationalId:  params.NewPatient.NationalId,
 		Nationality: params.NewPatient.Nationality,
 		FirstName:   params.NewPatient.FirstName,
@@ -472,6 +470,32 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 	return GetPatientPayload{
 		Data: outPatient,
 	}, nil
+}
+
+type DeletePatientParams struct {
+	ActionContext
+	PublicId string
+}
+
+type DeletePatientPayload struct {
+}
+
+func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return DeletePatientPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetMinimalPatientByPublicId(params.PublicId)
+	if err != nil {
+		return DeletePatientPayload{}, err
+	}
+
+	err = a.app.DeletePatient(patient.Id)
+	if err != nil {
+		return DeletePatientPayload{}, err
+	}
+
+	return DeletePatientPayload{}, nil
 }
 
 type GeneratePatientCardParams struct {

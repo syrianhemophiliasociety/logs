@@ -313,12 +313,7 @@ func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {
-		components.GenericError("What do you think you're doing?").
-			Render(r.Context(), w)
-		return
-	}
+	id := r.PathValue("id")
 
 	patient, err := p.usecases.GetPatient(actions.GetPatientParams{
 		RequestContext: ctx,
@@ -368,7 +363,7 @@ func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request)
 	}
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavPatient)
-		w.Header().Set("HX-Push-Url", "/patient/"+strconv.Itoa(id))
+		w.Header().Set("HX-Push-Url", "/patient/"+id)
 		pages.Patient(patient, bloodTests, viruses, allMedicine, visits).Render(r.Context(), w)
 		return
 	}

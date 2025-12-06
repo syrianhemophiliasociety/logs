@@ -47,3 +47,8 @@ type PatientUseMedicine struct {
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
 }
+
+type PatientId struct {
+	Id       uint `gorm:"primaryKey;autoIncrement"`
+	PublicId uint `gorm:"not null;index"`
+}

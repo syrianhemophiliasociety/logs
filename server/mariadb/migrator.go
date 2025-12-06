@@ -25,6 +25,7 @@ func Migrate() error {
 		new(models.BloodTestFilledField),
 		new(models.Address),
 		new(models.Patient),
+		new(models.PatientId),
 		new(models.PatientUseMedicine),
 		new(models.PrescribedMedicine),
 	)

@@ -3,7 +3,6 @@ package components
 import (
 	"shs-web/actions"
 	"shs-web/i18n"
-	"strconv"
 )
 
 templ PatientsBrief(patients []actions.Patient) {
@@ -17,7 +16,6 @@ templ PatientsBrief(patients []actions.Patient) {
 templ patientBrief(patient actions.Patient) {
 	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
 		<span
-			_="on click call event.stopImmediatePropagation() then call event.stopPropagation()"
 			class="min-w-20 text-xl font-bold text-secondary"
 		>{ patient.PublicId }</span>
 		<span class="min-w-20 text-xl font-bold text-secondary">{ patient.FullName() }</span>
@@ -29,6 +27,6 @@ templ patientBrief(patient actions.Patient) {
 			}
 			<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
 		</span>
-		@DeleteButton("patient", strconv.Itoa(int(patient.Id)), patient.FullName(), false)
+		@DeleteButton("patient", patient.PublicId, patient.FullName(), false)
 	</div>
 }

@@ -14,10 +14,11 @@ templ DeleteButton(resourceType, itemId, itemName string, redirect bool) {
 		hx-confirm={ fmt.Sprintf("Are you sure to delete '%s' %s?",
         itemName, resourceType) }
 		hx-trigger="click consume"
-		if redirect {
+		if !redirect {
 			hx-target="closest div"
 			hx-swap="delete"
 		}
+		_="on click halt the event then call event.stopImmediatePropagation() then call event.stopPropagation()"
 	>
 		{ 
         i18n.StringsCtx(ctx).FormsDelete }

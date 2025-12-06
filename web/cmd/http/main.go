@@ -109,8 +109,7 @@ func main() {
 	apisHandler.HandleFunc("POST /patient/{id}/blood-test", authMiddleware.AuthApi(patientApi.HandleAddPatientBloodTest))
 	apisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCreatePatientCheckUp))
 	apisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
-
-	// apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
+	apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", locale.Handler(ismobile.Handler(theme.Handler(pagesHandler))))

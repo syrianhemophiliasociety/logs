@@ -82,7 +82,7 @@ func (v *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request) {

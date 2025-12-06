@@ -95,3 +95,7 @@ func (a *App) ListPatientVisits(patientId uint) ([]models.Visit, error) {
 func (a *App) GetPatientVisit(visitId uint) (models.Visit, error) {
 	return a.repo.GetPatientVisit(visitId)
 }
+
+func (a *App) DeletePatient(id uint) error {
+	return a.repo.DeletePatient(id)
+}

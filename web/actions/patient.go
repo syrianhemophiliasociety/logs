@@ -78,7 +78,7 @@ type Visit struct {
 
 type GetPatientParams struct {
 	RequestContext
-	PatientId int
+	PatientId string
 }
 
 type GetPatientPayload struct {
@@ -88,7 +88,7 @@ type GetPatientPayload struct {
 func (a *Actions) GetPatient(params GetPatientParams) (Patient, error) {
 	payload, err := makeRequest[any, GetPatientPayload](makeRequestConfig[any]{
 		method:   http.MethodGet,
-		endpoint: "/v1/patient/" + strconv.Itoa(params.PatientId),
+		endpoint: "/v1/patient/" + params.PatientId,
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},
@@ -236,7 +236,7 @@ func (a *Actions) FindPatients(params FindPatientsParams) ([]Patient, error) {
 }
 
 //================
-// ListLast patient
+// List last patient
 //================
 
 type ListLastPatientsParams struct {
@@ -382,6 +382,28 @@ func (p *PatientViruses) UnmarshalJSON(payload []byte) error {
 	(*p).Viruses = viruses
 
 	return nil
+}
+
+//================
+// Delete patient
+//================
+
+type DeletePatientParams struct {
+	RequestContext
+	PatientId string
+}
+
+type DeletePatientPayload struct {
+}
+
+func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayload, error) {
+	return makeRequest[any, DeletePatientPayload](makeRequestConfig[any]{
+		method:   http.MethodDelete,
+		endpoint: "/v1/patient/" + params.PatientId,
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
 }
 
 //================================

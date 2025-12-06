@@ -104,7 +104,7 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.Request) {
@@ -136,7 +136,7 @@ func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	respRawText(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }
 
 func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {
@@ -160,4 +160,27 @@ func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.Write([]byte(payload.ImageBase64))
+}
+
+func (v *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	_, err = v.usecases.DeletePatient(actions.DeletePatientParams{
+		RequestContext: ctx,
+		PatientId:      patientId,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
 }

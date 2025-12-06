@@ -557,11 +557,62 @@ func (r *Repository) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
 	return medicines, nil
 }
 
+func (r *Repository) findOrCreateLastPatientId() (models.PatientId, error) {
+	var patientIds []models.PatientId
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PatientId)).
+			Order("id DESC").
+			Limit(1).
+			Find(&patientIds).
+			Error,
+	)
+	lastPatientId := patientIds[0]
+	if err != nil {
+		lastPatientId = models.PatientId{
+			PublicId: 1,
+		}
+		err = tryWrapDbError(
+			r.client.
+				Model(new(models.PatientId)).
+				Create(&lastPatientId).
+				Error,
+		)
+		return models.PatientId{
+			PublicId: 1,
+		}, err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Model(new(models.PatientId)).
+			Create(&models.PatientId{
+				PublicId: lastPatientId.PublicId + 1,
+			}).
+			Error,
+	)
+	if err != nil {
+		return models.PatientId{}, err
+	}
+
+	return lastPatientId, nil
+}
+
 func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, error) {
+	lastPatientId, err := r.findOrCreateLastPatientId()
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	patient.PublicId = fmt.Sprintf("%06d", lastPatientId.PublicId)
 	patient.CreatedAt = time.Now().UTC()
 	patient.UpdatedAt = time.Now().UTC()
 
-	err := tryWrapDbError(
+	if patient.NationalId == "" {
+		patient.NationalId = "please_change_" + patient.PublicId
+	}
+
+	err = tryWrapDbError(
 		r.client.
 			Model(new(models.Patient)).
 			Create(&patient).
@@ -703,6 +754,43 @@ func (r *Repository) ListLastPatients(limit int) ([]models.Patient, error) {
 	}
 
 	return patients, nil
+}
+
+func (r *Repository) DeletePatient(id uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM did_blood_tests WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM has_viri WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			Delete(&models.Patient{Id: id}, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *Repository) ListMedicinesForVisit(visitId uint) ([]models.Medicine, error) {

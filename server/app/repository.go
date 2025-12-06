@@ -41,6 +41,7 @@ type Repository interface {
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)
 	FindPatientsByFields(patientIndexFields models.PatientIndexFields) ([]models.Patient, error)
 	ListLastPatients(limit int) ([]models.Patient, error)
+	DeletePatient(id uint) error
 
 	CreatePatientVisit(visit models.Visit) (models.Visit, error)
 	ListPatientVisits(patientId uint) ([]models.Visit, error)
