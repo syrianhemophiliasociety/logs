@@ -3,6 +3,7 @@ package layouts
 import (
 	"fmt"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 )
 
 templ Raw(props PageProps, content templ.Component) {
@@ -53,7 +54,7 @@ templ Raw(props PageProps, content templ.Component) {
 				type="text/css"
 				href="/assets/css/ibm-plex-font.css"
 			/>
-			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", ctx.Value("theme-name").(string)) } rel="stylesheet"/>
+			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", helpers.ThemeCtx(ctx)) } rel="stylesheet"/>
 			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
 			<script defer src="/assets/js/htmx/htmx.min.js"></script>
 			<script defer src="/assets/js/htmx/json-enc.js"></script>

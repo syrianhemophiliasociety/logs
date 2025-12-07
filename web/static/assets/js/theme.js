@@ -41,6 +41,15 @@ function changeTheme(themeName) {
   }
   window.Utils.setCookie("theme-name", themeName);
   const style = document.documentElement.style;
+  switch (themeName) {
+    case "white":
+      document.body.style.backgroundImage = `url("/assets/images/shs-bg-logo.webp")`;
+      break;
+    case "black":
+    default:
+      document.body.style.backgroundImage = `url("/assets/images/shs-bg-logo-dark.webp")`;
+      break;
+  }
 
   style.setProperty("--primary-color", theme.primary);
   style.setProperty("--primary-color-20", theme.primary20);

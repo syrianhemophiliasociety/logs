@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 	"shs-web/views/icons"
 	"shs-web/views/ui"
 )
@@ -65,7 +66,7 @@ templ Default(props PageProps, content templ.Component) {
 				type="text/css"
 				href="/assets/css/ibm-plex-font.css"
 			/>
-			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", ctx.Value("theme-name").(string)) } rel="stylesheet"/>
+			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", helpers.ThemeCtx(ctx)) } rel="stylesheet"/>
 			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
 			<link defer href="/assets/css/refresher.css" rel="stylesheet"/>
 			<script defer src="/assets/js/htmx/htmx.min.js"></script>
@@ -75,7 +76,7 @@ templ Default(props PageProps, content templ.Component) {
 		</head>
 		<body
 			hx-ext="loading-states"
-			style="min-width: 360px; min-height: 100dvh; padding: 0; margin: 0; background-color: var(--color-primary);"
+			style={ fmt.Sprintf(`min-width: 360px; min-height: 100dvh; padding: 0; margin: 0; background-color: var(--color-primary); background-repeat: no-repeat; background-position: center; background-image: url("%s");`, helpers.BackgroundImageCtx(ctx)) }
 			if lang(ctx) == "ar" {
 				class="font-IBMPlex"
 			} else {
