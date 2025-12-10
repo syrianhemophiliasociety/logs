@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"shs-web/config"
 	"shs-web/errors"
+	"shs-web/log"
 	"sync"
 	"time"
 )
@@ -122,6 +123,7 @@ func makeRequest[RequestBody any, ResponseBody any](conf makeRequestConfig[Reque
 }
 
 func mapError(errorId string) error {
+	log.Warningf("ooo error, %s\n", errorId)
 	switch errorId {
 	case "invalid-token":
 		return errors.ErrInvalidToken
@@ -135,12 +137,12 @@ func mapError(errorId string) error {
 		return errors.ErrAccountExists
 	case "profile-exists":
 		return errors.ErrProfileExists
-	case "different-login-method-used":
-		return errors.ErrDifferentLoginMethodUsed
 	case "verification-code-expired":
 		return errors.ErrVerificationCodeExpired
 	case "invalid-verification-code":
 		return errors.ErrInvalidVerificationCode
+	case "patient-not-found":
+		return errors.ErrPatientNotFound
 	default:
 		return errors.ErrSomethingWentWrong
 	}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"shs-web/actions"
+	"shs-web/errors"
 	"shs-web/i18n"
 	"shs-web/log"
 	"shs-web/views/components"
@@ -66,6 +67,10 @@ func (v *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) 
 	reqBody.RequestContext = ctx
 
 	payload, err := v.usecases.FindPatients(reqBody)
+	if errors.Is(err, errors.ErrPatientNotFound) {
+		components.NotFoundError(i18n.StringsCtx(r.Context()).NavPatients).Render(r.Context(), w)
+		return
+	}
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)

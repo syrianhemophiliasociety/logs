@@ -13,6 +13,11 @@ var (
 	ErrVerificationCodeExpired  = errors.New("verification-code-expired")
 	ErrInvalidVerificationCode  = errors.New("invalid-verification-code")
 	ErrInvalidSessionToken      = errors.New("invalid-session-token")
+	ErrPatientNotFound          = errors.New("patient-not-found")
 
 	ErrSomethingWentWrong = errors.New("something went wrong")
 )
+
+func Is(err, target error) bool {
+	return errors.Is(err, target)
+}
