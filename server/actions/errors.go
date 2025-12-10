@@ -95,3 +95,29 @@ func (e ErrValidation) ExtraData() map[string]any {
 func (e ErrValidation) ExposeToClients() bool {
 	return true
 }
+
+type ErrInsufficientMedicine struct {
+	MedicineName    string
+	ExceedingAmount int
+	LeftPackages    int
+}
+
+func (e ErrInsufficientMedicine) Error() string {
+	return "insufficient-medicine-amount"
+}
+
+func (e ErrInsufficientMedicine) ClientStatusCode() int {
+	return http.StatusForbidden
+}
+
+func (e ErrInsufficientMedicine) ExtraData() map[string]any {
+	return map[string]any{
+		"medicine_name":    e.MedicineName,
+		"exceeding_amount": e.ExceedingAmount,
+		"left_packages":    e.LeftPackages,
+	}
+}
+
+func (e ErrInsufficientMedicine) ExposeToClients() bool {
+	return true
+}

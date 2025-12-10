@@ -17,3 +17,7 @@ func (a *App) ListAllMedicines() ([]models.Medicine, error) {
 func (a *App) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
 	return a.repo.ListMedicinesByIds(ids)
 }
+
+func (a *App) DecrementMedicineAmount(id uint, amount int) error {
+	return a.repo.DecrementMedicineAmount(id, amount)
+}

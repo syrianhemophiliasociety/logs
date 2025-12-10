@@ -106,7 +106,7 @@ func makeRequest[RequestBody any, ResponseBody any](conf makeRequestConfig[Reque
 
 		_ = resp.Body.Close()
 
-		return respBody, mapError(errResp.ErrorId)
+		return respBody, tryParseShsError(errResp.ErrorId, errResp)
 	}
 
 	respBodyType := reflect.TypeOf(respBody)
@@ -120,6 +120,19 @@ func makeRequest[RequestBody any, ResponseBody any](conf makeRequestConfig[Reque
 	}
 
 	return respBody, nil
+}
+
+func tryParseShsError(errorId string, e errorResponse) error {
+	switch errorId {
+	case "insufficient-medicine-amount":
+		return errors.ErrInsufficientMedicineAmount{
+			MedicineName:    e.ExtraData["medicine_name"].(string),
+			ExceedingAmount: int(e.ExtraData["exceeding_amount"].(float64)),
+			LeftPackages:    int(e.ExtraData["left_packages"].(float64)),
+		}
+	default:
+		return mapError(errorId)
+	}
 }
 
 func mapError(errorId string) error {

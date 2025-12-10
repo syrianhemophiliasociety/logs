@@ -59,7 +59,7 @@ func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
 func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Request) {
@@ -78,11 +78,11 @@ func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Requ
 		BloodTestId:    uint(intId),
 	})
 	if err != nil {
-		writeRawTextResponse(w, i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong)
+		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }

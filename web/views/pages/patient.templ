@@ -336,6 +336,15 @@ templ medicineInCheckUp(medicines []actions.Medicine) {
 		Placeholder: i18n.StringsCtx(ctx).EnterCheckUpPrescribedMedicines,
 		Options:     options,
 	})
+	@components.Input(components.InputOptions{
+		Id:          "amount",
+		Name:        "amount",
+		Type:        components.InputTypeNumber,
+		Required:    false,
+		Autofocus:   false,
+		Title:       i18n.StringsCtx(ctx).MedicineAmount,
+		Placeholder: i18n.StringsCtx(ctx).EnterPrescribedAmount,
+	})
 }
 
 templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
@@ -366,8 +375,8 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 					{Name: i18n.StringsCtx(ctx).ActiveBleeding, Value: "active_bleeding"},
 				},
 			})
-			<div id="prescribed_medicines">
-				<div id="single_medicine">
+			<div id="prescribed_medicines" class={ "flex", "flex-col", "gap-3" }>
+				<div id="single_medicine" class={ "flex", "gap-3" }>
 					@medicineInCheckUp(allMedicine)
 				</div>
 			</div>

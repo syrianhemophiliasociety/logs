@@ -557,6 +557,25 @@ func (r *Repository) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
 	return medicines, nil
 }
 
+func (r *Repository) DecrementMedicineAmount(id uint, amount int) error {
+	err := tryWrapDbError(
+		r.client.
+			Exec("UPDATE medicines SET amount = amount - ? WHERE id = ?;", amount, id).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "medicine",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) findOrCreateLastPatientId() (models.PatientId, error) {
 	var patientIds []models.PatientId
 	err := tryWrapDbError(

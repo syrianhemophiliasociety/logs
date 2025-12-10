@@ -13,9 +13,9 @@ type Visit struct {
 
 type CreatePatientVisitParams struct {
 	ActionContext
-	PatientId             string
-	VisitReason           string `json:"visit_reason"`
-	PrescribedMedicineIds []uint `json:"prescribed_medicine_ids"`
+	PatientId           string
+	VisitReason         string     `json:"visit_reason"`
+	PrescribedMedicines []Medicine `json:"prescribed_medicines"`
 }
 
 type CreatePatientVisitPayload struct {
@@ -31,13 +31,29 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 		return CreatePatientVisitPayload{}, err
 	}
 
-	meds, err := a.app.ListMedicinesByIds(params.PrescribedMedicineIds)
+	medIds := make([]uint, 0, len(params.PrescribedMedicines))
+	for _, med := range params.PrescribedMedicines {
+		medIds = append(medIds, med.Id)
+	}
+
+	meds, err := a.app.ListMedicinesByIds(medIds)
 	if err != nil {
 		return CreatePatientVisitPayload{}, err
 	}
 
-	if len(meds) != len(params.PrescribedMedicineIds) {
-		// TODO: do something
+	prescribedMedicinesAmount := make(map[uint]int)
+	for _, med := range params.PrescribedMedicines {
+		prescribedMedicinesAmount[med.Id] += med.Amount
+	}
+
+	for _, med := range meds {
+		if prescribedMedicinesAmount[med.Id] > med.Amount {
+			return CreatePatientVisitPayload{}, ErrInsufficientMedicine{
+				MedicineName:    med.Name,
+				ExceedingAmount: prescribedMedicinesAmount[med.Id],
+				LeftPackages:    med.Amount,
+			}
+		}
 	}
 
 	visit, err := a.app.CreatePatientVisit(models.Visit{
@@ -48,12 +64,16 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 		return CreatePatientVisitPayload{}, err
 	}
 
-	for _, medId := range params.PrescribedMedicineIds {
+	for _, med := range params.PrescribedMedicines {
 		_, err = a.app.CreatePrescribedMedicine(models.PrescribedMedicine{
 			VisitId:    visit.Id,
 			PatientId:  patient.Id,
-			MedicineId: medId,
+			MedicineId: med.Id,
 		})
+		if err != nil {
+			return CreatePatientVisitPayload{}, err
+		}
+		err = a.app.DecrementMedicineAmount(med.Id, med.Amount)
 		if err != nil {
 			return CreatePatientVisitPayload{}, err
 		}

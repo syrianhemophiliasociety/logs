@@ -417,8 +417,8 @@ func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayloa
 //================================
 
 type CreateCheckUpRequest struct {
-	VisitReason           string
-	PrescribedMedicineIds []uint
+	VisitReason         string
+	PrescribedMedicines []Medicine
 }
 
 func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
@@ -441,7 +441,11 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 		if err != nil {
 			return err
 		}
-		(*v).PrescribedMedicineIds = []uint{uint(mIdInt)}
+		(*v).PrescribedMedicines = []Medicine{
+			{
+				Id: uint(mIdInt),
+			},
+		}
 
 	case []any:
 		for _, mId := range data[medicineIdsKey].([]any) {
@@ -453,11 +457,39 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 			if err != nil {
 				return err
 			}
-			(*v).PrescribedMedicineIds = append((*v).PrescribedMedicineIds, uint(mIdInt))
+			(*v).PrescribedMedicines = append((*v).PrescribedMedicines, Medicine{
+				Id: uint(mIdInt),
+			})
 		}
 
 	default:
-		return errors.New("invalid blood_test_id value")
+		return errors.New("invalid medicine_id value")
+	}
+
+	const medicineAmountKey = "amount"
+	switch data[medicineAmountKey].(type) {
+	case string:
+		mAmountInt, err := strconv.Atoi(data[medicineAmountKey].(string))
+		if err != nil {
+			return err
+		}
+		(*v).PrescribedMedicines[0].Amount = mAmountInt
+
+	case []any:
+		for i, mId := range data[medicineAmountKey].([]any) {
+			mIdStr, ok := mId.(string)
+			if !ok {
+				return errors.New("invalid amount type")
+			}
+			mAmountInt, err := strconv.Atoi(mIdStr)
+			if err != nil {
+				return err
+			}
+			(*v).PrescribedMedicines[i].Amount = mAmountInt
+		}
+
+	default:
+		return errors.New("invalid amount value")
 	}
 
 	return nil
@@ -480,8 +512,8 @@ func (a *Actions) CreatePatientCheckUp(params CreatePatientCheckUpParams) (Creat
 			"Authorization": params.SessionToken,
 		},
 		body: map[string]any{
-			"visit_reason":            params.CheckUpRequest.VisitReason,
-			"prescribed_medicine_ids": params.CheckUpRequest.PrescribedMedicineIds,
+			"visit_reason":         params.CheckUpRequest.VisitReason,
+			"prescribed_medicines": params.CheckUpRequest.PrescribedMedicines,
 		},
 	})
 }

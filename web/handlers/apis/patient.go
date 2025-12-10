@@ -109,7 +109,7 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
 func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.Request) {
@@ -125,6 +125,7 @@ func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.R
 	var reqBody actions.CreateCheckUpRequest
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
+		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
@@ -135,13 +136,21 @@ func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.R
 		PatientId:      patientId,
 		CheckUpRequest: reqBody,
 	})
+	if errors.Is(err, errors.ErrInsufficientMedicineAmount{}) {
+		imErr := err.(errors.ErrInsufficientMedicineAmount)
+		writeRawTextResponse(w, i18n.Strings("en").ErrorInsufficientMedicineAmountFmt(imErr.MedicineName, imErr.ExceedingAmount, imErr.LeftPackages))
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorInsufficientMedicineAmountFmt(imErr.MedicineName, imErr.ExceedingAmount, imErr.LeftPackages)).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
 	if err != nil {
+		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
 func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {
@@ -187,5 +196,5 @@ func (v *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }

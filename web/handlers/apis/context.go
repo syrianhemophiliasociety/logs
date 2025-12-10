@@ -20,7 +20,7 @@ func parseContext(ctx context.Context) (actions.RequestContext, error) {
 }
 
 func writeRawTextResponse(w http.ResponseWriter, msg string) error {
-	w.Header().Add("HX-Trigger", `{"respDetails": "`+msg+`"}`)
+	w.Header().Set("HX-Trigger", `{"respDetails": "`+msg+`"}`)
 	w.Write([]byte(msg))
 	return nil
 }

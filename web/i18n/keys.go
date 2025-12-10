@@ -10,15 +10,16 @@ type Keys struct {
 	Description string
 	Hello       string
 
-	ErrorSomethingWentWrong string
-	ErrorPermissionDenied   string
-	MessageSuccess          string
-	MessageDeleteConfirmFmt func(resourceType, resourceName string) string
-	MessageEmptyListFmt     func(resourceType string) string
-	ChooseTheme             string
-	DarkTheme               string
-	LightTheme              string
-	ChooseLanguage          string
+	ErrorSomethingWentWrong            string
+	ErrorPermissionDenied              string
+	ErrorInsufficientMedicineAmountFmt func(medicineName string, exceedingAmount, leftPackages int) string
+	MessageSuccess                     string
+	MessageDeleteConfirmFmt            func(resourceType, resourceName string) string
+	MessageEmptyListFmt                func(resourceType string) string
+	ChooseTheme                        string
+	DarkTheme                          string
+	LightTheme                         string
+	ChooseLanguage                     string
 
 	Yes    string
 	No     string
@@ -73,6 +74,7 @@ type Keys struct {
 	EnterMedicineUnit      string
 	MedicineAmount         string
 	EnterMedicineAmount    string
+	EnterPrescribedAmount  string
 	MedicinePackageLeftFmt func(n int) string
 
 	BloodTest                         string

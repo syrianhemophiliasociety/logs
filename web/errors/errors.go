@@ -18,6 +18,34 @@ var (
 	ErrSomethingWentWrong = errors.New("something went wrong")
 )
 
+type SHSError interface {
+	error
+	Id() string
+}
+
+type ErrInsufficientMedicineAmount struct {
+	MedicineName    string `json:"medicine_name"`
+	ExceedingAmount int    `json:"exceeding_amount"`
+	LeftPackages    int    `json:"left_packages"`
+}
+
+func (e ErrInsufficientMedicineAmount) Error() string {
+	return "insufficient-medicine-amount"
+}
+
+func (e ErrInsufficientMedicineAmount) Id() string {
+	return "insufficient-medicine-amount"
+}
+
+func IsShs(err error) bool {
+	var shsError SHSError
+	return errors.As(err, &shsError)
+}
+
 func Is(err, target error) bool {
+	if IsShs(err) {
+		return true
+	}
+
 	return errors.Is(err, target)
 }
