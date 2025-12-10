@@ -27,6 +27,6 @@ templ patientBrief(patient actions.Patient) {
 			}
 			<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
 		</span>
-		@DeleteButton("patient", patient.PublicId, patient.FullName(), false)
+		@DeleteButton("patient", i18n.StringsCtx(ctx).Patient, patient.PublicId, patient.FullName(), true)
 	</div>
 }

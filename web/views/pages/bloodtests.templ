@@ -38,7 +38,7 @@ templ allBloodTests(bloodTests []actions.BloodTest) {
 						<span class="min-w-20 text-md text-secondary">{ fmt.Sprintf("%s - %s", field.Name, field.Unit) }</span>
 					}
 				</div>
-				@components.DeleteButton("blood-test", strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
+				@components.DeleteButton("blood-test", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
 			</div>
 		}
 	</div>

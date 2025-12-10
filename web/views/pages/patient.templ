@@ -274,13 +274,13 @@ templ patientViruses(patient actions.Patient, viruses []actions.Virus) {
 
 templ medicineInCheckUp(medicines []actions.Medicine) {
 	{{
-	options := make([]components.SelectOption, 0, len(medicines))
-	for _, m := range medicines {
-		options = append(options, components.SelectOption{
-			Name:  m.Name,
-			Value: strconv.Itoa(int(m.Id)),
-		})
-	}
+		options := make([]components.SelectOption, 0, len(medicines))
+		for _, m := range medicines {
+			options = append(options, components.SelectOption{
+				Name:  fmt.Sprintf("%s %d %s", m.Name, m.Dose, m.Unit),
+				Value: strconv.Itoa(int(m.Id)),
+			})
+		}
 	}}
 	@components.Select(components.SelectParams{
 		Id:          "medicine_id",
@@ -308,12 +308,14 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 				Required:    true,
 				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpVisitReason,
 				Options: []components.SelectOption{
-					// TODO: translate
-					{Name: "Surgery", Value: "surgery"},
-					{Name: "Joint evaluation", Value: "joint_evaluation"},
-					{Name: "Joint injection", Value: "joint_injection"},
-					{Name: "Hemelibra", Value: "hemelibra"},
-					{Name: "Pafilaxes", Value: "pafilaxes"},
+					{Name: i18n.StringsCtx(ctx).PrimaryProphylaxis, Value: "primary_prophylaxis"},
+					{Name: i18n.StringsCtx(ctx).SecondaryProphylaxis, Value: "secondary_prophylaxis"},
+					{Name: i18n.StringsCtx(ctx).Surgery, Value: "surgery"},
+					{Name: i18n.StringsCtx(ctx).JointEvaluation, Value: "joint_evaluation"},
+					{Name: i18n.StringsCtx(ctx).JointInjection, Value: "joint_injection"},
+					{Name: i18n.StringsCtx(ctx).Hemelibra, Value: "hemelibra"},
+					{Name: i18n.StringsCtx(ctx).TreatmentAtHome, Value: "home_treatment"},
+					{Name: i18n.StringsCtx(ctx).ActiveBleeding, Value: "active_bleeding"},
 				},
 			})
 			<div id="prescribed_medicines">

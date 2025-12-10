@@ -9,6 +9,9 @@ var arabic = Keys{
 	ErrorSomethingWentWrong: "حدث خطأ ما",
 	ErrorPermissionDenied:   "صلاحية غير كافية",
 	MessageSuccess:          "تمت العملية بنجاح",
+	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
+		return fmt.Sprintf("هل انت متأكد من حذف '%s' %s؟", resourceName, resourceType)
+	},
 	ChooseTheme:             "اختر لون الواجهة",
 	DarkTheme:               "واجهة سوداء",
 	LightTheme:              "واجهة بيضاء",
@@ -70,6 +73,14 @@ var arabic = Keys{
 	},
 
 	RemoveBloodTest:                 "إزالة الفحص",
+	PrimaryProphylaxis:              "العلاج الوقائي الأولي",
+	SecondaryProphylaxis:            "العلاج الوقائي الثانوي",
+	Surgery:                         "عمل جراحي",
+	JointEvaluation:                 "التقييم المفصلي",
+	JointInjection:                  "الحقن المفصلي",
+	Hemelibra:                       "هيمليبرا",
+	TreatmentAtHome:                 "العلاج المنزلي",
+	ActiveBleeding:                  "نزف حالي",
 	Account:                         "الاسم",
 	Accounts:                        "الحسابات",
 	AccountUsername:                 "اسم المستخدم",

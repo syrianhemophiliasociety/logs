@@ -32,7 +32,7 @@ templ allViruses(viruses []actions.Virus) {
 		for _, virus := range viruses {
 			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
 				<span class="w-20 text-xl text-secondary">{ virus.Name }</span>
-				@components.DeleteButton("virus", strconv.Itoa(int(virus.Id)), virus.Name, false)
+				@components.DeleteButton("virus", i18n.StringsCtx(ctx).Virus, strconv.Itoa(int(virus.Id)), virus.Name, true)
 			</div>
 		}
 	</div>

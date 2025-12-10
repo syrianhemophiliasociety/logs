@@ -9,6 +9,9 @@ var english = Keys{
 	ErrorSomethingWentWrong: "Something went wrong",
 	ErrorPermissionDenied:   "Permission denied",
 	MessageSuccess:          "Success",
+	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
+		return fmt.Sprintf("Are you sure to delete '%s' %s?", resourceName, resourceType)
+	},
 	ChooseTheme:             "Theme",
 	DarkTheme:               "Dark theme",
 	LightTheme:              "Light theme",
@@ -70,6 +73,14 @@ var english = Keys{
 	},
 
 	RemoveBloodTest:                 "Remove test",
+	PrimaryProphylaxis:              "Primary Prophylaxis",
+	SecondaryProphylaxis:            "Secondary Prophylaxis",
+	Surgery:                         "Surgery",
+	JointEvaluation:                 "Joint evaluation",
+	JointInjection:                  "Joint injection",
+	Hemelibra:                       "Hemelibra",
+	TreatmentAtHome:                 "Treatment at home",
+	ActiveBleeding:                  "Active bleeding",
 	Account:                         "Account",
 	Accounts:                        "Accounts",
 	AccountUsername:                 "Username",

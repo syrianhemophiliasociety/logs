@@ -81,6 +81,7 @@ func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Requ
 		BloodTestId:    uint(intId),
 	})
 	if err != nil {
+		writeRawTextResponse(w, i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong)
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return

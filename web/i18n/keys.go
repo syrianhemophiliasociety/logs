@@ -13,6 +13,7 @@ type Keys struct {
 	ErrorSomethingWentWrong string
 	ErrorPermissionDenied   string
 	MessageSuccess          string
+	MessageDeleteConfirmFmt func(resourceType, resourceName string) string
 	ChooseTheme             string
 	DarkTheme               string
 	LightTheme              string
@@ -79,6 +80,14 @@ type Keys struct {
 	EnterBloodTestFieldUnit           string
 	EnterBloodTestResultFieldValueFmt func(unit string) string
 	RemoveBloodTest                   string
+	PrimaryProphylaxis                string
+	SecondaryProphylaxis              string
+	Surgery                           string
+	JointEvaluation                   string
+	JointInjection                    string
+	Hemelibra                         string
+	TreatmentAtHome                   string
+	ActiveBleeding                    string
 
 	Account                  string
 	Accounts                 string

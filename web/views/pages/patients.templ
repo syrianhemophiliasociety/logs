@@ -108,7 +108,7 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavPatients)
 	} else {
 		<form
-			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-11/12", "overflow-y-scroll", }
+			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
 			hx-encoding="application/json"
 			hx-post="/api/patient"
 			hx-ext="json-enc"

@@ -36,7 +36,7 @@ templ allMedicines(medicines []actions.Medicine) {
 					<span class="w-20 text-lg text-secondary">{ medicine.Name }</span>
 					<span class="w-20 text-lg text-secondary">{ fmt.Sprintf("%d %s", medicine.Dose, medicine.Unit) }</span>
 				</div>
-				@components.DeleteButton("medicine", strconv.Itoa(int(medicine.Id)), medicine.Name, false)
+				@components.DeleteButton("medicine", i18n.StringsCtx(ctx).Medicine, strconv.Itoa(int(medicine.Id)), medicine.Name, true)
 			</div>
 		}
 	</div>

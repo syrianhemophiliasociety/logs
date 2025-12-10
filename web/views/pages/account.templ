@@ -218,7 +218,7 @@ templ Account(account actions.Account) {
 			</form>
 			<div class={ "flex", "flex-col", "gap-3" }>
 				<span class="w-full text-xl text-secondary">{ i18n.StringsCtx(ctx).AccountDelete }</span>
-				@components.DeleteButton("account", strconv.Itoa(int(account.Id)), account.Username, true)
+				@components.DeleteButton("account", i18n.StringsCtx(ctx).Account, strconv.Itoa(int(account.Id)), account.Username, false)
 			</div>
 		</div>
 	</div>

@@ -18,8 +18,6 @@ type BloodTestFilledField struct {
 	BloodTestFieldId uint   `json:"blood_test_field_id"`
 	Name             string `json:"name"`
 	Unit             string `json:"unit"`
-	MinValue         uint   `json:"min_value"`
-	MaxValue         uint   `json:"max_value"`
 	ValueNumber      uint   `json:"value_number"`
 	ValueString      string `json:"value_string"`
 }
@@ -309,8 +307,6 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 			BloodTestFieldId: uint(fieldId),
 			Name:             fieldName,
 			Unit:             "",
-			MinValue:         0,
-			MaxValue:         0,
 			ValueNumber:      uint(testResultInt),
 			ValueString:      testResult,
 		})
