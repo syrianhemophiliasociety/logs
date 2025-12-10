@@ -65,12 +65,15 @@ type Keys struct {
 	VirusBloodTest      string
 	EnterVirusBloodTest string
 
-	Medicine          string
-	EnterMedicineName string
-	MedicineDose      string
-	EnterMedicineDose string
-	MedicineUnit      string
-	EnterMedicineUnit string
+	Medicine               string
+	EnterMedicineName      string
+	MedicineDose           string
+	EnterMedicineDose      string
+	MedicineUnit           string
+	EnterMedicineUnit      string
+	MedicineAmount         string
+	EnterMedicineAmount    string
+	MedicinePackageLeftFmt func(n int) string
 
 	BloodTest                         string
 	BloodTestDetails                  string

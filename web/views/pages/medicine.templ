@@ -38,6 +38,7 @@ templ allMedicines(medicines []actions.Medicine) {
 					<div class={ "flex", "gap-x-5" }>
 						<span class="w-20 text-lg text-secondary">{ medicine.Name }</span>
 						<span class="w-20 text-lg text-secondary">{ fmt.Sprintf("%d %s", medicine.Dose, medicine.Unit) }</span>
+						<span class="min-w-20 text-lg text-secondary">{ i18n.StringsCtx(ctx).MedicinePackageLeftFmt(medicine.Amount) }</span>
 					</div>
 					@components.DeleteButton("medicine", i18n.StringsCtx(ctx).Medicine, strconv.Itoa(int(medicine.Id)), medicine.Name, true)
 				</div>
@@ -74,8 +75,8 @@ templ newMedicine() {
 					Id:          "dose",
 					Name:        "dose",
 					Type:        components.InputTypeNumber,
-					Required:    false,
-					Autofocus:   true,
+					Required:    true,
+					Autofocus:   false,
 					Title:       i18n.StringsCtx(ctx).MedicineDose,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
 				})
@@ -88,6 +89,15 @@ templ newMedicine() {
 						{Name: "mg", Value: "mg"},
 						{Name: "IU", Value: "IU"},
 					},
+				})
+				@components.Input(components.InputOptions{
+					Id:          "amount",
+					Name:        "amount",
+					Type:        components.InputTypeNumber,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineAmount,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineAmount,
 				})
 				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
 					{ i18n.StringsCtx(ctx).FormsSubmit }

@@ -6,10 +6,11 @@ import (
 )
 
 type Medicine struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-	Dose int    `json:"dose"`
-	Unit string `json:"unit"`
+	Id     uint   `json:"id"`
+	Name   string `json:"name"`
+	Dose   int    `json:"dose"`
+	Unit   string `json:"unit"`
+	Amount int    `json:"amount"`
 }
 
 type CreateMedicineParams struct {
@@ -19,18 +20,20 @@ type CreateMedicineParams struct {
 
 func (m Medicine) IntoModel() models.Medicine {
 	return models.Medicine{
-		Name: m.Name,
-		Dose: m.Dose,
-		Unit: m.Unit,
+		Name:   m.Name,
+		Dose:   m.Dose,
+		Unit:   m.Unit,
+		Amount: m.Amount,
 	}
 }
 
 func (m *Medicine) FromModel(medicine models.Medicine) {
 	(*m) = Medicine{
-		Id:   medicine.Id,
-		Name: medicine.Name,
-		Dose: medicine.Dose,
-		Unit: medicine.Unit,
+		Id:     medicine.Id,
+		Name:   medicine.Name,
+		Dose:   medicine.Dose,
+		Unit:   medicine.Unit,
+		Amount: medicine.Amount,
 	}
 }
 
