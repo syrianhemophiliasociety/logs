@@ -28,14 +28,18 @@ templ Viruses(viruses []actions.Virus, bloodTests []actions.BloodTest) {
 }
 
 templ allViruses(viruses []actions.Virus) {
-	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
-		for _, virus := range viruses {
-			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-				<span class="w-20 text-xl text-secondary">{ virus.Name }</span>
-				@components.DeleteButton("virus", i18n.StringsCtx(ctx).Virus, strconv.Itoa(int(virus.Id)), virus.Name, true)
-			</div>
-		}
-	</div>
+	if len(viruses) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavViruses) }</span>
+	} else {
+		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+			for _, virus := range viruses {
+				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+					<span class="w-20 text-xl text-secondary">{ virus.Name }</span>
+					@components.DeleteButton("virus", i18n.StringsCtx(ctx).Virus, strconv.Itoa(int(virus.Id)), virus.Name, true)
+				</div>
+			}
+		</div>
+	}
 }
 
 templ bloodTestsSelectForm(bloodTests []actions.BloodTest) {

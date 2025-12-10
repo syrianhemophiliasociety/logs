@@ -7,9 +7,9 @@ templ GenericError(msg string) {
 }
 
 templ ReadPermissionDenied(resourceName string) {
-	<h2 class={ "text-[#DE3333]", "text-xl", "font-semibold" }>{ i18n.StringsCtx(ctx).PermissionRead } { i18n.StringsCtx(ctx).Denied } { i18n.StringsCtx(ctx).On } { resourceName }</h2>
+	<h2 class={ "text-[#DE3333]", "text-xl", "font-semibold" }>{ i18n.StringsCtx(ctx).PermissionRead } { i18n.StringsCtx(ctx).Denied } { i18n.StringsCtx(ctx).On } <span class={ "lowercase" }>{ resourceName }</span></h2>
 }
 
 templ WritePermissionDenied(resourceName string) {
-	<h2 class={ "text-[#DE3333]", "text-xl", "font-semibold" }>{ i18n.StringsCtx(ctx).PermissionWrite } { i18n.StringsCtx(ctx).Denied } { i18n.StringsCtx(ctx).On } { resourceName }</h2>
+	<h2 class={ "text-[#DE3333]", "text-xl", "font-semibold" }>{ i18n.StringsCtx(ctx).PermissionWrite } { i18n.StringsCtx(ctx).Denied } { i18n.StringsCtx(ctx).On } <span class={ "lowercase" }>{ resourceName }</span></h2>
 }

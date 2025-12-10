@@ -173,20 +173,24 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 }
 
 templ patientBloodTests(bloodTests []actions.BloodTestResult) {
-	<div class={ "flex", "flex-col", "gap-3", "w-full" }>
-		for _, bt := range bloodTests {
-			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
-				<span class={ "font-bold", "text-lg" }>
-					{ bt.Name }
-				</span>
-				for _, btField := range bt.FilledFields {
+	if len(bloodTests) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
+	} else {
+		<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+			for _, bt := range bloodTests {
+				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+					<span class={ "font-bold", "text-lg" }>
+						{ bt.Name }
+					</span>
+					for _, btField := range bt.FilledFields {
+						<br/>
+						<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
+					}
 					<br/>
-					<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
-				}
-				<br/>
-			</div>
-		}
-	</div>
+				</div>
+			}
+		</div>
+	}
 }
 
 func newPatientBloodTestFormId(bt actions.BloodTest, field actions.BloodTestField) string {
@@ -263,13 +267,16 @@ templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.Bl
 }
 
 templ patientViruses(patient actions.Patient, viruses []actions.Virus) {
-	<span class={ "text-xl", "font-bold" }>{ i18n.StringsCtx(ctx).NavViruses }</span>
-	<div class={ "flex",  "justify-between", "gap-10" }>
-		for _, virus := range viruses {
-			<br/>
-			{ virus.Name }
-		}
-	</div>
+	if len(viruses) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavViruses) }</span>
+	} else {
+		<div class={ "flex",  "justify-between", "gap-10" }>
+			for _, virus := range viruses {
+				<br/>
+				{ virus.Name }
+			}
+		</div>
+	}
 }
 
 templ medicineInCheckUp(medicines []actions.Medicine) {
@@ -338,13 +345,17 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 }
 
 templ patientVisits(patient actions.Patient, visits []actions.Visit) {
-	<div class={ "flex", "flex-col", "gap-3", "w-full" }>
-		for _, visit := range visits {
-			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
-				<span class={ "font-bold", "text-lg" }>
-					{ visit.VisitedAt.Format(time.DateOnly) }
-				</span>
-			</div>
-		}
-	</div>
+	if len(visits) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).TabsVisits) }</span>
+	} else {
+		<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+			for _, visit := range visits {
+				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+					<span class={ "font-bold", "text-lg" }>
+						{ visit.VisitedAt.Format(time.DateOnly) }
+					</span>
+				</div>
+			}
+		</div>
+	}
 }

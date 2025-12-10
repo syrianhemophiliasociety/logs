@@ -14,6 +14,7 @@ type Keys struct {
 	ErrorPermissionDenied   string
 	MessageSuccess          string
 	MessageDeleteConfirmFmt func(resourceType, resourceName string) string
+	MessageEmptyListFmt     func(resourceType string) string
 	ChooseTheme             string
 	DarkTheme               string
 	LightTheme              string

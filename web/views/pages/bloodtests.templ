@@ -29,19 +29,23 @@ templ BloodTests(bloodTests []actions.BloodTest) {
 }
 
 templ allBloodTests(bloodTests []actions.BloodTest) {
-	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
-		for _, bloodTest := range bloodTests {
-			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-				<div class={ "flex", "gap-x-5", "items-center" }>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ bloodTest.Name }</span>
-					for _, field := range bloodTest.Fields {
-						<span class="min-w-20 text-md text-secondary">{ fmt.Sprintf("%s - %s", field.Name, field.Unit) }</span>
-					}
+	if len(bloodTests) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
+	} else {
+		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+			for _, bloodTest := range bloodTests {
+				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+					<div class={ "flex", "gap-x-5", "items-center" }>
+						<span class="min-w-20 font-bold text-lg text-secondary">{ bloodTest.Name }</span>
+						for _, field := range bloodTest.Fields {
+							<span class="min-w-20 text-md text-secondary">{ fmt.Sprintf("%s - %s", field.Name, field.Unit) }</span>
+						}
+					</div>
+					@components.DeleteButton("blood-test", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
 				</div>
-				@components.DeleteButton("blood-test", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
-			</div>
-		}
-	</div>
+			}
+		</div>
+	}
 }
 
 templ newBloodTest() {

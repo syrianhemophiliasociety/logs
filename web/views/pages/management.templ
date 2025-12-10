@@ -37,11 +37,15 @@ templ accountListItem(account actions.Account) {
 }
 
 templ allAccounts(accounts []actions.Account) {
-	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
-		for _, account := range accounts {
-			@components.JustLink("/management/account/"+strconv.Itoa(int(account.Id)), "Account page", accountListItem(account))
-		}
-	</div>
+	if len(accounts) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).Accounts) }</span>
+	} else {
+		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+			for _, account := range accounts {
+				@components.JustLink("/management/account/"+strconv.Itoa(int(account.Id)), "Account page", accountListItem(account))
+			}
+		</div>
+	}
 }
 
 templ newAccount() {

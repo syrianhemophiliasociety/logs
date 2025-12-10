@@ -6,11 +6,15 @@ import (
 )
 
 templ PatientsBrief(patients []actions.Patient) {
-	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
-		for _, patient := range patients {
-			@JustLink("/patient/"+patient.PublicId, "Patient page", patientBrief(patient))
-		}
-	</div>
+	if len(patients) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavPatients) }</span>
+	} else {
+		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+			for _, patient := range patients {
+				@JustLink("/patient/"+patient.PublicId, "Patient page", patientBrief(patient))
+			}
+		</div>
+	}
 }
 
 templ patientBrief(patient actions.Patient) {

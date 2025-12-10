@@ -12,6 +12,9 @@ var english = Keys{
 	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
 		return fmt.Sprintf("Are you sure to delete '%s' %s?", resourceName, resourceType)
 	},
+	MessageEmptyListFmt: func(resourceType string) string {
+		return fmt.Sprintf("No existing %s were found", resourceType)
+	},
 	ChooseTheme:             "Theme",
 	DarkTheme:               "Dark theme",
 	LightTheme:              "Light theme",
