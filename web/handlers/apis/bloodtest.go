@@ -48,9 +48,6 @@ func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	log.Warningln("body json", string(body))
-	log.Warningf("body json %+v\n", reqBody)
-
 	_, err = v.usecases.CreateBloodTest(actions.CreateBloodTestParams{
 		RequestContext:     ctx,
 		NewBloodTest:       reqBody,

@@ -12,9 +12,11 @@ var english = Keys{
 	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
 		return fmt.Sprintf("Are you sure to delete '%s' %s?", resourceName, resourceType)
 	},
+
 	MessageEmptyListFmt: func(resourceType string) string {
 		return fmt.Sprintf("No existing %s were found", resourceType)
 	},
+
 	ChooseTheme:             "Theme",
 	DarkTheme:               "Dark theme",
 	LightTheme:              "Light theme",
@@ -76,6 +78,8 @@ var english = Keys{
 	},
 
 	RemoveBloodTest:                 "Remove test",
+	BloodTestDoLater:                "Do later",
+	BloodTestPending:                "Test pending",
 	PrimaryProphylaxis:              "Primary Prophylaxis",
 	SecondaryProphylaxis:            "Secondary Prophylaxis",
 	Surgery:                         "Surgery",

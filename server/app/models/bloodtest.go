@@ -117,6 +117,7 @@ type BloodTestResult struct {
 	BloodTestId  uint                   `gorm:"not null"`
 	PatientId    uint                   `gorm:"not null"`
 	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestResultId"`
+	Pending      bool                   `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

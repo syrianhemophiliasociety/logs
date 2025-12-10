@@ -3,7 +3,6 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"shs-web/log"
 )
 
 type RequestBloodTest struct {
@@ -83,8 +82,6 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 			Unit: params.NewBloodTestSingle.FieldUnit,
 		})
 	}
-
-	log.Warningln("body", newBloodTest)
 
 	payload, err := makeRequest[map[string]any, CreateBloodTestPayload](makeRequestConfig[map[string]any]{
 		method:   http.MethodPost,

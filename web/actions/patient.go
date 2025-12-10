@@ -26,6 +26,7 @@ type BloodTestResult struct {
 	BloodTestId  uint                   `json:"blood_test_id"`
 	Name         string                 `json:"name"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
+	Pending      bool                   `json:"pending"`
 }
 
 type Address struct {
@@ -312,11 +313,14 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 		})
 	}
 
+	doTestLater, _ := data["do_later"].(string)
+
 	for id, fields := range bloodTestsFields {
-		p.BloodTests = append(p.BloodTests, BloodTestResult{
+		(*p).BloodTests = append((*p).BloodTests, BloodTestResult{
 			BloodTestId:  id,
 			Name:         bloodTestNames[id],
 			FilledFields: fields,
+			Pending:      doTestLater == "on",
 		})
 	}
 

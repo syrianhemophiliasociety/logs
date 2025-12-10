@@ -12,9 +12,11 @@ var arabic = Keys{
 	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
 		return fmt.Sprintf("هل انت متأكد من حذف '%s' %s؟", resourceName, resourceType)
 	},
+
 	MessageEmptyListFmt: func(resourceType string) string {
 		return fmt.Sprintf("لا يوجد %s الان", resourceType)
 	},
+
 	ChooseTheme:             "اختر لون الواجهة",
 	DarkTheme:               "واجهة سوداء",
 	LightTheme:              "واجهة بيضاء",
@@ -76,6 +78,8 @@ var arabic = Keys{
 	},
 
 	RemoveBloodTest:                 "إزالة الفحص",
+	BloodTestDoLater:                "القيام بالفحص لاحقا",
+	BloodTestPending:                "الفحص غير مكتمل",
 	PrimaryProphylaxis:              "العلاج الوقائي الأولي",
 	SecondaryProphylaxis:            "العلاج الوقائي الثانوي",
 	Surgery:                         "عمل جراحي",

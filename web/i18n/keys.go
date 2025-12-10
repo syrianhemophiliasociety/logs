@@ -81,6 +81,8 @@ type Keys struct {
 	EnterBloodTestFieldUnit           string
 	EnterBloodTestResultFieldValueFmt func(unit string) string
 	RemoveBloodTest                   string
+	BloodTestDoLater                  string
+	BloodTestPending                  string
 	PrimaryProphylaxis                string
 	SecondaryProphylaxis              string
 	Surgery                           string

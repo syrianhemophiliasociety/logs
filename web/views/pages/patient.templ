@@ -182,9 +182,16 @@ templ patientBloodTests(bloodTests []actions.BloodTestResult) {
 					<span class={ "font-bold", "text-lg" }>
 						{ bt.Name }
 					</span>
-					for _, btField := range bt.FilledFields {
-						<br/>
-						<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
+					<span class={ "text-[#DE3333]" }>
+						if bt.Pending {
+							{ i18n.StringsCtx(ctx).BloodTestPending }
+						}
+					</span>
+					if !bt.Pending {
+						for _, btField := range bt.FilledFields {
+							<br/>
+							<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
+						}
 					}
 					<br/>
 				</div>
@@ -199,7 +206,7 @@ func newPatientBloodTestFormId(bt actions.BloodTest, field actions.BloodTestFiel
 
 templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 	<form
-		class={ "", "flex", "flex-col", "gap-5" }
+		class={ "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
 		hx-post={ fmt.Sprintf("/api/patient/%s/blood-test", patient.PublicId) }
 		hx-ext="json-enc"
@@ -208,13 +215,22 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
 	>
+		@components.Input(components.InputOptions{
+			Id:        "do_later",
+			Name:      "do_later",
+			Type:      components.InputTypeCheckbox,
+			Checked:   false,
+			Required:  false,
+			Autofocus: false,
+			Title:     i18n.StringsCtx(ctx).BloodTestDoLater,
+		})
 		for i := 0; i < len(bt.Fields); i++ {
 			<div class={ "flex", "gap-10", "justify-between" }>
 				@components.Input(components.InputOptions{
 					Id:          newPatientBloodTestFormId(bt, bt.Fields[i]),
 					Name:        newPatientBloodTestFormId(bt, bt.Fields[i]),
 					Type:        components.InputTypeText,
-					Required:    true,
+					Required:    false,
 					Autofocus:   false,
 					Title:       bt.Fields[i].Name,
 					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i].Unit),
@@ -225,7 +241,7 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 						Id:          newPatientBloodTestFormId(bt, bt.Fields[i+1]),
 						Name:        newPatientBloodTestFormId(bt, bt.Fields[i+1]),
 						Type:        components.InputTypeText,
-						Required:    true,
+						Required:    false,
 						Autofocus:   false,
 						Title:       bt.Fields[i+1].Name,
 						Placeholder: i18n.StringsCtx(ctx).EnterBloodTestResultFieldValueFmt(bt.Fields[i+1].Unit),
@@ -241,7 +257,7 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 	</form>
 }
 
-func mapBloodTestsToView(patient actions.Patient, bts []actions.BloodTest) []components.SelectContent {
+func mapNewBloodTestToView(patient actions.Patient, bts []actions.BloodTest) []components.SelectContent {
 	bloodTestsViews := make([]components.SelectContent, 0, len(bts))
 	for _, bt := range bts {
 		bloodTestsViews = append(bloodTestsViews, components.SelectContent{
@@ -260,7 +276,7 @@ templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.Bl
 		components.SelectContentsParams{
 			Title:    i18n.StringsCtx(ctx).EnterBloodTest,
 			TitleId:  "patient-blood-tests",
-			Contents: mapBloodTestsToView(patient, bloodTests),
+			Contents: mapNewBloodTestToView(patient, bloodTests),
 		},
 	)
 	<div id="status-msg"></div>

@@ -23,6 +23,7 @@ type BloodTestResult struct {
 	Name         string                 `json:"name"`
 	BloodTestId  uint                   `json:"blood_test_id"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
+	Pending      bool                   `json:"pending"`
 }
 
 type Address struct {
@@ -82,6 +83,12 @@ func (p Patient) IntoModel() models.Patient {
 				ValueString:       field.ValueString,
 			})
 		}
+
+		bloodTestResults = append(bloodTestResults, models.BloodTestResult{
+			BloodTestId:  btr.BloodTestId,
+			FilledFields: bloodTestResultFields,
+			Pending:      btr.Pending,
+		})
 	}
 
 	return models.Patient{
@@ -159,9 +166,9 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 	}
 
 	(*p).BloodTestResults = make([]BloodTestResult, 0, len(patientBloodTestResults))
-	for _, bt := range patientBloodTestResults {
-		fields := make([]BloodTestFilledField, 0, len(bt.FilledFields))
-		for _, field := range bt.FilledFields {
+	for _, btr := range patientBloodTestResults {
+		fields := make([]BloodTestFilledField, 0, len(btr.FilledFields))
+		for _, field := range btr.FilledFields {
 			fields = append(fields, BloodTestFilledField{
 				BloodTestFieldId: field.Id,
 				Name:             bloodTestFieldNames[field.BloodTestFieldId],
@@ -172,9 +179,10 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 		}
 
 		(*p).BloodTestResults = append((*p).BloodTestResults, BloodTestResult{
-			BloodTestId:  bt.BloodTestId,
-			Name:         bloodTestNames[bt.BloodTestId],
+			BloodTestId:  btr.BloodTestId,
+			Name:         bloodTestNames[btr.BloodTestId],
 			FilledFields: fields,
+			Pending:      btr.Pending,
 		})
 	}
 }
@@ -342,6 +350,7 @@ func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (C
 		BloodTestId:  params.BloodTest.BloodTestId,
 		PatientId:    patient.Id,
 		FilledFields: bloodTestResultFields,
+		Pending:      params.BloodTest.Pending,
 	})
 	if err != nil {
 		return CreatePatientBloodTestPayload{}, err
