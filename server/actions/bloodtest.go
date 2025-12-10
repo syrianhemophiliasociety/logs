@@ -6,17 +6,46 @@ import (
 )
 
 type BloodTestField struct {
-	Id       uint                 `json:"id"`
-	Name     string               `json:"name"`
-	Unit     models.BlootTestUnit `json:"unit"`
-	MinValue uint                 `json:"min_value"`
-	MaxValue uint                 `json:"max_value"`
+	Id   uint                 `json:"id"`
+	Name string               `json:"name"`
+	Unit models.BlootTestUnit `json:"unit"`
 }
 
 type BloodTest struct {
 	Id     uint             `json:"id"`
 	Name   string           `json:"name"`
 	Fields []BloodTestField `json:"fields"`
+}
+
+func (bt BloodTest) IntoModel() models.BloodTest {
+	bloodTestFields := make([]models.BloodTestField, 0, len(bt.Fields))
+	for _, field := range bt.Fields {
+		bloodTestFields = append(bloodTestFields, models.BloodTestField{
+			Name: field.Name,
+			Unit: field.Unit,
+		})
+	}
+	return models.BloodTest{
+		Name:   bt.Name,
+		Fields: bloodTestFields,
+	}
+}
+
+func (bt *BloodTest) FromModel(bloodTest models.BloodTest) {
+	btFields := make([]BloodTestField, 0, len(bloodTest.Fields))
+	for _, field := range bloodTest.Fields {
+		btFields = append(btFields, BloodTestField{
+			Id:   field.Id,
+			Name: field.Name,
+			Unit: field.Unit,
+		})
+	}
+
+	(*bt) = BloodTest{
+		Id:     bloodTest.Id,
+		Name:   bloodTest.Name,
+		Fields: btFields,
+	}
 }
 
 type CreateBloodTestParams struct {
@@ -32,21 +61,7 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 		return CreateBloodTestPayload{}, ErrPermissionDenied{}
 	}
 
-	bloodTestFields := make([]models.BloodTestField, 0, len(params.BloodTest.Fields))
-	for _, field := range params.BloodTest.Fields {
-		bloodTestFields = append(bloodTestFields, models.BloodTestField{
-			Name:     field.Name,
-			Unit:     field.Unit,
-			MinValue: field.MinValue,
-			MaxValue: field.MaxValue,
-		})
-	}
-	bloodTest := models.BloodTest{
-		Name:   params.BloodTest.Name,
-		Fields: bloodTestFields,
-	}
-
-	_, err := a.app.CreateBloodTest(bloodTest)
+	_, err := a.app.CreateBloodTest(params.BloodTest.IntoModel())
 	if err != nil {
 		return CreateBloodTestPayload{}, err
 	}
@@ -105,8 +120,11 @@ func (a *Actions) GetBloodTest(params GetBloodTestParams) (GetBloodTestPayload, 
 		return GetBloodTestPayload{}, err
 	}
 
+	outBt := new(BloodTest)
+	outBt.FromModel(bt)
+
 	return GetBloodTestPayload{
-		Data: mapModelBloodTest(bt),
+		Data: *outBt,
 	}, nil
 }
 
@@ -130,29 +148,12 @@ func (a *Actions) ListAllBloodTests(params ListAllBloodTestsParams) (ListAllBloo
 
 	outBloodTests := make([]BloodTest, 0, len(bloodTests))
 	for _, bt := range bloodTests {
-		outBloodTests = append(outBloodTests, mapModelBloodTest(bt))
+		outBt := new(BloodTest)
+		outBt.FromModel(bt)
+		outBloodTests = append(outBloodTests, *outBt)
 	}
 
 	return ListAllBloodTestsPayload{
 		Data: outBloodTests,
 	}, nil
-}
-
-func mapModelBloodTest(bt models.BloodTest) BloodTest {
-	btFields := make([]BloodTestField, 0, len(bt.Fields))
-	for _, field := range bt.Fields {
-		btFields = append(btFields, BloodTestField{
-			Id:       field.Id,
-			Name:     field.Name,
-			Unit:     field.Unit,
-			MinValue: field.MinValue,
-			MaxValue: field.MaxValue,
-		})
-	}
-
-	return BloodTest{
-		Id:     bt.Id,
-		Name:   bt.Name,
-		Fields: btFields,
-	}
 }

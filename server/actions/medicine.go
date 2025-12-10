@@ -17,6 +17,23 @@ type CreateMedicineParams struct {
 	NewMedicine Medicine `json:"new_medicine"`
 }
 
+func (m Medicine) IntoModel() models.Medicine {
+	return models.Medicine{
+		Name: m.Name,
+		Dose: m.Dose,
+		Unit: m.Unit,
+	}
+}
+
+func (m *Medicine) FromModel(medicine models.Medicine) {
+	(*m) = Medicine{
+		Id:   medicine.Id,
+		Name: medicine.Name,
+		Dose: medicine.Dose,
+		Unit: medicine.Unit,
+	}
+}
+
 type CreateMedicinePayload struct {
 }
 
@@ -25,11 +42,7 @@ func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePay
 		return CreateMedicinePayload{}, ErrPermissionDenied{}
 	}
 
-	_, err := a.app.CreateMedicine(models.Medicine{
-		Name: params.NewMedicine.Name,
-		Dose: params.NewMedicine.Dose,
-		Unit: params.NewMedicine.Unit,
-	})
+	_, err := a.app.CreateMedicine(params.NewMedicine.IntoModel())
 
 	return CreateMedicinePayload{}, err
 }
@@ -81,12 +94,9 @@ func (a *Actions) ListAllMedicine(params ListAllMedicineParams) (ListAllMedicine
 
 	outMedicines := make([]Medicine, 0, len(medicines))
 	for _, medicine := range medicines {
-		outMedicines = append(outMedicines, Medicine{
-			Id:   medicine.Id,
-			Name: medicine.Name,
-			Dose: medicine.Dose,
-			Unit: medicine.Unit,
-		})
+		outMedicine := new(Medicine)
+		outMedicine.FromModel(medicine)
+		outMedicines = append(outMedicines, *outMedicine)
 	}
 
 	return ListAllMedicinePayload{

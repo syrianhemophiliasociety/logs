@@ -9,6 +9,27 @@ type Virus struct {
 	// TODO: expose blood tests as a whole
 }
 
+func (v Virus) IntoModel() models.Virus {
+	identifyingBloodTests := make([]models.BloodTest, 0, len(v.BloodTestIds))
+	for _, btId := range v.BloodTestIds {
+		identifyingBloodTests = append(identifyingBloodTests, models.BloodTest{
+			Id: btId,
+		})
+	}
+
+	return models.Virus{
+		Name:                  v.Name,
+		IdentifyingBloodTests: identifyingBloodTests,
+	}
+}
+
+func (v *Virus) FromModel(virus models.Virus) {
+	(*v) = Virus{
+		Id:   virus.Id,
+		Name: virus.Name,
+	}
+}
+
 type CreateVirusParams struct {
 	ActionContext
 	NewVirus Virus `json:"new_virus"`
@@ -22,17 +43,7 @@ func (a *Actions) CreateVirus(params CreateVirusParams) (CreateVirusPayload, err
 		return CreateVirusPayload{}, ErrPermissionDenied{}
 	}
 
-	identifyingBloodTests := make([]models.BloodTest, 0, len(params.NewVirus.BloodTestIds))
-	for _, btId := range params.NewVirus.BloodTestIds {
-		identifyingBloodTests = append(identifyingBloodTests, models.BloodTest{
-			Id: btId,
-		})
-	}
-
-	_, err := a.app.CreateVirus(models.Virus{
-		Name:                  params.NewVirus.Name,
-		IdentifyingBloodTests: identifyingBloodTests,
-	})
+	_, err := a.app.CreateVirus(params.NewVirus.IntoModel())
 	if err != nil {
 		return CreateVirusPayload{}, err
 	}
@@ -82,10 +93,9 @@ func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, err
 
 	outViri := make([]Virus, 0, len(viri))
 	for _, virus := range viri {
-		outViri = append(outViri, Virus{
-			Id:   virus.Id,
-			Name: virus.Name,
-		})
+		outVirus := new(Virus)
+		outVirus.FromModel(virus)
+		outViri = append(outViri, *outVirus)
 	}
 
 	return ListAllViriPayload{

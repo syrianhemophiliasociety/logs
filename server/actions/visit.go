@@ -127,33 +127,11 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 		})
 	}
 
+	outPatient := new(Patient)
+	outPatient.FromModel(patient)
+
 	return GetPatientLastVisitPayload{
-		Patient: Patient{
-			Id:          patient.Id,
-			PublicId:    patient.PublicId,
-			NationalId:  patient.NationalId,
-			Nationality: patient.NationalId,
-			FirstName:   patient.FirstName,
-			LastName:    patient.LastName,
-			FatherName:  patient.FatherName,
-			MotherName:  patient.MotherName,
-			PlaceOfBirth: Address{
-				Id:          patient.PlaceOfBirth.Id,
-				Governorate: patient.PlaceOfBirth.Governorate,
-				Suburb:      patient.PlaceOfBirth.Suburb,
-				Street:      patient.PlaceOfBirth.Street,
-			},
-			DateOfBirth: patient.DateOfBirth,
-			Residency: Address{
-				Id:          patient.Residency.Id,
-				Governorate: patient.Residency.Governorate,
-				Suburb:      patient.Residency.Suburb,
-				Street:      patient.Residency.Street,
-			},
-			Gender:      patient.Gender,
-			PhoneNumber: patient.PhoneNumber,
-			BATScore:    patient.BATScore,
-		},
+		Patient:            *outPatient,
 		PrescribedMedicine: outMeds,
 		VisitedAt:          lastVisit.CreatedAt,
 	}, nil

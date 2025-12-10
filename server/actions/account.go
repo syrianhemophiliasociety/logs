@@ -26,8 +26,8 @@ type Account struct {
 	Permissions models.AccountPermissions `json:"permissions"`
 }
 
-func (a Account) FromModel(ma models.Account) Account {
-	return Account{
+func (a *Account) FromModel(ma models.Account) {
+	(*a) = Account{
 		Id:          ma.Id,
 		DisplayName: ma.DisplayName,
 		Username:    ma.Username,
@@ -116,8 +116,11 @@ func (a *Actions) GetAccount(params GetAccountParams) (GetAccountPayload, error)
 		return GetAccountPayload{}, err
 	}
 
+	outAccount := new(Account)
+	outAccount.FromModel(account)
+
 	return GetAccountPayload{
-		Account: Account{}.FromModel(account),
+		Account: *outAccount,
 	}, nil
 }
 
@@ -194,13 +197,9 @@ func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccounts
 
 	outAccounts := make([]Account, 0, len(accounts))
 	for _, account := range accounts {
-		outAccounts = append(outAccounts, Account{
-			Id:          account.Id,
-			DisplayName: account.DisplayName,
-			Username:    account.Username,
-			Type:        string(account.Type),
-			Permissions: account.Permissions,
-		})
+		outAccount := new(Account)
+		outAccount.FromModel(account)
+		outAccounts = append(outAccounts, *outAccount)
 	}
 
 	return ListAllAccountsPayload{

@@ -15,8 +15,6 @@ type BloodTestFilledField struct {
 	BloodTestFieldId uint                 `json:"blood_test_field_id"`
 	Name             string               `json:"name"`
 	Unit             models.BlootTestUnit `json:"unit"`
-	MinValue         uint                 `json:"min_value"`
-	MaxValue         uint                 `json:"max_value"`
 	ValueNumber      uint                 `json:"value_number"`
 	ValueString      string               `json:"value_string"`
 }
@@ -44,22 +42,151 @@ func (a Address) IntoModel() models.Address {
 }
 
 type Patient struct {
-	Id           uint              `json:"id"`
-	PublicId     string            `json:"public_id"`
-	NationalId   string            `json:"national_id"`
-	Nationality  string            `json:"nationality"`
-	FirstName    string            `json:"first_name"`
-	LastName     string            `json:"last_name"`
-	FatherName   string            `json:"father_name"`
-	MotherName   string            `json:"mother_name"`
-	PlaceOfBirth Address           `json:"place_of_birth"`
-	DateOfBirth  time.Time         `json:"date_of_birth"`
-	Residency    Address           `json:"residency"`
-	Gender       bool              `json:"gender"`
-	PhoneNumber  string            `json:"phone_number"`
-	BATScore     uint              `json:"bat_score"`
-	Viri         []Virus           `json:"viruses"`
-	BloodTests   []BloodTestResult `json:"blood_test_results"`
+	Id                  uint              `json:"id"`
+	PublicId            string            `json:"public_id"`
+	NationalId          string            `json:"national_id"`
+	Nationality         string            `json:"nationality"`
+	FirstName           string            `json:"first_name"`
+	LastName            string            `json:"last_name"`
+	FatherName          string            `json:"father_name"`
+	MotherName          string            `json:"mother_name"`
+	PlaceOfBirth        Address           `json:"place_of_birth"`
+	DateOfBirth         time.Time         `json:"date_of_birth"`
+	Residency           Address           `json:"residency"`
+	Gender              bool              `json:"gender"`
+	PhoneNumber         string            `json:"phone_number"`
+	BATScore            uint              `json:"bat_score"`
+	FamilyHistoryExists bool              `json:"family_history_exists"`
+	FirstVisitReason    string            `json:"first_visit_reason"`
+	Viri                []Virus           `json:"viruses"`
+	BloodTestResults    []BloodTestResult `json:"blood_test_results"`
+}
+
+func (p Patient) IntoModel() models.Patient {
+	viruses := make([]models.Virus, 0, len(p.Viri))
+	for _, v := range p.Viri {
+		viruses = append(viruses, models.Virus{
+			Id:   v.Id,
+			Name: v.Name,
+		})
+	}
+
+	bloodTestResults := make([]models.BloodTestResult, 0, len(p.BloodTestResults))
+	for _, btr := range p.BloodTestResults {
+		bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(btr.FilledFields))
+		for _, field := range btr.FilledFields {
+			bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
+				BloodTestResultId: btr.BloodTestId,
+				BloodTestFieldId:  field.BloodTestFieldId,
+				ValueNumber:       field.ValueNumber,
+				ValueString:       field.ValueString,
+			})
+		}
+	}
+
+	return models.Patient{
+		Id:          p.Id,
+		PublicId:    p.PublicId,
+		NationalId:  p.NationalId,
+		Nationality: p.Nationality,
+		FirstName:   p.FirstName,
+		LastName:    p.LastName,
+		FatherName:  p.FatherName,
+		MotherName:  p.MotherName,
+		PlaceOfBirth: models.Address{
+			Governorate: p.PlaceOfBirth.Governorate,
+			Suburb:      p.PlaceOfBirth.Suburb,
+			Street:      p.PlaceOfBirth.Street,
+		},
+		DateOfBirth: p.DateOfBirth,
+		Residency: models.Address{
+			Governorate: p.Residency.Governorate,
+			Suburb:      p.Residency.Suburb,
+			Street:      p.Residency.Street,
+		},
+		Gender:              p.Gender,
+		PhoneNumber:         p.PhoneNumber,
+		FamilyHistoryExists: p.FamilyHistoryExists,
+		FirstVisitReason:    models.PatientFirstVisitReason(p.FirstVisitReason),
+		BATScore:            p.BATScore,
+		Viri:                viruses,
+		BloodTestResults:    bloodTestResults,
+	}
+}
+
+func (p *Patient) FromModel(patient models.Patient) {
+	(*p) = Patient{
+		Id:          patient.Id,
+		PublicId:    patient.PublicId,
+		NationalId:  patient.NationalId,
+		Nationality: patient.Nationality,
+		FirstName:   patient.FirstName,
+		LastName:    patient.LastName,
+		FatherName:  patient.FatherName,
+		MotherName:  patient.MotherName,
+		PlaceOfBirth: Address{
+			Id:          patient.PlaceOfBirth.Id,
+			Governorate: patient.PlaceOfBirth.Governorate,
+			Suburb:      patient.PlaceOfBirth.Suburb,
+			Street:      patient.PlaceOfBirth.Street,
+		},
+		DateOfBirth: patient.DateOfBirth,
+		Residency: Address{
+			Id:          patient.Residency.Id,
+			Governorate: patient.Residency.Governorate,
+			Suburb:      patient.Residency.Suburb,
+			Street:      patient.Residency.Street,
+		},
+		Gender:              patient.Gender,
+		PhoneNumber:         patient.PhoneNumber,
+		BATScore:            patient.BATScore,
+		FamilyHistoryExists: patient.FamilyHistoryExists,
+		FirstVisitReason:    string(patient.FirstVisitReason),
+	}
+}
+
+func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTestResult, bloodTests []models.BloodTest) {
+	bloodTestNames := make(map[uint]string)
+	bloodTestFieldNames := make(map[uint]string)
+	bloodTestFieldUnits := make(map[uint]models.BlootTestUnit)
+
+	for _, bt := range bloodTests {
+		bloodTestNames[bt.Id] = bt.Name
+		for _, field := range bt.Fields {
+			bloodTestFieldNames[field.Id] = field.Name
+			bloodTestFieldUnits[field.Id] = field.Unit
+		}
+	}
+
+	(*p).BloodTestResults = make([]BloodTestResult, 0, len(patientBloodTestResults))
+	for _, bt := range patientBloodTestResults {
+		fields := make([]BloodTestFilledField, 0, len(bt.FilledFields))
+		for _, field := range bt.FilledFields {
+			fields = append(fields, BloodTestFilledField{
+				BloodTestFieldId: field.Id,
+				Name:             bloodTestFieldNames[field.BloodTestFieldId],
+				Unit:             bloodTestFieldUnits[field.BloodTestFieldId],
+				ValueNumber:      field.ValueNumber,
+				ValueString:      field.ValueString,
+			})
+		}
+
+		(*p).BloodTestResults = append((*p).BloodTestResults, BloodTestResult{
+			BloodTestId:  bt.BloodTestId,
+			Name:         bloodTestNames[bt.BloodTestId],
+			FilledFields: fields,
+		})
+	}
+}
+
+func (p *Patient) WithViruses(patientViri []models.Virus, viri []models.Virus) {
+	(*p).Viri = make([]Virus, 0, len(patientViri))
+	for _, v := range patientViri {
+		(*p).Viri = append((*p).Viri, Virus{
+			Id:   v.Id,
+			Name: v.Name,
+		})
+	}
 }
 
 type CreatePatientParams struct {
@@ -77,18 +204,19 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}
 
 	newPatient := models.Patient{
-		NationalId:  params.NewPatient.NationalId,
-		Nationality: params.NewPatient.Nationality,
-		FirstName:   params.NewPatient.FirstName,
-		LastName:    params.NewPatient.LastName,
-		FatherName:  params.NewPatient.FatherName,
-		MotherName:  params.NewPatient.MotherName,
-		DateOfBirth: params.NewPatient.DateOfBirth,
-		Gender:      params.NewPatient.Gender,
-		PhoneNumber: params.NewPatient.PhoneNumber,
-		BATScore:    params.NewPatient.BATScore,
-		Viri:        []models.Virus{},
-		BloodTests:  []models.BloodTestResult{},
+		NationalId:       params.NewPatient.NationalId,
+		Nationality:      params.NewPatient.Nationality,
+		FirstName:        params.NewPatient.FirstName,
+		LastName:         params.NewPatient.LastName,
+		FatherName:       params.NewPatient.FatherName,
+		MotherName:       params.NewPatient.MotherName,
+		DateOfBirth:      params.NewPatient.DateOfBirth,
+		Gender:           params.NewPatient.Gender,
+		PhoneNumber:      params.NewPatient.PhoneNumber,
+		BATScore:         params.NewPatient.BATScore,
+		FirstVisitReason: models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
+		Viri:             []models.Virus{},
+		BloodTestResults: []models.BloodTestResult{},
 	}
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
@@ -145,7 +273,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		return CreatePatientPayload{}, err
 	}
 
-	for _, btr := range params.NewPatient.BloodTests {
+	for _, btr := range params.NewPatient.BloodTestResults {
 		bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(btr.FilledFields))
 		for _, field := range btr.FilledFields {
 			bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
@@ -286,32 +414,9 @@ func (a *Actions) FindPatients(params FindPatientsParams) (FindPatientsPayload, 
 
 	outPatients := make([]Patient, 0, len(patients))
 	for _, patient := range patients {
-		outPatients = append(outPatients, Patient{
-			Id:          patient.Id,
-			PublicId:    patient.PublicId,
-			NationalId:  patient.NationalId,
-			Nationality: patient.NationalId,
-			FirstName:   patient.FirstName,
-			LastName:    patient.LastName,
-			FatherName:  patient.FatherName,
-			MotherName:  patient.MotherName,
-			PlaceOfBirth: Address{
-				Id:          patient.PlaceOfBirth.Id,
-				Governorate: patient.PlaceOfBirth.Governorate,
-				Suburb:      patient.PlaceOfBirth.Suburb,
-				Street:      patient.PlaceOfBirth.Street,
-			},
-			DateOfBirth: patient.DateOfBirth,
-			Residency: Address{
-				Id:          patient.Residency.Id,
-				Governorate: patient.Residency.Governorate,
-				Suburb:      patient.Residency.Suburb,
-				Street:      patient.Residency.Street,
-			},
-			Gender:      patient.Gender,
-			PhoneNumber: patient.PhoneNumber,
-			BATScore:    patient.BATScore,
-		})
+		outPatient := new(Patient)
+		outPatient.FromModel(patient)
+		outPatients = append(outPatients, *outPatient)
 	}
 
 	return FindPatientsPayload{
@@ -339,32 +444,9 @@ func (a *Actions) ListLastPatients(params ListLastPatientsParams) (ListLastPatie
 
 	outPatients := make([]Patient, 0, len(patients))
 	for _, patient := range patients {
-		outPatients = append(outPatients, Patient{
-			Id:          patient.Id,
-			PublicId:    patient.PublicId,
-			NationalId:  patient.NationalId,
-			Nationality: patient.NationalId,
-			FirstName:   patient.FirstName,
-			LastName:    patient.LastName,
-			FatherName:  patient.FatherName,
-			MotherName:  patient.MotherName,
-			PlaceOfBirth: Address{
-				Id:          patient.PlaceOfBirth.Id,
-				Governorate: patient.PlaceOfBirth.Governorate,
-				Suburb:      patient.PlaceOfBirth.Suburb,
-				Street:      patient.PlaceOfBirth.Street,
-			},
-			DateOfBirth: patient.DateOfBirth,
-			Residency: Address{
-				Id:          patient.Residency.Id,
-				Governorate: patient.Residency.Governorate,
-				Suburb:      patient.Residency.Suburb,
-				Street:      patient.Residency.Street,
-			},
-			Gender:      patient.Gender,
-			PhoneNumber: patient.PhoneNumber,
-			BATScore:    patient.BATScore,
-		})
+		outPatient := new(Patient)
+		outPatient.FromModel(patient)
+		outPatients = append(outPatients, *outPatient)
 	}
 
 	return ListLastPatientsPayload{
@@ -391,84 +473,18 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		return GetPatientPayload{}, err
 	}
 
-	viruses := make([]Virus, 0, len(patient.Viri))
-	for _, v := range patient.Viri {
-		viruses = append(viruses, Virus{
-			Id:   v.Id,
-			Name: v.Name,
-		})
-	}
-
 	bloodTests, err := a.app.ListAllBloodTests()
 	if err != nil {
 		return GetPatientPayload{}, err
 	}
 
-	bloodTestNames := make(map[uint]string)
-	bloodTestFieldNames := make(map[uint]string)
-	bloodTestFieldUnits := make(map[uint]models.BlootTestUnit)
-
-	for _, bt := range bloodTests {
-		bloodTestNames[bt.Id] = bt.Name
-		for _, field := range bt.Fields {
-			bloodTestFieldNames[field.Id] = field.Name
-			bloodTestFieldUnits[field.Id] = field.Unit
-		}
-	}
-
-	bloodTestResults := make([]BloodTestResult, 0, len(patient.BloodTests))
-	for _, bt := range patient.BloodTests {
-		fields := make([]BloodTestFilledField, 0, len(bt.FilledFields))
-		for _, field := range bt.FilledFields {
-			fields = append(fields, BloodTestFilledField{
-				BloodTestFieldId: field.Id,
-				Name:             bloodTestFieldNames[field.BloodTestFieldId],
-				Unit:             bloodTestFieldUnits[field.BloodTestFieldId],
-				MinValue:         0,
-				MaxValue:         0,
-				ValueNumber:      field.ValueNumber,
-				ValueString:      field.ValueString,
-			})
-		}
-
-		bloodTestResults = append(bloodTestResults, BloodTestResult{
-			BloodTestId:  bt.BloodTestId,
-			Name:         bloodTestNames[bt.BloodTestId],
-			FilledFields: fields,
-		})
-	}
-
-	outPatient := Patient{
-		Id:          patient.Id,
-		PublicId:    patient.PublicId,
-		NationalId:  patient.NationalId,
-		Nationality: patient.Nationality,
-		FirstName:   patient.FirstName,
-		LastName:    patient.LastName,
-		FatherName:  patient.FatherName,
-		MotherName:  patient.MotherName,
-		PlaceOfBirth: Address{
-			Id:          patient.PlaceOfBirth.Id,
-			Governorate: patient.PlaceOfBirth.Governorate,
-			Suburb:      patient.PlaceOfBirth.Suburb,
-			Street:      patient.PlaceOfBirth.Street,
-		},
-		DateOfBirth: patient.DateOfBirth,
-		Residency: Address{
-			Id:          patient.Residency.Id,
-			Governorate: patient.Residency.Governorate,
-			Suburb:      patient.Residency.Suburb,
-			Street:      patient.Residency.Street,
-		},
-		Gender:      patient.Gender,
-		PhoneNumber: patient.PhoneNumber,
-		BATScore:    patient.BATScore,
-		Viri:        viruses,
-		BloodTests:  bloodTestResults,
-	}
+	outPatient := &Patient{}
+	outPatient.FromModel(patient)
+	outPatient.WithViruses(patient.Viri, nil)
+	outPatient.WithBloodTestResults(patient.BloodTestResults, bloodTests)
 
 	return GetPatientPayload{
-		Data: outPatient,
+		Data: *outPatient,
 	}, nil
 }
 

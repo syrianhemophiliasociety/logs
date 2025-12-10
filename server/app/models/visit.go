@@ -5,11 +5,14 @@ import "time"
 type VisitReason string
 
 const (
-	VisitReasonSurgery         VisitReason = "surgery"
-	VisitReasonJointEvaluation VisitReason = "joint_evaluation"
-	VisitReasonJointInjection  VisitReason = "joint_injection"
-	VisitReasonHemelibra       VisitReason = "hemelibra"
-	VisitReasonPafilaxes       VisitReason = "pafilaxes"
+	VisitReasonPrimaryProphylaxis   VisitReason = "primary_prophylaxis"
+	VisitReasonSecondaryProphylaxis VisitReason = "secondary_prophylaxis"
+	VisitReasonSurgery              VisitReason = "surgery"
+	VisitReasonJointEvaluation      VisitReason = "joint_evaluation"
+	VisitReasonJointInjection       VisitReason = "joint_injection"
+	VisitReasonHemelibra            VisitReason = "hemelibra"
+	VisitReasonTreatmentAtHome      VisitReason = "home_treatment"
+	VisitReasonActiveBleeding       VisitReason = "active_bleeding"
 )
 
 type Visit struct {

@@ -14,25 +14,35 @@ type PatientIndexFields struct {
 	PhoneNumber  string
 }
 
+type PatientFirstVisitReason string
+
+const (
+	PatientFirstVisitReasonFamilyHistory PatientFirstVisitReason = "family_history"
+	PatientFirstVisitReasonBleeding      PatientFirstVisitReason = "bleeding"
+	PatientFirstVisitReasonReferral      PatientFirstVisitReason = "referral"
+)
+
 type Patient struct {
-	Id             uint              `gorm:"primaryKey;autoIncrement"`
-	PublicId       string            `gorm:"index;not null;unique"`
-	NationalId     string            `gorm:"index;not null;unique"`
-	Nationality    string            `gorm:"not null"`
-	FirstName      string            `gorm:"index;not null"`
-	LastName       string            `gorm:"index;not null"`
-	FatherName     string            `gorm:"index;not null"`
-	MotherName     string            `gorm:"index;not null"`
-	PlaceOfBirth   Address           `gorm:"not null"`
-	PlaceOfBirthId uint              `gorm:"index;not null"`
-	DateOfBirth    time.Time         `gorm:"not null"`
-	Residency      Address           `gorm:"not null"`
-	ResidencyId    uint              `gorm:"index;not null"`
-	Gender         bool              `gorm:"not null"`
-	PhoneNumber    string            `gorm:"index;not null"`
-	BATScore       uint              `gorm:"not null"`
-	Viri           []Virus           `gorm:"not null;many2many:has_viri;"`
-	BloodTests     []BloodTestResult `gorm:"not null;many2many:did_blood_tests;"`
+	Id                  uint                    `gorm:"primaryKey;autoIncrement"`
+	PublicId            string                  `gorm:"index;not null;unique"`
+	NationalId          string                  `gorm:"index;not null;unique"`
+	Nationality         string                  `gorm:"not null"`
+	FirstName           string                  `gorm:"index;not null"`
+	LastName            string                  `gorm:"index;not null"`
+	FatherName          string                  `gorm:"index;not null"`
+	MotherName          string                  `gorm:"index;not null"`
+	PlaceOfBirth        Address                 `gorm:"not null"`
+	PlaceOfBirthId      uint                    `gorm:"index;not null"`
+	DateOfBirth         time.Time               `gorm:"not null"`
+	Residency           Address                 `gorm:"not null"`
+	ResidencyId         uint                    `gorm:"index;not null"`
+	Gender              bool                    `gorm:"not null"`
+	PhoneNumber         string                  `gorm:"index;not null"`
+	FamilyHistoryExists bool                    `gorm:"not null"`
+	FirstVisitReason    PatientFirstVisitReason `gorm:"not null"`
+	BATScore            uint                    `gorm:"not null"`
+	Viri                []Virus                 `gorm:"not null;many2many:has_viri;"`
+	BloodTestResults    []BloodTestResult       `gorm:"not null;many2many:did_blood_tests;"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

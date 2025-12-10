@@ -27,7 +27,7 @@ func (a *App) GetPatientById(id uint) (models.Patient, error) {
 		return models.Patient{}, err
 	}
 
-	patient.BloodTests = bloodTests
+	patient.BloodTestResults = bloodTests
 
 	return patient, nil
 }
@@ -59,7 +59,7 @@ func (a *App) GetFullPatientByPublicId(publicId string) (models.Patient, error) 
 		return models.Patient{}, err
 	}
 
-	patient.BloodTests = bloodTests
+	patient.BloodTestResults = bloodTests
 
 	return patient, nil
 }

@@ -43,16 +43,28 @@ const (
 func BloodTestUnits() []BlootTestUnit {
 	return []BlootTestUnit{
 		BlootTestUnitSecond,
-		BlootTestUnitGram,
+		BlootTestUnitMinute,
 		BlootTestUnitPercentage,
 		BlootTestUnitCell,
-		BlootTestUnitML,
 		BlootTestUnitBU,
+		BlootTestUnitGram,
+		BlootTestUnitPicoGram,
 		BlootTestUnitGramPerDeciLiter,
 		BlootTestUnitGramPerLiter,
 		BlootTestUnitGramPerCubicCentimeter,
-		BlootTestUnitCellPerCubicMilliLiter,
+		BlootTestUnitMilligramPerDeciLiter,
+		BlootTestUnitMicroUnitPerMilliLiter,
+		BlootTestUnitMicroGramPerDeciLiter,
+		BlootTestUnitNanoGramPerDeciLiter,
+		BlootTestUnitPicoGramPerDeciLiter,
+		BlootTestUnitML,
+		BlootTestUnitFemtoLiter,
 		BlootTestUnitInternationalUnitPerDeciLiter,
+		BlootTestUnitUnitPerLiter,
+		BlootTestUnitCellPerCubicMilliLiter,
+		BlootTestUnitThousandCellPerCubicMillimeter,
+		BlootTestUnitMillionCellPerCubicMillimeter,
+		BlootTestUnitRatioOrIndex,
 	}
 }
 
@@ -61,8 +73,6 @@ type BloodTestField struct {
 	BloodTestId uint          `gorm:"not null"`
 	Name        string        `gorm:"not null"`
 	Unit        BlootTestUnit `gorm:"not null"`
-	MinValue    uint
-	MaxValue    uint
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
