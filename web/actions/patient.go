@@ -37,22 +37,24 @@ type Address struct {
 }
 
 type Patient struct {
-	Id           uint              `json:"id"`
-	PublicId     string            `json:"public_id"`
-	NationalId   string            `json:"national_id"`
-	Nationality  string            `json:"nationality"`
-	FirstName    string            `json:"first_name"`
-	LastName     string            `json:"last_name"`
-	FatherName   string            `json:"father_name"`
-	MotherName   string            `json:"mother_name"`
-	PlaceOfBirth Address           `json:"place_of_birth"`
-	DateOfBirth  time.Time         `json:"date_of_birth"`
-	Residency    Address           `json:"residency"`
-	Gender       bool              `json:"gender"`
-	PhoneNumber  string            `json:"phone_number"`
-	BATScore     uint              `json:"bat_score"`
-	Viri         []Virus           `json:"viruses"`
-	BloodTests   []BloodTestResult `json:"blood_test_results"`
+	Id                  uint              `json:"id"`
+	PublicId            string            `json:"public_id"`
+	NationalId          string            `json:"national_id"`
+	Nationality         string            `json:"nationality"`
+	FirstName           string            `json:"first_name"`
+	LastName            string            `json:"last_name"`
+	FatherName          string            `json:"father_name"`
+	MotherName          string            `json:"mother_name"`
+	PlaceOfBirth        Address           `json:"place_of_birth"`
+	DateOfBirth         time.Time         `json:"date_of_birth"`
+	Residency           Address           `json:"residency"`
+	Gender              bool              `json:"gender"`
+	PhoneNumber         string            `json:"phone_number"`
+	BATScore            uint              `json:"bat_score"`
+	Viri                []Virus           `json:"viruses"`
+	BloodTests          []BloodTestResult `json:"blood_test_results"`
+	FamilyHistoryExists bool              `json:"family_history_exists"`
+	FirstVisitReason    string            `json:"first_visit_reason"`
 }
 
 func (p Patient) FullName() string {
@@ -119,6 +121,8 @@ type PatientRequest struct {
 	ResidencyGovernorate    string `json:"residency_governorate"`
 	ResidencySuburb         string `json:"residency_suburb"`
 	ResidencyStreet         string `json:"residency_street"`
+	FamilyHistoryExists     string `json:"family_history_exists"`
+	FirstVisitReason        string `json:"first_visit_reason"`
 }
 
 func (p PatientRequest) IntoPatient() Patient {
@@ -141,9 +145,11 @@ func (p PatientRequest) IntoPatient() Patient {
 			Suburb:      p.ResidencySuburb,
 			Street:      p.ResidencyStreet,
 		},
-		Gender:      p.Gender == "male",
-		PhoneNumber: p.PhoneNumber,
-		BATScore:    0,
+		Gender:              p.Gender == "male",
+		PhoneNumber:         p.PhoneNumber,
+		BATScore:            0,
+		FirstVisitReason:    p.FirstVisitReason,
+		FamilyHistoryExists: p.FamilyHistoryExists == "on",
 	}
 }
 

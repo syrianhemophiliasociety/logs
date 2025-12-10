@@ -20,6 +20,8 @@ type Keys struct {
 	LightTheme              string
 	ChooseLanguage          string
 
+	Yes    string
+	No     string
 	And    string
 	Or     string
 	With   string
@@ -111,46 +113,52 @@ type Keys struct {
 	AccountTypeAdmin         string
 	AccountDelete            string
 
-	Patient                string
-	PatientFirstName       string
-	EnterPatientFirstName  string
-	PatientLastName        string
-	EnterPatientLastName   string
-	PatientFatherName      string
-	EnterPatientFatherName string
-	PatientMotherName      string
-	EnterPatientMotherName string
-	NationalId             string
-	EnterNationalId        string
-	Nationality            string
-	EnterNationality       string
-	PlaceOfBirth           string
-	Governorate            string
-	EnterGovernorate       string
-	Suburb                 string
-	EnterSuburb            string
-	Street                 string
-	EnterStreet            string
-	DateOfBirth            string
-	EnterDateOfBirth       string
-	Residency              string
-	Gender                 string
-	EnterGender            string
-	GenderMale             string
-	GenderFemale           string
-	PhoneNumber            string
-	EnterPhoneNumber       string
-	Diagnosis              string
-	PatientSonOf           string
-	PatientDaughterOf      string
-	FindPatients           string
-	CheckupOnPatients      string
-	PatientProfile         string
-	PatientAddBloodTest    string
-	PatientAddVirus        string
-	PatientId              string
-	EnterPatientId         string
-	EnterBloodTest         string
+	Patient                       string
+	PatientFirstName              string
+	EnterPatientFirstName         string
+	PatientLastName               string
+	EnterPatientLastName          string
+	PatientFatherName             string
+	EnterPatientFatherName        string
+	PatientMotherName             string
+	EnterPatientMotherName        string
+	NationalId                    string
+	EnterNationalId               string
+	Nationality                   string
+	EnterNationality              string
+	PlaceOfBirth                  string
+	Governorate                   string
+	EnterGovernorate              string
+	Suburb                        string
+	EnterSuburb                   string
+	Street                        string
+	EnterStreet                   string
+	DateOfBirth                   string
+	EnterDateOfBirth              string
+	Residency                     string
+	Gender                        string
+	EnterGender                   string
+	GenderMale                    string
+	GenderFemale                  string
+	PhoneNumber                   string
+	EnterPhoneNumber              string
+	Diagnosis                     string
+	PatientSonOf                  string
+	PatientDaughterOf             string
+	FindPatients                  string
+	CheckupOnPatients             string
+	PatientProfile                string
+	PatientAddBloodTest           string
+	PatientAddVirus               string
+	PatientId                     string
+	EnterPatientId                string
+	EnterBloodTest                string
+	FamilyHistoryExists           string
+	FirstVisitReason              string
+	EnterFirstVisitReason         string
+	FirstVisitReasonFamilyHistory string
+	FirstVisitReasonBleeding      string
+	FirstVisitReasonReferral      string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string
@@ -162,6 +170,7 @@ type Keys struct {
 	NationalityPalestinian string
 	NationalityIraqi       string
 	NationalityEgyptian    string
+	NationalityLebanese    string
 }
 
 var localeKeys = map[string]Keys{

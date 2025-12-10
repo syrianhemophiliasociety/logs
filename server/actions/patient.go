@@ -212,19 +212,20 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}
 
 	newPatient := models.Patient{
-		NationalId:       params.NewPatient.NationalId,
-		Nationality:      params.NewPatient.Nationality,
-		FirstName:        params.NewPatient.FirstName,
-		LastName:         params.NewPatient.LastName,
-		FatherName:       params.NewPatient.FatherName,
-		MotherName:       params.NewPatient.MotherName,
-		DateOfBirth:      params.NewPatient.DateOfBirth,
-		Gender:           params.NewPatient.Gender,
-		PhoneNumber:      params.NewPatient.PhoneNumber,
-		BATScore:         params.NewPatient.BATScore,
-		FirstVisitReason: models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		Viri:             []models.Virus{},
-		BloodTestResults: []models.BloodTestResult{},
+		NationalId:          params.NewPatient.NationalId,
+		Nationality:         params.NewPatient.Nationality,
+		FirstName:           params.NewPatient.FirstName,
+		LastName:            params.NewPatient.LastName,
+		FatherName:          params.NewPatient.FatherName,
+		MotherName:          params.NewPatient.MotherName,
+		DateOfBirth:         params.NewPatient.DateOfBirth,
+		Gender:              params.NewPatient.Gender,
+		PhoneNumber:         params.NewPatient.PhoneNumber,
+		BATScore:            params.NewPatient.BATScore,
+		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
+		Viri:                []models.Virus{},
+		BloodTestResults:    []models.BloodTestResult{},
+		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
 	}
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{

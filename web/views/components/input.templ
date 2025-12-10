@@ -50,7 +50,9 @@ templ Input(options InputOptions) {
 			if options.Required {
 				required
 			}
-			class={ "min-w-20", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary", options.Class }
+			class={ templ.KV("min-w-20", options.Type != InputTypeCheckbox) ,
+            templ.KV("min-w-5", options.Type == InputTypeCheckbox),
+            "p-[10px]",  "rounded-[8px]", "bg-secondary", "text-primary", options.Class }
 			name={ options.Name }
 			if options.Value != "" {
 				value={ options.Value }

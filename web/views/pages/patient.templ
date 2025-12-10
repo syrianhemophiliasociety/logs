@@ -110,6 +110,31 @@ templ patientProfile(patient actions.Patient) {
 					</td>
 				</tr>
 				<tr>
+					<td><b>{ i18n.StringsCtx(ctx).FamilyHistoryExists }</b></td>
+					<td class={ "capitalize" }>
+						if patient.FamilyHistoryExists {
+							{ i18n.StringsCtx(ctx).Yes }
+						} else {
+							{ i18n.StringsCtx(ctx).No }
+						}
+					</td>
+				</tr>
+				<tr>
+					<td><b>{ i18n.StringsCtx(ctx).FirstVisitReason }</b></td>
+					<td>
+						switch patient.FirstVisitReason {
+							case "family_history":
+								{ i18n.StringsCtx(ctx).FirstVisitReasonFamilyHistory }
+							case "bleeding":
+								{ i18n.StringsCtx(ctx).FirstVisitReasonBleeding }
+							case "referral":
+								{ i18n.StringsCtx(ctx).FirstVisitReasonReferral }
+							default:
+								{ "N/A" }
+						}
+					</td>
+				</tr>
+				<tr>
 					<td><b>{ i18n.StringsCtx(ctx).Gender }</b></td>
 					<td>
 						if patient.Gender {

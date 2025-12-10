@@ -169,6 +169,7 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 							{Name: i18n.StringsCtx(ctx).NationalityPalestinian, Value: "palestinian"},
 							{Name: i18n.StringsCtx(ctx).NationalityIraqi, Value: "iraqi"},
 							{Name: i18n.StringsCtx(ctx).NationalityEgyptian, Value: "egyptian"},
+							{Name: i18n.StringsCtx(ctx).NationalityLebanese, Value: "lebanese"},
 						},
 					})
 					@components.Input(components.InputOptions{
@@ -192,17 +193,6 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 						},
 					})
 					@components.Input(components.InputOptions{
-						Id:          "phone_number",
-						Name:        "phone_number",
-						Type:        components.InputTypeTel,
-						Required:    true,
-						Autofocus:   false,
-						Title:       i18n.StringsCtx(ctx).PhoneNumber,
-						Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
-					})
-				</div>
-				<div class={ "flex",  "justify-between", "gap-10" }>
-					@components.Input(components.InputOptions{
 						Id:          "date_of_birth",
 						Name:        "date_of_birth",
 						Type:        components.InputTypeDate,
@@ -210,6 +200,38 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 						Autofocus:   false,
 						Title:       i18n.StringsCtx(ctx).DateOfBirth,
 						Placeholder: i18n.StringsCtx(ctx).EnterDateOfBirth,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Select(components.SelectParams{
+						Id:          "first_visit_reason",
+						Name:        i18n.StringsCtx(ctx).FirstVisitReason,
+						Placeholder: i18n.StringsCtx(ctx).EnterFirstVisitReason,
+						Required:    true,
+						Options: []components.SelectOption{
+							{Name: i18n.StringsCtx(ctx).FirstVisitReasonFamilyHistory, Value: "family_history"},
+							{Name: i18n.StringsCtx(ctx).FirstVisitReasonBleeding, Value: "bleeding"},
+							{Name: i18n.StringsCtx(ctx).FirstVisitReasonReferral, Value: "referral"},
+						},
+					})
+					@components.Input(components.InputOptions{
+						Id:        "family_history_exists",
+						Name:      "family_history_exists",
+						Type:      components.InputTypeCheckbox,
+						Required:  false,
+						Autofocus: false,
+						Title:     i18n.StringsCtx(ctx).FamilyHistoryExists,
+					})
+				</div>
+				<div class={ "flex",  "justify-between", "gap-10" }>
+					@components.Input(components.InputOptions{
+						Id:          "phone_number",
+						Name:        "phone_number",
+						Type:        components.InputTypeTel,
+						Required:    true,
+						Autofocus:   false,
+						Title:       i18n.StringsCtx(ctx).PhoneNumber,
+						Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
 					})
 				</div>
 				<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
