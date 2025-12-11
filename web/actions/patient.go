@@ -429,14 +429,29 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 		return err
 	}
 
+	const (
+		visitReason       = "visit_reason"
+		visitExtraDetails = "visit_extra_details"
+		medicineIdsKey    = "medicine_id"
+		medicineAmountKey = "amount"
+	)
+
 	var ok bool
-	(*v).VisitReason, ok = data["visit_reason"].(string)
+	(*v).VisitReason, ok = data[visitReason].(string)
 	if !ok {
 		return errors.New("missing visit_reason")
 	}
-	(*v).VisitExtraDetails, _ = data["visit_extra_details"].(string)
+	(*v).VisitExtraDetails, _ = data[visitExtraDetails].(string)
 
-	const medicineIdsKey = "medicine_id"
+	_, ok = data[medicineIdsKey]
+	if !ok {
+		return nil
+	}
+	_, ok = data[medicineAmountKey]
+	if !ok {
+		return nil
+	}
+
 	switch data[medicineIdsKey].(type) {
 	case string:
 		mIdInt, err := strconv.Atoi(data[medicineIdsKey].(string))
@@ -465,7 +480,6 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 		}
 	}
 
-	const medicineAmountKey = "amount"
 	switch data[medicineAmountKey].(type) {
 	case string:
 		mAmountInt, err := strconv.Atoi(data[medicineAmountKey].(string))
