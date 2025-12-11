@@ -18,6 +18,7 @@ var english = Keys{
 			return fmt.Sprintf("Can't prescribe %d packages of %s, as there are %d packages left of it", exceedingAmount, medicineName, leftPackages)
 		}
 	},
+
 	MessageSuccess: "Success",
 	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
 		return fmt.Sprintf("Are you sure to delete '%s' %s?", resourceName, resourceType)
@@ -183,6 +184,8 @@ var english = Keys{
 	CheckUpPrescribedMedicines:      "Prescribed medicines",
 	EnterCheckUpPrescribedMedicines: "Enter prescribed medicines",
 	CheckUpAddPrescribedMedicine:    "Add medicine",
+	CheckUpExtraReason:              "Extra note",
+	EnterCheckUpExtraReason:         "Enter extra note",
 	NationalitySyrian:               "Syrian",
 	NationalityPalestinian:          "Palestinian",
 	NationalityIraqi:                "Iraqi",

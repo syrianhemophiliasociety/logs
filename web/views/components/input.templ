@@ -38,6 +38,7 @@ type InputOptions struct {
 	Autofocus   bool
 	Class       []string
 	Placeholder string
+	Disabled    bool
 	HyperScript string
 }
 
@@ -50,9 +51,12 @@ templ Input(options InputOptions) {
 			if options.Required {
 				required
 			}
-			class={ templ.KV("min-w-20", options.Type != InputTypeCheckbox) ,
+			class={ templ.KV("min-w-20", options.Type != InputTypeCheckbox),
             templ.KV("min-w-5", options.Type == InputTypeCheckbox),
-            "p-[10px]",  "rounded-[8px]", "bg-secondary", "text-primary", options.Class }
+            "p-[10px]",  "rounded-[8px]",
+            "bg-secondary", "disabled:bg-secondary-trans-69",
+            "text-primary", "disabled:text-primary-trans-69",
+            options.Class }
 			name={ options.Name }
 			if options.Value != "" {
 				value={ options.Value }
@@ -63,6 +67,9 @@ templ Input(options InputOptions) {
 			}
 			if options.Checked {
 				checked="checked"
+			}
+			if options.Disabled {
+				disabled
 			}
 			if options.HyperScript != "" {
 				_={ options.HyperScript }

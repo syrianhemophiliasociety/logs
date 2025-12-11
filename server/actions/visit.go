@@ -15,6 +15,7 @@ type CreatePatientVisitParams struct {
 	ActionContext
 	PatientId           string
 	VisitReason         string     `json:"visit_reason"`
+	VisitExtraDetails   string     `json:"visit_extra_details"`
 	PrescribedMedicines []Medicine `json:"prescribed_medicines"`
 }
 
@@ -59,6 +60,7 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 	visit, err := a.app.CreatePatientVisit(models.Visit{
 		PatientId: patient.Id,
 		Reason:    models.VisitReason(params.VisitReason),
+		Notes:     params.VisitExtraDetails,
 	})
 	if err != nil {
 		return CreatePatientVisitPayload{}, err

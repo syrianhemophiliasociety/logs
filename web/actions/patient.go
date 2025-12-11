@@ -418,6 +418,7 @@ func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayloa
 
 type CreateCheckUpRequest struct {
 	VisitReason         string
+	VisitExtraDetails   string
 	PrescribedMedicines []Medicine
 }
 
@@ -433,6 +434,7 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 	if !ok {
 		return errors.New("missing visit_reason")
 	}
+	(*v).VisitExtraDetails, _ = data["visit_extra_details"].(string)
 
 	const medicineIdsKey = "medicine_id"
 	switch data[medicineIdsKey].(type) {
@@ -461,9 +463,6 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 				Id: uint(mIdInt),
 			})
 		}
-
-	default:
-		return errors.New("invalid medicine_id value")
 	}
 
 	const medicineAmountKey = "amount"
@@ -487,9 +486,6 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 			}
 			(*v).PrescribedMedicines[i].Amount = mAmountInt
 		}
-
-	default:
-		return errors.New("invalid amount value")
 	}
 
 	return nil
@@ -513,6 +509,7 @@ func (a *Actions) CreatePatientCheckUp(params CreatePatientCheckUpParams) (Creat
 		},
 		body: map[string]any{
 			"visit_reason":         params.CheckUpRequest.VisitReason,
+			"visit_extra_details":  params.CheckUpRequest.VisitExtraDetails,
 			"prescribed_medicines": params.CheckUpRequest.PrescribedMedicines,
 		},
 	})

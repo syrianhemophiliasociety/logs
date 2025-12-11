@@ -155,6 +155,46 @@ func (p *pagesHandler) HandleMedicinesPage(w http.ResponseWriter, r *http.Reques
 	}, pages.Medicines(medicines)).Render(r.Context(), w)
 }
 
+func (p *pagesHandler) HandleMedicinePage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	id := r.PathValue("id")
+	intId, err := strconv.Atoi(id)
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	medicine, err := p.usecases.GetMedicine(actions.GetMedicineParams{
+		RequestContext: ctx,
+		MedicineId:     uint(intId),
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.StringsCtx(r.Context()).NavPatient)
+		w.Header().Set("HX-Push-Url", "/medicine/"+id)
+		pages.Medicine(medicine).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPatient,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Medicine(medicine)).Render(r.Context(), w)
+}
+
 func (p *pagesHandler) HandleBloodTestsPage(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {

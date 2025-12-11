@@ -170,6 +170,8 @@ type Keys struct {
 	CheckUpPrescribedMedicines      string
 	EnterCheckUpPrescribedMedicines string
 	CheckUpAddPrescribedMedicine    string
+	CheckUpExtraReason              string
+	EnterCheckUpExtraReason         string
 
 	NationalitySyrian      string
 	NationalityPalestinian string

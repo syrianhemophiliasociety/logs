@@ -82,6 +82,8 @@ func main() {
 
 	v1ApisHandler.HandleFunc("POST /medicine", authMiddleware.AuthApi(medicineApi.HandleCreateMedicine))
 	v1ApisHandler.HandleFunc("GET /medicine/all", authMiddleware.AuthApi(medicineApi.HandleListMedicines))
+	v1ApisHandler.HandleFunc("GET /medicine/{id}", authMiddleware.AuthApi(medicineApi.HandleGetMedicine))
+	v1ApisHandler.HandleFunc("PUT /medicine/{id}/amount", authMiddleware.AuthApi(medicineApi.HandleUpdateMedicineAmount))
 	v1ApisHandler.HandleFunc("DELETE /medicine/{id}", authMiddleware.AuthApi(medicineApi.HandleDeleteMedicine))
 
 	v1ApisHandler.HandleFunc(

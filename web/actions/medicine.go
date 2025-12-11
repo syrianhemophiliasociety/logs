@@ -111,3 +111,59 @@ func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePay
 
 	return payload, nil
 }
+
+type GetMedicineParams struct {
+	RequestContext
+	MedicineId uint
+}
+
+type GetMedicinePayload struct {
+	Data Medicine `json:"data"`
+}
+
+func (a *Actions) GetMedicine(params GetMedicineParams) (Medicine, error) {
+	payload, err := makeRequest[any, GetMedicinePayload](makeRequestConfig[any]{
+		method:   http.MethodGet,
+		endpoint: "/v1/medicine/" + strconv.Itoa(int(params.MedicineId)),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+	})
+	if err != nil {
+		return Medicine{}, err
+	}
+
+	return payload.Data, nil
+}
+
+type UpdateMedicineParams struct {
+	RequestContext
+	MedicineId  uint
+	NewMedicine RequestMedicine `json:"new_medicine"`
+}
+
+type UpdateMedicinePayload struct {
+}
+
+func (a *Actions) UpdateMedicine(params UpdateMedicineParams) (UpdateMedicinePayload, error) {
+	amount, err := strconv.Atoi(params.NewMedicine.Amount)
+	if err != nil {
+		return UpdateMedicinePayload{}, err
+	}
+
+	payload, err := makeRequest[map[string]any, UpdateMedicinePayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPut,
+		endpoint: fmt.Sprintf("/v1/medicine/%d/amount", params.MedicineId),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"amount": amount,
+		},
+	})
+	if err != nil {
+		return UpdateMedicinePayload{}, err
+	}
+
+	return payload, nil
+}

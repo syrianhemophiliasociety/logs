@@ -557,6 +557,48 @@ func (r *Repository) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
 	return medicines, nil
 }
 
+func (r *Repository) UpdateMedicineAmount(id uint, newAmount int) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Medicine)).
+			Where("id = ?", id).
+			Update("amount", newAmount).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "medicine",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) GetMedicine(id uint) (models.Medicine, error) {
+	var medicine models.Medicine
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Medicine)).
+			First(&medicine, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Medicine{}, &app.ErrNotFound{
+			ResourceName: "medicine",
+		}
+	}
+	if err != nil {
+		return models.Medicine{}, err
+	}
+
+	return medicine, nil
+}
+
 func (r *Repository) DecrementMedicineAmount(id uint, amount int) error {
 	err := tryWrapDbError(
 		r.client.

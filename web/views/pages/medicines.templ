@@ -1,20 +1,64 @@
 package pages
 
 import (
+	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 	"strconv"
 )
 
-templ Medicine(medicine actions.Medicine) {
+templ Medicines(medicines []actions.Medicine) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
-		<h1 class="w-full font-bold text-2xl text-secondary">{ medicine.Name } </h1>
-		<hr/>
+		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavMedicine }</h1>
+		@components.Tabs(
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
+				GroupName: "Medicine",
+				Content:   allMedicines(medicines),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
+				GroupName: "Medicine",
+				Content:   newMedicine(),
+			})
+	</div>
+}
+
+templ allMedicines(medicines []actions.Medicine) {
+	if len(medicines) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavMedicine) }</span>
+	} else {
+		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+			for _, medicine := range medicines {
+				@components.JustLink("/medicine/"+strconv.Itoa(int(medicine.Id)), "Medicine page", medicineBrief(medicine))
+			}
+		</div>
+	}
+}
+
+templ medicineBrief(medicine actions.Medicine) {
+	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+		<div class={ "flex", "gap-x-5" }>
+			<span class="min-w-20 text-lg text-secondary font-bold">{ medicine.Name }</span>
+			<span class="w-20 text-lg text-secondary">{ fmt.Sprintf("%d %s", medicine.Dose, medicine.Unit) }</span>
+			<span class="min-w-20 text-lg text-secondary">{ i18n.StringsCtx(ctx).MedicinePackageLeftFmt(medicine.Amount) }</span>
+		</div>
+		@components.DeleteButton("medicine", i18n.StringsCtx(ctx).Medicine, strconv.Itoa(int(medicine.Id)), medicine.Name, true)
+	</div>
+}
+
+templ newMedicine() {
+	if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionWriteMedicine) {
+		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavMedicine)
+	} else {
 		<form
 			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
 			hx-encoding="application/json"
-			hx-put={ "/api/medicine/" + strconv.Itoa(int(medicine.Id)) }
+			hx-post="/api/medicine"
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"
@@ -30,8 +74,6 @@ templ Medicine(medicine actions.Medicine) {
 					Autofocus:   true,
 					Title:       i18n.StringsCtx(ctx).Medicine,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineName,
-					Value:       medicine.Name,
-					Disabled:    true,
 				})
 				@components.Input(components.InputOptions{
 					Id:          "dose",
@@ -41,20 +83,16 @@ templ Medicine(medicine actions.Medicine) {
 					Autofocus:   false,
 					Title:       i18n.StringsCtx(ctx).MedicineDose,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
-					Disabled:    true,
-					Value:       strconv.Itoa(medicine.Dose),
 				})
 				@components.Select(components.SelectParams{
 					Id:          "unit",
 					Name:        i18n.StringsCtx(ctx).MedicineUnit,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineUnit,
 					Required:    true,
-					Disabled:    true,
 					Options: []components.SelectOption{
 						{Name: "mg", Value: "mg"},
 						{Name: "IU", Value: "IU"},
 					},
-					SelectedValue: medicine.Unit,
 				})
 				@components.Input(components.InputOptions{
 					Id:          "amount",
@@ -64,13 +102,12 @@ templ Medicine(medicine actions.Medicine) {
 					Autofocus:   false,
 					Title:       i18n.StringsCtx(ctx).MedicineAmount,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineAmount,
-					Value:       strconv.Itoa(medicine.Amount),
 				})
 				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
-					{ i18n.StringsCtx(ctx).FormsUpdate }
+					{ i18n.StringsCtx(ctx).FormsSubmit }
 				</button>
 			</div>
 			<div id="status-msg"></div>
 		</form>
-	</div>
+	}
 }

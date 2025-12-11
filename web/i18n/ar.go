@@ -18,6 +18,7 @@ var arabic = Keys{
 			return fmt.Sprintf("لا يمكن وصف %d عبوة من %s، حيث لا يزال هناك %d عبوة متبقية منه", exceedingAmount, medicineName, leftPackages)
 		}
 	},
+
 	MessageSuccess: "تمت العملية بنجاح",
 	MessageDeleteConfirmFmt: func(resourceType, resourceName string) string {
 		return fmt.Sprintf("هل انت متأكد من حذف '%s' %s؟", resourceName, resourceType)
@@ -185,6 +186,8 @@ var arabic = Keys{
 	CheckUpPrescribedMedicines:      "الادوية الموصوفة",
 	EnterCheckUpPrescribedMedicines: "اختر الادوية الموصوفة",
 	CheckUpAddPrescribedMedicine:    "اضف دواء",
+	CheckUpExtraReason:              "ملاحظة اضافية",
+	EnterCheckUpExtraReason:         "ادخل الملاحظة الاضافية",
 	NationalitySyrian:               "سوري",
 	NationalityPalestinian:          "فلسطيني",
 	NationalityIraqi:                "عراقي",

@@ -6,11 +6,13 @@ type SelectOption struct {
 }
 
 type SelectParams struct {
-	Id          string
-	Name        string
-	Placeholder string
-	Required    bool
-	Options     []SelectOption
+	Id            string
+	Name          string
+	Placeholder   string
+	Required      bool
+	Disabled      bool
+	SelectedValue string
+	Options       []SelectOption
 }
 
 templ Select(params SelectParams) {
@@ -19,14 +21,31 @@ templ Select(params SelectParams) {
 		<select
 			name={ params.Id }
 			id={ params.Id }
-			class={ "min-w-20", "p-[10px]", "rounded-[8px]", "bg-secondary", "text-primary" }
+			class={
+				"min-w-20", "p-[10px]", "rounded-[8px]",
+				"bg-secondary", "disabled:bg-secondary-trans-69",
+				"text-primary", "disabled:text-primary-trans-69",
+			}
 			if params.Required {
 				required
 			}
+			if params.Disabled {
+				disabled
+			}
 		>
-			<option selected="true" disabled="disabled">{ params.Placeholder }</option>
+			<option
+				if params.SelectedValue == "" {
+					selected="true"
+				}
+				disabled="disabled"
+			>{ params.Placeholder }</option>
 			for _, option := range params.Options {
-				<option value={ option.Value }>{ option.Name }</option>
+				<option
+					value={ option.Value }
+					if option.Value == params.SelectedValue {
+						selected="true"
+					}
+				>{ option.Name }</option>
 			}
 		</select>
 	</div>

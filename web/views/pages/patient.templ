@@ -375,6 +375,15 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 					{Name: i18n.StringsCtx(ctx).ActiveBleeding, Value: "active_bleeding"},
 				},
 			})
+			@components.Input(components.InputOptions{
+				Id:          "visit_extra_details",
+				Name:        "visit_extra_details",
+				Type:        components.InputTypeText,
+				Required:    false,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).CheckUpExtraReason,
+				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpExtraReason,
+			})
 			<div id="prescribed_medicines" class={ "flex", "flex-col", "gap-3" }>
 				<div id="single_medicine" class={ "flex", "gap-3" }>
 					@medicineInCheckUp(allMedicine)

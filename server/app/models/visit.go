@@ -19,6 +19,7 @@ type Visit struct {
 	Id        uint        `gorm:"primaryKey;autoIncrement"`
 	PatientId uint        `gorm:"not null"`
 	Reason    VisitReason `gorm:"not null"`
+	Notes     string
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

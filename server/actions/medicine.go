@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"errors"
 	"shs/app/models"
 )
 
@@ -52,13 +51,21 @@ func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePay
 
 type UpdateMedicineParams struct {
 	ActionContext
+	MedicineId uint `json:"medicine_id"`
+	Amount     int  `json:"amount"`
 }
 
 type UpdateMedicinePayload struct {
 }
 
 func (a *Actions) UpdateMedicine(params UpdateMedicineParams) (UpdateMedicinePayload, error) {
-	return UpdateMedicinePayload{}, errors.New("not implemented")
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return UpdateMedicinePayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.UpdateMedicineAmount(params.MedicineId, params.Amount)
+
+	return UpdateMedicinePayload{}, err
 }
 
 type DeleteMedicineParams struct {
@@ -75,6 +82,33 @@ func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePay
 	}
 
 	return DeleteMedicinePayload{}, a.app.DeleteMedicine(params.MedicineId)
+}
+
+type GetMedicineParams struct {
+	ActionContext
+	MedicineId uint `json:"medicine_id"`
+}
+
+type GetMedicinePayload struct {
+	Data Medicine `json:"data"`
+}
+
+func (a *Actions) GetMedicine(params GetMedicineParams) (GetMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return GetMedicinePayload{}, ErrPermissionDenied{}
+	}
+
+	medicine, err := a.app.GetMedicine(params.MedicineId)
+	if err != nil {
+		return GetMedicinePayload{}, err
+	}
+
+	outMedicine := new(Medicine)
+	outMedicine.FromModel(medicine)
+
+	return GetMedicinePayload{
+		Data: *outMedicine,
+	}, nil
 }
 
 type ListAllMedicineParams struct {
