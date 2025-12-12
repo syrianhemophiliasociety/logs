@@ -1,0 +1,11 @@
+package components
+
+type ScrollableListParams struct {
+	Class []string
+}
+
+templ ScrollableList(params ScrollableListParams) {
+	<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		{ children... }
+	</div>
+}

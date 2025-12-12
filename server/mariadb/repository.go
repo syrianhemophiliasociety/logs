@@ -368,6 +368,51 @@ func (r *Repository) ListPatientBloodTestResults(patientId uint) ([]models.Blood
 	return bloodTestResults, nil
 }
 
+func (r *Repository) SetBloodTestResultPending(id uint, pending bool) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTestResult)).
+			Where("id = ?", id).
+			Update("pending", pending).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "blood_test_result",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) CreateBloodTestResultFilledFields(filledFields []models.BloodTestFilledField) error {
+	for i := range filledFields {
+		filledFields[i].CreatedAt = time.Now().UTC()
+		filledFields[i].UpdatedAt = time.Now().UTC()
+	}
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTestFilledField)).
+			Create(filledFields).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return &app.ErrExists{
+			ResourceName: "blood_test_result_field",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) CreateVirus(virus models.Virus) (models.Virus, error) {
 	virus.CreatedAt = time.Now().UTC()
 	virus.UpdatedAt = time.Now().UTC()
@@ -388,7 +433,6 @@ func (r *Repository) CreateVirus(virus models.Virus) (models.Virus, error) {
 	}
 
 	return virus, nil
-
 }
 
 func (r *Repository) DeleteVirus(id uint) error {

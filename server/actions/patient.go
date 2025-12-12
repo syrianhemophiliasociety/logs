@@ -5,7 +5,6 @@ import (
 	"shs/app"
 	"shs/app/models"
 	"shs/cardgen"
-	"shs/log"
 	"slices"
 	"strings"
 	"time"
@@ -20,6 +19,7 @@ type BloodTestFilledField struct {
 }
 
 type BloodTestResult struct {
+	Id           uint                   `json:"id"`
 	Name         string                 `json:"name"`
 	BloodTestId  uint                   `json:"blood_test_id"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
@@ -179,6 +179,7 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 		}
 
 		(*p).BloodTestResults = append((*p).BloodTestResults, BloodTestResult{
+			Id:           btr.Id,
 			BloodTestId:  btr.BloodTestId,
 			Name:         bloodTestNames[btr.BloodTestId],
 			FilledFields: fields,
@@ -204,6 +205,45 @@ type CreatePatientParams struct {
 
 type CreatePatientPayload struct {
 	PatientPublicId string `json:"id"`
+}
+
+func cleanPhoneNumberCountryCode(num string) string {
+	countryCodes := []string{
+		"93", "355", "213", "376", "244", "54", "374", "297", "61", "43",
+		"994", "973", "880", "375", "32", "501", "229", "975", "591", "387",
+		"267", "55", "673", "359", "226", "257", "855", "237", "1", "238",
+		"236", "235", "56", "86", "57", "269", "242", "243", "506", "225",
+		"385", "53", "357", "420", "45", "253", "593", "20", "503", "240",
+		"291", "372", "251", "500", "298", "679", "358", "33", "241", "220",
+		"995", "49", "233", "350", "30", "299", "502", "224", "245", "592",
+		"509", "504", "852", "36", "354", "91", "62", "98", "964", "353",
+		"972", "39", "81", "962", "7", "254", "686", "383", "965", "996",
+		"856", "371", "961", "266", "231", "218", "423", "370", "352", "853",
+		"389", "261", "265", "60", "960", "223", "356", "222", "230", "52",
+		"373", "377", "976", "382", "212", "258", "95", "264", "674", "977",
+		"31", "687", "64", "505", "227", "234", "47", "968", "92", "970",
+		"507", "675", "595", "51", "63", "48", "351", "974", "40", "7",
+		"250", "685", "378", "239", "966", "221", "381", "248", "232", "65",
+		"421", "386", "677", "252", "27", "82", "211", "34", "94", "249",
+		"597", "46", "41", "963", "886", "992", "255", "66", "670", "228",
+		"676", "216", "90", "993", "688", "256", "380", "971", "44", "598",
+		"998", "678", "58", "84", "681", "260", "263", "247", "246", "599",
+		"682", "691", "508", "680", "690",
+	}
+
+	for _, code := range countryCodes {
+		if cut, ok := strings.CutPrefix(num, "+"+code); ok {
+			return cut
+		}
+		if cut, ok := strings.CutPrefix(num, "00"+code); ok {
+			return cut
+		}
+		if cut, ok := strings.CutPrefix(num, code); ok {
+			return cut
+		}
+	}
+
+	return num
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
@@ -262,51 +302,21 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		newPatient.PlaceOfBirth = placeOfBirth
 	}
 
-	allViri, err := a.app.ListAllViri()
+	newPatient, err := a.app.CreatePatient(newPatient)
 	if err != nil {
 		return CreatePatientPayload{}, err
 	}
 
-	for _, virus := range params.NewPatient.Viri {
-		matchedVirusIndex := slices.IndexFunc(allViri, func(v models.Virus) bool {
-			return v.Id == virus.Id
-		})
-		if matchedVirusIndex < 0 {
-			continue
-		}
-		newPatient.Viri = append(newPatient.Viri, allViri[matchedVirusIndex])
-	}
-
-	newPatient, err = a.app.CreatePatient(newPatient)
-	if err != nil {
-		return CreatePatientPayload{}, err
-	}
-
-	for _, btr := range params.NewPatient.BloodTestResults {
-		bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(btr.FilledFields))
-		for _, field := range btr.FilledFields {
-			bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
-				BloodTestResultId: btr.BloodTestId,
-				BloodTestFieldId:  field.BloodTestFieldId,
-				ValueNumber:       field.ValueNumber,
-				ValueString:       field.ValueString,
-			})
-		}
-
-		_, err := a.app.CreateBloodTestResult(models.BloodTestResult{
-			BloodTestId:  btr.BloodTestId,
-			PatientId:    newPatient.Id,
-			FilledFields: bloodTestResultFields,
-		})
-		if err != nil {
-			log.Errorf("failed creating blood test result: %v\n", err)
-		}
+	// INFO: in case of minors without a national id, the password will be the patient's phone number without the country code
+	password := params.NewPatient.NationalId
+	if password == "" {
+		password = cleanPhoneNumberCountryCode(params.NewPatient.PhoneNumber)
 	}
 
 	_, err = a.app.CreateAccount(models.Account{
 		DisplayName: newPatient.FirstName + " " + newPatient.LastName,
 		Username:    newPatient.PublicId,
-		Password:    newPatient.NationalId,
+		Password:    password,
 		Type:        models.AccountTypePatient,
 		Permissions: patientPermissions,
 	})
@@ -358,6 +368,51 @@ func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (C
 	}
 
 	return CreatePatientBloodTestPayload{}, nil
+}
+
+type UpdatePatientPendingBloodTestResultParams struct {
+	ActionContext
+	BloodTestResultId uint
+	PatientPublicId   string
+	FilledFields      []BloodTestFilledField `json:"filled_fields"`
+}
+
+type UpdatePatientPendingBloodTestResultPayload struct {
+}
+
+func (a *Actions) UpdatePatientPendingBloodTestResult(params UpdatePatientPendingBloodTestResultParams) (UpdatePatientPendingBloodTestResultPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return UpdatePatientPendingBloodTestResultPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	if err != nil {
+		return UpdatePatientPendingBloodTestResultPayload{}, err
+	}
+
+	if !slices.ContainsFunc(patient.BloodTestResults, func(btr models.BloodTestResult) bool {
+		return btr.Id == params.BloodTestResultId
+	}) {
+		return UpdatePatientPendingBloodTestResultPayload{}, app.ErrNotFound{
+			ResourceName: "blood_test_result",
+		}
+	}
+
+	bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(params.FilledFields))
+	for _, field := range params.FilledFields {
+		bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
+			BloodTestFieldId: field.BloodTestFieldId,
+			ValueNumber:      field.ValueNumber,
+			ValueString:      field.ValueString,
+		})
+	}
+
+	err = a.app.UpdatePatientPendingBloodTestResultFields(params.BloodTestResultId, bloodTestResultFields)
+	if err != nil {
+		return UpdatePatientPendingBloodTestResultPayload{}, err
+	}
+
+	return UpdatePatientPendingBloodTestResultPayload{}, nil
 }
 
 type FindPatientsParams struct {

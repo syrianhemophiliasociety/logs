@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"shs/actions"
 	"shs/log"
+	"strconv"
 )
 
 type patientApi struct {
@@ -231,6 +232,38 @@ func (e *patientApi) HandleListPatientVisits(w http.ResponseWriter, r *http.Requ
 		ActionContext: ctx,
 		PatientId:     r.PathValue("id"),
 	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleUpdatePendingBloodTestResult(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	btrId, err := strconv.Atoi(r.PathValue("btr_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var params actions.UpdatePatientPendingBloodTestResultParams
+	err = json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+	params.ActionContext = ctx
+	params.PatientPublicId = r.PathValue("id")
+	params.BloodTestResultId = uint(btrId)
+
+	payload, err := e.usecases.UpdatePatientPendingBloodTestResult(params)
 	if err != nil {
 		handleErrorResponse(w, err)
 		return

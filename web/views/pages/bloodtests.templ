@@ -32,7 +32,7 @@ templ allBloodTests(bloodTests []actions.BloodTest) {
 	if len(bloodTests) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
 	} else {
-		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, bloodTest := range bloodTests {
 				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
 					<div class={ "flex", "gap-x-5", "items-center" }>
@@ -44,7 +44,7 @@ templ allBloodTests(bloodTests []actions.BloodTest) {
 					@components.DeleteButton("blood-test", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
 				</div>
 			}
-		</div>
+		}
 	}
 }
 

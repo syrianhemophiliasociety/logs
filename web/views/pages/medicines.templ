@@ -32,11 +32,11 @@ templ allMedicines(medicines []actions.Medicine) {
 	if len(medicines) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavMedicine) }</span>
 	} else {
-		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, medicine := range medicines {
 				@components.JustLink("/medicine/"+strconv.Itoa(int(medicine.Id)), "Medicine page", medicineBrief(medicine))
 			}
-		</div>
+		}
 	}
 }
 

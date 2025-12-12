@@ -77,6 +77,7 @@ func main() {
 	pagesHandler.HandleFunc("GET /management/account/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandleAccountManagementPage)))
 	pagesHandler.HandleFunc("GET /patients", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientsPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
+	pagesHandler.HandleFunc("GET /patient/{id}/blood-test-result/{btr_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientBloodTestResultPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}/visit/{visit_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
 	pagesHandler.HandleFunc("GET /patient/medications", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientMedicationsPage)))
 
@@ -111,6 +112,7 @@ func main() {
 	apisHandler.HandleFunc("POST /patient/{id}/blood-test", authMiddleware.AuthApi(patientApi.HandleAddPatientBloodTest))
 	apisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCreatePatientCheckUp))
 	apisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
+	apisHandler.HandleFunc("PUT /patient/{id}/blood-test-result/{btr_id}/pending", authMiddleware.AuthApi(patientApi.HandleUpdatePatientPendingBloodTestResult))
 	apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 
 	applicationHandler := http.NewServeMux()

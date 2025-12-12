@@ -24,7 +24,7 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).NavBloodTests,
 				TitleId:   "blood-tests",
 				GroupName: "Patient",
-				Content:   patientBloodTests(patient.BloodTests),
+				Content:   patientBloodTests(patient, patient.BloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).NavViruses,
@@ -197,31 +197,28 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 	</div>
 }
 
-templ patientBloodTests(bloodTests []actions.BloodTestResult) {
+templ patientBloodTestsBrief(bt actions.BloodTestResult) {
+	<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+		<span class={ "font-bold", "text-lg" }>
+			{ bt.Name }
+		</span>
+		<span class={ "text-[#DE3333]" }>
+			if bt.Pending {
+				{ i18n.StringsCtx(ctx).BloodTestPending }
+			}
+		</span>
+	</div>
+}
+
+templ patientBloodTests(patient actions.Patient, bloodTests []actions.BloodTestResult) {
 	if len(bloodTests) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
 	} else {
-		<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, bt := range bloodTests {
-				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
-					<span class={ "font-bold", "text-lg" }>
-						{ bt.Name }
-					</span>
-					<span class={ "text-[#DE3333]" }>
-						if bt.Pending {
-							{ i18n.StringsCtx(ctx).BloodTestPending }
-						}
-					</span>
-					if !bt.Pending {
-						for _, btField := range bt.FilledFields {
-							<br/>
-							<b>{ btField.Name }:</b>&nbsp;{ btField.ValueString }{ btField.Unit }
-						}
-					}
-					<br/>
-				</div>
+				@components.JustLink(fmt.Sprintf("/patient/%s/blood-test-result/%d", patient.PublicId, bt.Id), "Patient blood test result", patientBloodTestsBrief(bt))
 			}
-		</div>
+		}
 	}
 }
 
@@ -407,7 +404,7 @@ templ patientVisits(patient actions.Patient, visits []actions.Visit) {
 	if len(visits) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).TabsVisits) }</span>
 	} else {
-		<div class={ "flex", "flex-col", "gap-3", "w-full" }>
+		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, visit := range visits {
 				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
 					<span class={ "font-bold", "text-lg" }>
@@ -415,6 +412,6 @@ templ patientVisits(patient actions.Patient, visits []actions.Visit) {
 					</span>
 				</div>
 			}
-		</div>
+		}
 	}
 }

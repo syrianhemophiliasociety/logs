@@ -24,6 +24,8 @@ type Repository interface {
 
 	CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error)
 	ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error)
+	SetBloodTestResultPending(id uint, pending bool) error
+	CreateBloodTestResultFilledFields(filledFields []models.BloodTestFilledField) error
 
 	CreateVirus(virus models.Virus) (models.Virus, error)
 	DeleteVirus(id uint) error

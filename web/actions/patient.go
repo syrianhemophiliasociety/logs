@@ -23,6 +23,7 @@ type BloodTestFilledField struct {
 }
 
 type BloodTestResult struct {
+	Id           uint                   `json:"id"`
 	BloodTestId  uint                   `json:"blood_test_id"`
 	Name         string                 `json:"name"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
@@ -322,10 +323,18 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 	doTestLater, _ := data["do_later"].(string)
 
 	for id, fields := range bloodTestsFields {
+		cleanedFields := make([]BloodTestFilledField, 0, len(fields))
+		for _, f := range fields {
+			if f.ValueString == "" {
+				continue
+			}
+			cleanedFields = append(cleanedFields, f)
+		}
+
 		(*p).BloodTests = append((*p).BloodTests, BloodTestResult{
 			BloodTestId:  id,
 			Name:         bloodTestNames[id],
-			FilledFields: fields,
+			FilledFields: cleanedFields,
 			Pending:      doTestLater == "on",
 		})
 	}
@@ -352,6 +361,29 @@ func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (C
 		body: map[string]any{
 			"patient_id":         params.PatientId,
 			"patient_blood_test": params.PatientBloodTest,
+		},
+	})
+}
+
+type UpdatePatientPendingBloodTestParams struct {
+	RequestContext
+	PatientId         string
+	BloodTestResultId string
+	FilledFields      []BloodTestFilledField
+}
+
+type UpdatePatientPendingBloodTestPayload struct {
+}
+
+func (a *Actions) UpdatePatientPendingBloodTest(params UpdatePatientPendingBloodTestParams) (UpdatePatientPendingBloodTestPayload, error) {
+	return makeRequest[map[string]any, UpdatePatientPendingBloodTestPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPut,
+		endpoint: fmt.Sprintf("/v1/patient/%s/bloodtest/%s/pending", params.PatientId, params.BloodTestResultId),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"filled_fields": params.FilledFields,
 		},
 	})
 }
@@ -430,18 +462,18 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 	}
 
 	const (
-		visitReason       = "visit_reason"
-		visitExtraDetails = "visit_extra_details"
-		medicineIdsKey    = "medicine_id"
-		medicineAmountKey = "amount"
+		visitReasonKey       = "visit_reason"
+		visitExtraDetailsKey = "visit_extra_details"
+		medicineIdsKey       = "medicine_id"
+		medicineAmountKey    = "amount"
 	)
 
 	var ok bool
-	(*v).VisitReason, ok = data[visitReason].(string)
+	(*v).VisitReason, ok = data[visitReasonKey].(string)
 	if !ok {
 		return errors.New("missing visit_reason")
 	}
-	(*v).VisitExtraDetails, _ = data[visitExtraDetails].(string)
+	(*v).VisitExtraDetails, _ = data[visitExtraDetailsKey].(string)
 
 	_, ok = data[medicineIdsKey]
 	if !ok {

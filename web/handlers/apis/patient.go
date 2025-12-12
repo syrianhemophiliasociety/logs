@@ -198,3 +198,37 @@ func (v *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request)
 
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
+
+func (v *patientApi) HandleUpdatePatientPendingBloodTestResult(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+	btrId := r.PathValue("btr_id")
+
+	var reqBody actions.PatientBloodTests
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.UpdatePatientPendingBloodTest(actions.UpdatePatientPendingBloodTestParams{
+		RequestContext:    ctx,
+		PatientId:         patientId,
+		BloodTestResultId: btrId,
+		FilledFields:      reqBody.BloodTests[0].FilledFields,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}

@@ -78,6 +78,7 @@ type Keys struct {
 	MedicinePackageLeftFmt func(n int) string
 
 	BloodTest                         string
+	BloodTestResult                   string
 	BloodTestDetails                  string
 	BloodTestName                     string
 	EnterBloodTestName                string
@@ -90,6 +91,7 @@ type Keys struct {
 	RemoveBloodTest                   string
 	BloodTestDoLater                  string
 	BloodTestPending                  string
+	BloodTestPendingInfo              string
 	PrimaryProphylaxis                string
 	SecondaryProphylaxis              string
 	Surgery                           string

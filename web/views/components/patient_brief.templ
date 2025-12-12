@@ -9,11 +9,11 @@ templ PatientsBrief(patients []actions.Patient) {
 	if len(patients) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavPatients) }</span>
 	} else {
-		<div class={ "w-full", "h-full", "overflow-y-scroll", "flex", "flex-col", "gap-y-2" }>
+		@ScrollableList(ScrollableListParams{}) {
 			for _, patient := range patients {
 				@JustLink("/patient/"+patient.PublicId, "Patient page", patientBrief(patient))
 			}
-		</div>
+		}
 	}
 }
 

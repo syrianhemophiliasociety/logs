@@ -92,6 +92,7 @@ var english = Keys{
 	},
 
 	BloodTest:               "Blood test",
+	BloodTestResult:         "Blood test result",
 	BloodTestDetails:        "Blood test details",
 	BloodTestName:           "Blood test name",
 	EnterBloodTestName:      "Enter blood test's name",
@@ -107,6 +108,7 @@ var english = Keys{
 	RemoveBloodTest:                 "Remove test",
 	BloodTestDoLater:                "Do later",
 	BloodTestPending:                "Test pending",
+	BloodTestPendingInfo:            "Blood test is not complete, fill the fields below to complete it",
 	PrimaryProphylaxis:              "Primary Prophylaxis",
 	SecondaryProphylaxis:            "Secondary Prophylaxis",
 	Surgery:                         "Surgery",

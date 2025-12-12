@@ -25,3 +25,16 @@ func (a *App) CreateBloodTestResult(btr models.BloodTestResult) (models.BloodTes
 func (a *App) ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error) {
 	return a.repo.ListPatientBloodTestResults(patientId)
 }
+
+func (a *App) UpdatePatientPendingBloodTestResultFields(btrId uint, fields []models.BloodTestFilledField) error {
+	err := a.repo.SetBloodTestResultPending(btrId, false)
+	if err != nil {
+		return err
+	}
+
+	for i := range fields {
+		fields[i].BloodTestResultId = btrId
+	}
+
+	return a.repo.CreateBloodTestResultFilledFields(fields)
+}

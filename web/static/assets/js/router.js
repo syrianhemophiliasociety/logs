@@ -102,16 +102,6 @@ window.addEventListener("load", () => {
   updateActiveNavLink();
 });
 
-window.addEventListener("popstate", async (e) => {
-  const mainContentsEl = document.getElementById("main-contents");
-  if (!!mainContentsEl && !!e.target.location.pathname) {
-    e.stopImmediatePropagation();
-    e.preventDefault();
-    await updateMainContent(e.target.location.pathname);
-    return;
-  }
-});
-
 document.addEventListener("htmx:afterRequest", function (e) {
   if (!!e.detail && !!e.detail.xhr) {
     const newTitle = e.detail.xhr.getResponseHeader("HX-Title");
