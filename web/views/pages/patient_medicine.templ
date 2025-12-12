@@ -13,14 +13,14 @@ templ patientMedForm(medicine actions.PrescribedMedicine) {
 
 templ patientMedsSelect(meds []actions.PrescribedMedicine) {
 	{{
-	contents := make([]components.SelectContent, 0, len(meds))
-	for _, med := range meds {
-		contents = append(contents, components.SelectContent{
-			Title:   fmt.Sprintf("%s %d%s", med.Name, med.Dose, med.Unit),
-			TitleId: strconv.Itoa(int(med.PrescribedMedicineId)),
-			Content: patientMedForm(med),
-		})
-	}
+		contents := make([]components.SelectContent, 0, len(meds))
+		for _, med := range meds {
+			contents = append(contents, components.SelectContent{
+				Title:   fmt.Sprintf("%s %d %s", med.Name, med.Dose, med.Unit),
+				TitleId: strconv.Itoa(int(med.PrescribedMedicineId)),
+				Content: patientMedForm(med),
+			})
+		}
 	}}
 	@components.SelectContents(components.SelectContentsParams{
 		Title:    i18n.StringsCtx(ctx).Medicine,
