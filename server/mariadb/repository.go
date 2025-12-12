@@ -413,6 +413,28 @@ func (r *Repository) CreateBloodTestResultFilledFields(filledFields []models.Blo
 	return nil
 }
 
+func (r *Repository) UpdateBloodTestResultCreatedAt(id uint, ts time.Time) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTestResult)).
+			Where("id = ?", id).
+			Update("created_at", ts).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "blood_test_result",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (r *Repository) CreateVirus(virus models.Virus) (models.Virus, error) {
 	virus.CreatedAt = time.Now().UTC()
 	virus.UpdatedAt = time.Now().UTC()

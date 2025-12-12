@@ -198,15 +198,20 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 }
 
 templ patientBloodTestsBrief(bt actions.BloodTestResult) {
-	<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
-		<span class={ "font-bold", "text-lg" }>
-			{ bt.Name }
-		</span>
-		<span class={ "text-[#DE3333]" }>
-			if bt.Pending {
-				{ i18n.StringsCtx(ctx).BloodTestPending }
-			}
-		</span>
+	<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between" }>
+		<div>
+			<span class={ "font-bold", "text-lg" }>
+				{ bt.Name }
+			</span>
+			<span class={ "text-[#DE3333]" }>
+				if bt.Pending {
+					{ i18n.StringsCtx(ctx).BloodTestPending }
+				}
+			</span>
+		</div>
+		<div>
+			{ bt.CreatedAt.Format("2006 Jan/02") }
+		</div>
 	</div>
 }
 

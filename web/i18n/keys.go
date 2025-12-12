@@ -92,6 +92,7 @@ type Keys struct {
 	BloodTestDoLater                  string
 	BloodTestPending                  string
 	BloodTestPendingInfo              string
+	BloodTestDate                     string
 	PrimaryProphylaxis                string
 	SecondaryProphylaxis              string
 	Surgery                           string

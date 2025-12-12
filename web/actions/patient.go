@@ -28,6 +28,7 @@ type BloodTestResult struct {
 	Name         string                 `json:"name"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
 	Pending      bool                   `json:"pending"`
+	CreatedAt    time.Time              `json:"created_at"`
 }
 
 type Address struct {

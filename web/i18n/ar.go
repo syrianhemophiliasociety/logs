@@ -111,6 +111,7 @@ var arabic = Keys{
 	BloodTestDoLater:                "القيام بالتحليل لاحقا",
 	BloodTestPending:                "التحليل غير مكتمل",
 	BloodTestPendingInfo:            "لم يكتمل تحليل الدم، يرجى ملء الحقول أدناه لإكماله",
+	BloodTestDate:                   "تاريخ التحليل",
 	PrimaryProphylaxis:              "العلاج الوقائي الأولي",
 	SecondaryProphylaxis:            "العلاج الوقائي الثانوي",
 	Surgery:                         "عمل جراحي",

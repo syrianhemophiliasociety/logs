@@ -24,6 +24,7 @@ type BloodTestResult struct {
 	BloodTestId  uint                   `json:"blood_test_id"`
 	FilledFields []BloodTestFilledField `json:"filled_fields"`
 	Pending      bool                   `json:"pending"`
+	CreatedAt    time.Time              `json:"created_at"`
 }
 
 type Address struct {
@@ -88,6 +89,7 @@ func (p Patient) IntoModel() models.Patient {
 			BloodTestId:  btr.BloodTestId,
 			FilledFields: bloodTestResultFields,
 			Pending:      btr.Pending,
+			CreatedAt:    btr.CreatedAt,
 		})
 	}
 
@@ -184,6 +186,7 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 			Name:         bloodTestNames[btr.BloodTestId],
 			FilledFields: fields,
 			Pending:      btr.Pending,
+			CreatedAt:    btr.CreatedAt,
 		})
 	}
 }

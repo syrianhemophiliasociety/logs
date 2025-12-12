@@ -1,6 +1,9 @@
 package app
 
-import "shs/app/models"
+import (
+	"shs/app/models"
+	"time"
+)
 
 func (a *App) CreateBloodTest(bt models.BloodTest) (models.BloodTest, error) {
 	return a.repo.CreateBloodTest(bt)
@@ -28,6 +31,11 @@ func (a *App) ListPatientBloodTestResults(patientId uint) ([]models.BloodTestRes
 
 func (a *App) UpdatePatientPendingBloodTestResultFields(btrId uint, fields []models.BloodTestFilledField) error {
 	err := a.repo.SetBloodTestResultPending(btrId, false)
+	if err != nil {
+		return err
+	}
+
+	err = a.repo.UpdateBloodTestResultCreatedAt(btrId, time.Now().UTC())
 	if err != nil {
 		return err
 	}

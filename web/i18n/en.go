@@ -109,6 +109,7 @@ var english = Keys{
 	BloodTestDoLater:                "Do later",
 	BloodTestPending:                "Test pending",
 	BloodTestPendingInfo:            "Blood test is not complete, fill the fields below to complete it",
+	BloodTestDate:                   "Test date",
 	PrimaryProphylaxis:              "Primary Prophylaxis",
 	SecondaryProphylaxis:            "Secondary Prophylaxis",
 	Surgery:                         "Surgery",

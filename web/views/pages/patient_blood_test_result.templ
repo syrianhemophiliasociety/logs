@@ -11,7 +11,6 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).BloodTestResult } &quot;{ btr.Name }&quot; { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
 		<hr/>
-		<br/>
 		if btr.Pending {
 			<span class="w-full font-bold text-2xl text-[#DE3333]">{ i18n.StringsCtx(ctx).BloodTestPendingInfo }</span>
 			<form
@@ -60,6 +59,14 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 		} else {
 			<table class={ "w-1/3" }>
 				<tbody>
+					<tr>
+						<td>
+							<b>{ i18n.StringsCtx(ctx).BloodTestDate }</b>
+						</td>
+						<td>
+							{  btr.CreatedAt.Format("2006 Jan/02") }
+						</td>
+					</tr>
 					for _, btField := range btr.FilledFields {
 						<tr>
 							<td>
