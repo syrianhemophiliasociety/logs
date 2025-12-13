@@ -54,6 +54,7 @@ type Keys struct {
 	TabsCreate  string
 	TabsCheckup string
 	TabsVisits  string
+	TabsJoints  string
 
 	FormsSubmit   string
 	FormsDelete   string

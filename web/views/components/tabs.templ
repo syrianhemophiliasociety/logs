@@ -9,9 +9,13 @@ type TabContent struct {
 	TitleId   string
 	GroupName string
 	Content   templ.Component
+	SubTab    bool
 }
 
 func (t TabContent) id() string {
+	if t.SubTab {
+		return actions.Slugify(fmt.Sprintf("sub-%s-%s", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId)))
+	}
 	return actions.Slugify(fmt.Sprintf("%s-%s", strings.ToLower(t.GroupName), strings.ToLower(t.TitleId)))
 }
 
@@ -23,7 +27,9 @@ func tabClickActionHS(currentTabIndex int, tabs []TabContent) string {
 		if i == currentTabIndex {
 			fmt.Fprintf(hsAction, "remove .hidden from #%s\n", tab.id())
 			fmt.Fprintf(hsAction, "show #%s with *display\n", tab.id())
-			fmt.Fprintf(hsAction, "call Router.updateSearchQuery('tab','%s')", tab.id())
+			if !tab.SubTab {
+				fmt.Fprintf(hsAction, "call Router.updateSearchQuery('tab','%s')", tab.id())
+			}
 		} else {
 			fmt.Fprintf(hsAction, "hide #%s with *display\n", tab.id())
 		}
@@ -55,7 +61,11 @@ templ Tabs(tabs ...TabContent) {
 			for i, tab := range tabs {
 				<input
 					type="radio"
-					name="tab"
+					if tab.SubTab {
+						name="sub-tab"
+					} else {
+						name="tab"
+					}
 					id={ tab.id() + "-button" }
 					if i == 0 {
 						checked

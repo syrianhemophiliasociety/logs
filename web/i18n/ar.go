@@ -62,6 +62,7 @@ var arabic = Keys{
 	TabsCreate:            "أنشئ",
 	TabsCheckup:           "المراجعة",
 	TabsVisits:            "الزيارات",
+	TabsJoints:            "المفاصل",
 	FormsSubmit:           "أرسل المحتوى",
 	FormsDelete:           "احذف المحتوى",
 	FormsNewField:         "حقل جديد",

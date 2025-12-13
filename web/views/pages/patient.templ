@@ -24,7 +24,7 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).NavBloodTests,
 				TitleId:   "blood-tests",
 				GroupName: "Patient",
-				Content:   patientBloodTests(patient, patient.BloodTests),
+				Content:   patientBloodTestsTab(patient, bloodTests),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).NavViruses,
@@ -33,20 +33,14 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Content:   patientViruses(patient, patient.Viri),
 			},
 			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).PatientAddBloodTest,
-				TitleId:   "add-blood-tests",
-				GroupName: "Patient",
-				Content:   addPatientBloodTestResult(patient, bloodTests),
-			},
-			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsVisits,
 				TitleId:   "visits",
 				GroupName: "Patient",
-				Content:   patientVisits(patient, visits),
+				Content:   patientVisitsTab(patient, allMedicine, visits),
 			},
 			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).TabsCheckup,
-				TitleId:   "checkup",
+				Title:     i18n.StringsCtx(ctx).TabsJoints,
+				TitleId:   "joints",
 				GroupName: "Patient",
 				Content:   patientCheckup(patient, allMedicine),
 			},
@@ -197,6 +191,62 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 	</div>
 }
 
+templ patientBloodTestsTab(patient actions.Patient, bloodTests []actions.BloodTest) {
+	@components.Tabs(
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsList,
+			TitleId:   "list",
+			GroupName: "patient-blood-test-results",
+			Content:   patientBloodTests(patient),
+			SubTab:    true,
+		},
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsCreate,
+			TitleId:   "create",
+			GroupName: "patient-blood-test-results",
+			Content:   addPatientBloodTestResult(patient, bloodTests),
+			SubTab:    true,
+		})
+}
+
+templ patientVisitsTab(patient actions.Patient, allMedicine []actions.Medicine, visits []actions.Visit) {
+	@components.Tabs(
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsList,
+			TitleId:   "list",
+			GroupName: "patient-visit",
+			Content:   patientVisits(patient, visits),
+			SubTab:    true,
+		},
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsCreate,
+			TitleId:   "create",
+			GroupName: "patient-visit",
+			Content:   patientCheckup(patient, allMedicine),
+			SubTab:    true,
+		},
+	)
+}
+
+templ patientJointsTab(patient actions.Patient, allMedicine []actions.Medicine, visits []actions.Visit) {
+	@components.Tabs(
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsList,
+			TitleId:   "list",
+			GroupName: "patient-visit",
+			Content:   patientVisits(patient, visits),
+			SubTab:    true,
+		},
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsCreate,
+			TitleId:   "create",
+			GroupName: "patient-visit",
+			Content:   patientCheckup(patient, allMedicine),
+			SubTab:    true,
+		},
+	)
+}
+
 templ patientBloodTestsBrief(bt actions.BloodTestResult) {
 	<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between" }>
 		<div>
@@ -215,12 +265,12 @@ templ patientBloodTestsBrief(bt actions.BloodTestResult) {
 	</div>
 }
 
-templ patientBloodTests(patient actions.Patient, bloodTests []actions.BloodTestResult) {
-	if len(bloodTests) == 0 {
+templ patientBloodTests(patient actions.Patient) {
+	if len(patient.BloodTests) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
 	} else {
 		@components.ScrollableList(components.ScrollableListParams{}) {
-			for _, bt := range bloodTests {
+			for _, bt := range patient.BloodTests {
 				@components.JustLink(fmt.Sprintf("/patient/%s/blood-test-result/%d", patient.PublicId, bt.Id), "Patient blood test result", patientBloodTestsBrief(bt))
 			}
 		}
