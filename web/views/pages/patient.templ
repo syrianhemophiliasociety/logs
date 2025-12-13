@@ -42,7 +42,7 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).TabsJoints,
 				TitleId:   "joints",
 				GroupName: "Patient",
-				Content:   patientCheckup(patient, allMedicine),
+				Content:   patientJointsTab(patient),
 			},
 		)
 	</div>
@@ -197,14 +197,14 @@ templ patientBloodTestsTab(patient actions.Patient, bloodTests []actions.BloodTe
 			Title:     i18n.StringsCtx(ctx).TabsList,
 			TitleId:   "list",
 			GroupName: "patient-blood-test-results",
-			Content:   patientBloodTests(patient),
+			Content:   patientListBloodTestResults(patient),
 			SubTab:    true,
 		},
 		components.TabContent{
 			Title:     i18n.StringsCtx(ctx).TabsCreate,
 			TitleId:   "create",
 			GroupName: "patient-blood-test-results",
-			Content:   addPatientBloodTestResult(patient, bloodTests),
+			Content:   patientCreateBloodTestResult(patient, bloodTests),
 			SubTab:    true,
 		})
 }
@@ -215,33 +215,33 @@ templ patientVisitsTab(patient actions.Patient, allMedicine []actions.Medicine, 
 			Title:     i18n.StringsCtx(ctx).TabsList,
 			TitleId:   "list",
 			GroupName: "patient-visit",
-			Content:   patientVisits(patient, visits),
+			Content:   patientListVisits(patient, visits),
 			SubTab:    true,
 		},
 		components.TabContent{
 			Title:     i18n.StringsCtx(ctx).TabsCreate,
 			TitleId:   "create",
 			GroupName: "patient-visit",
-			Content:   patientCheckup(patient, allMedicine),
+			Content:   patientCreateVisit(patient, allMedicine),
 			SubTab:    true,
 		},
 	)
 }
 
-templ patientJointsTab(patient actions.Patient, allMedicine []actions.Medicine, visits []actions.Visit) {
+templ patientJointsTab(patient actions.Patient) {
 	@components.Tabs(
 		components.TabContent{
 			Title:     i18n.StringsCtx(ctx).TabsList,
 			TitleId:   "list",
-			GroupName: "patient-visit",
-			Content:   patientVisits(patient, visits),
+			GroupName: "patient-joints",
+			Content:   patientListJointsEvaluations(patient),
 			SubTab:    true,
 		},
 		components.TabContent{
 			Title:     i18n.StringsCtx(ctx).TabsCreate,
 			TitleId:   "create",
-			GroupName: "patient-visit",
-			Content:   patientCheckup(patient, allMedicine),
+			GroupName: "patient-joints",
+			Content:   patientCreateJointsEvaluation(patient),
 			SubTab:    true,
 		},
 	)
@@ -265,7 +265,7 @@ templ patientBloodTestsBrief(bt actions.BloodTestResult) {
 	</div>
 }
 
-templ patientBloodTests(patient actions.Patient) {
+templ patientListBloodTestResults(patient actions.Patient) {
 	if len(patient.BloodTests) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
 	} else {
@@ -348,7 +348,7 @@ func mapNewBloodTestToView(patient actions.Patient, bts []actions.BloodTest) []c
 	return bloodTestsViews
 }
 
-templ addPatientBloodTestResult(patient actions.Patient, bloodTests []actions.BloodTest) {
+templ patientCreateBloodTestResult(patient actions.Patient, bloodTests []actions.BloodTest) {
 	@components.SelectContents(
 		components.SelectContentsParams{
 			Title:    i18n.StringsCtx(ctx).EnterBloodTest,
@@ -399,7 +399,7 @@ templ medicineInCheckUp(medicines []actions.Medicine) {
 	})
 }
 
-templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
+templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine) {
 	<form
 		class={ "", "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
@@ -455,7 +455,7 @@ templ patientCheckup(patient actions.Patient, allMedicine []actions.Medicine) {
 	</form>
 }
 
-templ patientVisits(patient actions.Patient, visits []actions.Visit) {
+templ patientListVisits(patient actions.Patient, visits []actions.Visit) {
 	if len(visits) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).TabsVisits) }</span>
 	} else {
@@ -469,4 +469,100 @@ templ patientVisits(patient actions.Patient, visits []actions.Visit) {
 			}
 		}
 	}
+}
+
+templ patientListJointsEvaluations(patient actions.Patient) {
+	if len(patient.JointsEvaluations) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).JointsEvaluations) }</span>
+	} else {
+		@components.ScrollableList(components.ScrollableListParams{}) {
+			for _, je := range patient.JointsEvaluations {
+				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "gap-x-5" }>
+					<span class={ "font-bold", "text-lg" }>
+						{ je.CreatedAt.Format("2006 Jan/02") }
+					</span>
+					<span class={ "text-lg" }>
+						{ fmt.Sprintf("Score: %d", je.Result) }
+					</span>
+				</div>
+			}
+		}
+	}
+}
+
+templ patientCreateJointsEvaluation(patient actions.Patient) {
+	<form
+		class={ "flex", "flex-col", "gap-5" }
+		hx-encoding="application/json"
+		hx-post={ fmt.Sprintf("/api/patient/%s/joints-evaluation", patient.PublicId) }
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+	>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "right_ankle",
+				Name:        "right_ankle",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsRightAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsRightAnkle,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "left_ankle",
+				Name:        "left_ankle",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsLeftAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsLeftAnkle,
+			})
+		</div>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "right_knee",
+				Name:        "right_knee",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsRightAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsRightAnkle,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "left_knee",
+				Name:        "left_knee",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsLeftAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsLeftAnkle,
+			})
+		</div>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "right_elbow",
+				Name:        "right_elbow",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsRightAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsRightAnkle,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "left_elbow",
+				Name:        "left_elbow",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).JointsLeftAnkle,
+				Placeholder: i18n.StringsCtx(ctx).JointsLeftAnkle,
+			})
+		</div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+	</form>
 }

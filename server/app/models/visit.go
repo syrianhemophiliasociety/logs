@@ -17,7 +17,7 @@ const (
 
 type Visit struct {
 	Id        uint        `gorm:"primaryKey;autoIncrement"`
-	PatientId uint        `gorm:"not null"`
+	PatientId uint        `gorm:"index;not null"`
 	Reason    VisitReason `gorm:"not null"`
 	Notes     string
 

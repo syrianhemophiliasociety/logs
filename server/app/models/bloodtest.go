@@ -115,7 +115,7 @@ func (bt *BloodTest) AfterDelete(tx *gorm.DB) error {
 type BloodTestResult struct {
 	Id           uint                   `gorm:"primaryKey;autoIncrement"`
 	BloodTestId  uint                   `gorm:"not null"`
-	PatientId    uint                   `gorm:"not null"`
+	PatientId    uint                   `gorm:"index;not null"`
 	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestResultId"`
 	Pending      bool                   `gorm:"not null"`
 

@@ -232,3 +232,35 @@ func (v *patientApi) HandleUpdatePatientPendingBloodTestResult(w http.ResponseWr
 
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
+
+func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	var reqBody actions.JointsEvaluationRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.CreatePatientJointsEvaluation(actions.CreatePatientJointsEvaluationParams{
+		RequestContext:   ctx,
+		PatientId:        patientId,
+		JointsEvaluation: reqBody,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}

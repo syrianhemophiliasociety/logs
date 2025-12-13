@@ -271,3 +271,48 @@ func (e *patientApi) HandleUpdatePendingBloodTestResult(w http.ResponseWriter, r
 
 	_ = json.NewEncoder(w).Encode(payload)
 }
+
+func (e *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var reqBody actions.CreatePatientJointsEvaluationParams
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+	reqBody.ActionContext = ctx
+	reqBody.PatientId = r.PathValue("id")
+
+	payload, err := e.usecases.CreatePatientJointsEvaluation(reqBody)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to create patient's joints evaluation: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleListPatientJointsEvaluations(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListPatientJointsEvaluations(actions.ListPatientJointsEvaluationsParams{
+		ActionContext: ctx,
+		PatientId:     r.PathValue("id"),
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}

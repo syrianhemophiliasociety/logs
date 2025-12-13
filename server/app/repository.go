@@ -61,4 +61,7 @@ type Repository interface {
 	GetAllAddresses() ([]models.Address, error)
 	GetAllAddressesALike(searchAddress models.Address) ([]models.Address, error)
 	DeleteAddress(id uint) error
+
+	CreateJointEvaluation(je models.JointsEvaluation) (models.JointsEvaluation, error)
+	ListJointEvaluationsForPatient(patientId uint) ([]models.JointsEvaluation, error)
 }

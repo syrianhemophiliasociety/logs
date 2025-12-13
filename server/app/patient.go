@@ -61,6 +61,13 @@ func (a *App) GetFullPatientByPublicId(publicId string) (models.Patient, error) 
 
 	patient.BloodTestResults = bloodTests
 
+	jointsEvaluations, err := a.repo.ListJointEvaluationsForPatient(patient.Id)
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	patient.JointsEvaluations = jointsEvaluations
+
 	return patient, nil
 }
 

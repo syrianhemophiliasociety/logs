@@ -1188,6 +1188,50 @@ func (r *Repository) DeleteAddress(id uint) error {
 	return nil
 }
 
+func (r *Repository) CreateJointEvaluation(je models.JointsEvaluation) (models.JointsEvaluation, error) {
+	je.CreatedAt = time.Now().UTC()
+	je.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.JointsEvaluation)).
+			Create(&je).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.JointsEvaluation{}, &app.ErrExists{
+			ResourceName: "joints_evaluation",
+		}
+	}
+	if err != nil {
+		return models.JointsEvaluation{}, err
+	}
+
+	return je, nil
+}
+
+func (r *Repository) ListJointEvaluationsForPatient(patientId uint) ([]models.JointsEvaluation, error) {
+	var jes []models.JointsEvaluation
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.JointsEvaluation)).
+			Where("patient_id = ?", patientId).
+			Find(&jes).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return nil, &app.ErrNotFound{
+			ResourceName: "joints_evaluation",
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return jes, nil
+}
+
 func likeArg(arg string) string {
 	return fmt.Sprintf("%%%s%%", arg)
 }

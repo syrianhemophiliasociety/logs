@@ -14,6 +14,18 @@ import (
 // Types
 //================
 
+type JointsEvaluation struct {
+	Id         uint      `json:"id"`
+	RightAnkle int       `json:"right_ankle"`
+	LeftAnkle  int       `json:"left_ankle"`
+	RightKnee  int       `json:"right_knee"`
+	LeftKnee   int       `json:"left_knee"`
+	RightElbow int       `json:"right_elbow"`
+	LeftElbow  int       `json:"left_elbow"`
+	Result     int       `json:"result"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 type BloodTestFilledField struct {
 	BloodTestFieldId uint   `json:"blood_test_field_id"`
 	Name             string `json:"name"`
@@ -39,24 +51,25 @@ type Address struct {
 }
 
 type Patient struct {
-	Id                  uint              `json:"id"`
-	PublicId            string            `json:"public_id"`
-	NationalId          string            `json:"national_id"`
-	Nationality         string            `json:"nationality"`
-	FirstName           string            `json:"first_name"`
-	LastName            string            `json:"last_name"`
-	FatherName          string            `json:"father_name"`
-	MotherName          string            `json:"mother_name"`
-	PlaceOfBirth        Address           `json:"place_of_birth"`
-	DateOfBirth         time.Time         `json:"date_of_birth"`
-	Residency           Address           `json:"residency"`
-	Gender              bool              `json:"gender"`
-	PhoneNumber         string            `json:"phone_number"`
-	BATScore            uint              `json:"bat_score"`
-	Viri                []Virus           `json:"viruses"`
-	BloodTests          []BloodTestResult `json:"blood_test_results"`
-	FamilyHistoryExists bool              `json:"family_history_exists"`
-	FirstVisitReason    string            `json:"first_visit_reason"`
+	Id                  uint               `json:"id"`
+	PublicId            string             `json:"public_id"`
+	NationalId          string             `json:"national_id"`
+	Nationality         string             `json:"nationality"`
+	FirstName           string             `json:"first_name"`
+	LastName            string             `json:"last_name"`
+	FatherName          string             `json:"father_name"`
+	MotherName          string             `json:"mother_name"`
+	PlaceOfBirth        Address            `json:"place_of_birth"`
+	DateOfBirth         time.Time          `json:"date_of_birth"`
+	Residency           Address            `json:"residency"`
+	Gender              bool               `json:"gender"`
+	PhoneNumber         string             `json:"phone_number"`
+	BATScore            uint               `json:"bat_score"`
+	FamilyHistoryExists bool               `json:"family_history_exists"`
+	FirstVisitReason    string             `json:"first_visit_reason"`
+	Viri                []Virus            `json:"viruses"`
+	BloodTests          []BloodTestResult  `json:"blood_test_results"`
+	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
 }
 
 func (p Patient) FullName() string {
@@ -273,6 +286,8 @@ func (a *Actions) ListLastPatients(params ListLastPatientsParams) ([]Patient, er
 // Create patient non personal details
 //================================================
 
+// Blood tests
+
 type PatientBloodTests struct {
 	BloodTests []BloodTestResult
 }
@@ -389,6 +404,8 @@ func (a *Actions) UpdatePatientPendingBloodTest(params UpdatePatientPendingBlood
 	})
 }
 
+// Viruses
+
 type PatientViruses struct {
 	Viruses []Virus
 }
@@ -421,6 +438,68 @@ func (p *PatientViruses) UnmarshalJSON(payload []byte) error {
 	(*p).Viruses = viruses
 
 	return nil
+}
+
+type JointsEvaluationRequest struct {
+	RightAnkle string `json:"right_ankle"`
+	LeftAnkle  string `json:"left_ankle"`
+	RightKnee  string `json:"right_knee"`
+	LeftKnee   string `json:"left_knee"`
+	RightElbow string `json:"right_elbow"`
+	LeftElbow  string `json:"left_elbow"`
+}
+
+type CreatePatientJointsEvaluationParams struct {
+	RequestContext
+	PatientId        string
+	JointsEvaluation JointsEvaluationRequest
+}
+
+type CreatePatientJointsEvaluationPayload struct{}
+
+func (a *Actions) CreatePatientJointsEvaluation(params CreatePatientJointsEvaluationParams) (CreatePatientJointsEvaluationPayload, error) {
+	rightAnkle, err := strconv.Atoi(params.JointsEvaluation.RightAnkle)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+	leftAnkle, err := strconv.Atoi(params.JointsEvaluation.LeftAnkle)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+	rightKnee, err := strconv.Atoi(params.JointsEvaluation.RightKnee)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+	leftKnee, err := strconv.Atoi(params.JointsEvaluation.LeftKnee)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+	rightElbow, err := strconv.Atoi(params.JointsEvaluation.RightElbow)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+	leftElbow, err := strconv.Atoi(params.JointsEvaluation.LeftElbow)
+	if err != nil {
+		return CreatePatientJointsEvaluationPayload{}, err
+	}
+
+	return makeRequest[map[string]any, CreatePatientJointsEvaluationPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: fmt.Sprintf("/v1/patient/%s/joints-evaluation", params.PatientId),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"joints_evaluation": JointsEvaluation{
+				RightAnkle: rightAnkle,
+				LeftAnkle:  leftAnkle,
+				RightKnee:  rightKnee,
+				LeftKnee:   leftKnee,
+				RightElbow: rightElbow,
+				LeftElbow:  leftElbow,
+			},
+		},
+	})
 }
 
 //================

@@ -44,24 +44,25 @@ func (a Address) IntoModel() models.Address {
 }
 
 type Patient struct {
-	Id                  uint              `json:"id"`
-	PublicId            string            `json:"public_id"`
-	NationalId          string            `json:"national_id"`
-	Nationality         string            `json:"nationality"`
-	FirstName           string            `json:"first_name"`
-	LastName            string            `json:"last_name"`
-	FatherName          string            `json:"father_name"`
-	MotherName          string            `json:"mother_name"`
-	PlaceOfBirth        Address           `json:"place_of_birth"`
-	DateOfBirth         time.Time         `json:"date_of_birth"`
-	Residency           Address           `json:"residency"`
-	Gender              bool              `json:"gender"`
-	PhoneNumber         string            `json:"phone_number"`
-	BATScore            uint              `json:"bat_score"`
-	FamilyHistoryExists bool              `json:"family_history_exists"`
-	FirstVisitReason    string            `json:"first_visit_reason"`
-	Viri                []Virus           `json:"viruses"`
-	BloodTestResults    []BloodTestResult `json:"blood_test_results"`
+	Id                  uint               `json:"id"`
+	PublicId            string             `json:"public_id"`
+	NationalId          string             `json:"national_id"`
+	Nationality         string             `json:"nationality"`
+	FirstName           string             `json:"first_name"`
+	LastName            string             `json:"last_name"`
+	FatherName          string             `json:"father_name"`
+	MotherName          string             `json:"mother_name"`
+	PlaceOfBirth        Address            `json:"place_of_birth"`
+	DateOfBirth         time.Time          `json:"date_of_birth"`
+	Residency           Address            `json:"residency"`
+	Gender              bool               `json:"gender"`
+	PhoneNumber         string             `json:"phone_number"`
+	BATScore            uint               `json:"bat_score"`
+	FamilyHistoryExists bool               `json:"family_history_exists"`
+	FirstVisitReason    string             `json:"first_visit_reason"`
+	Viri                []Virus            `json:"viruses"`
+	BloodTestResults    []BloodTestResult  `json:"blood_test_results"`
+	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
 }
 
 func (p Patient) IntoModel() models.Patient {
@@ -188,6 +189,14 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 			Pending:      btr.Pending,
 			CreatedAt:    btr.CreatedAt,
 		})
+	}
+}
+
+func (p *Patient) WithJointsEvaluations(jointsEvaluations []models.JointsEvaluation) {
+	for _, je := range jointsEvaluations {
+		outJointsEvaluation := new(JointsEvaluation)
+		outJointsEvaluation.FromModel(je)
+		(*p).JointsEvaluations = append((*p).JointsEvaluations, *outJointsEvaluation)
 	}
 }
 
@@ -550,6 +559,7 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 	outPatient.FromModel(patient)
 	outPatient.WithViruses(patient.Viri, nil)
 	outPatient.WithBloodTestResults(patient.BloodTestResults, bloodTests)
+	outPatient.WithJointsEvaluations(patient.JointsEvaluations)
 
 	return GetPatientPayload{
 		Data: *outPatient,

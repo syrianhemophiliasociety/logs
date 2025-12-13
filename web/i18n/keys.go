@@ -168,6 +168,13 @@ type Keys struct {
 	FirstVisitReasonFamilyHistory string
 	FirstVisitReasonBleeding      string
 	FirstVisitReasonReferral      string
+	JointsEvaluations             string
+	JointsRightAnkle              string
+	JointsLeftAnkle               string
+	JointsRightKnee               string
+	JointsLeftKnee                string
+	JointsRightElbow              string
+	JointsLeftElbow               string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string
