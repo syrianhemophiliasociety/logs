@@ -316,3 +316,35 @@ func (e *patientApi) HandleListPatientJointsEvaluations(w http.ResponseWriter, r
 
 	_ = json.NewEncoder(w).Encode(payload)
 }
+
+func (e *patientApi) HandleUsePrescribedMedicineForVisit(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	visitId, err := strconv.Atoi(r.PathValue("visit_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	medId, err := strconv.Atoi(r.PathValue("med_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.UseMedicineForVisit(actions.UseMedicineForVisitParams{
+		ActionContext:        ctx,
+		VisitId:              uint(visitId),
+		PrescribedMedicineId: uint(medId),
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}

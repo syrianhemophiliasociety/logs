@@ -924,10 +924,6 @@ func (r *Repository) ListMedicinesForVisit(visitId uint) ([]models.Medicine, err
 	return nil, errors.New("not implemented")
 }
 
-func (r *Repository) UseMedicine(patientId, medicineId uint) error {
-	return errors.New("not implemented")
-}
-
 func (r *Repository) CreatePatientVisit(visit models.Visit) (models.Visit, error) {
 	visit.CreatedAt = time.Now().UTC()
 	visit.UpdatedAt = time.Now().UTC()

@@ -117,6 +117,7 @@ func main() {
 	apisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
 	apisHandler.HandleFunc("PUT /patient/{id}/blood-test-result/{btr_id}/pending", authMiddleware.AuthApi(patientApi.HandleUpdatePatientPendingBloodTestResult))
 	apisHandler.HandleFunc("POST /patient/{id}/joints-evaluation", authMiddleware.AuthApi(patientApi.HandleCreatePatientJointsEvaluation))
+	apisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}", authMiddleware.AuthApi(patientApi.HandlePatientUseMedicine))
 	apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 
 	applicationHandler := http.NewServeMux()

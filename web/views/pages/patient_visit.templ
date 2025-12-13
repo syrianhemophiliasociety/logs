@@ -63,9 +63,9 @@ templ PatientVisit(patient actions.Patient, visit actions.Visit) {
 					<span class={ "" }>
 						{ i18n.StringsCtx(ctx).PrescribedMedicineUsedAt }&colon;
 						if pm.UsedAt.IsZero() {
-							N/A
+							{ "N/A" }
 						} else {
-							{ pm.UsedAt.Format(time.DateOnly) }
+							{ pm.UsedAt.Format(time.DateOnly+" - " + time.TimeOnly) }
 						}
 					</span>
 				</div>

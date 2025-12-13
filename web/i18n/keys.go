@@ -179,6 +179,8 @@ type Keys struct {
 	JointsRightElbow              string
 	JointsLeftElbow               string
 	VisitTitleFmt                 func(date time.Time) string
+	UseOnePrescribedMedicineFmt   func(medicineName string) string
+	UseMedicineParagraph          string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string

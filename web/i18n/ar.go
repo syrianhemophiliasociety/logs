@@ -200,6 +200,10 @@ var arabic = Keys{
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))
 	},
+	UseOnePrescribedMedicineFmt: func(medicineName string) string {
+		return fmt.Sprintf("استخدم واحد من %s", medicineName)
+	},
+	UseMedicineParagraph: "هذه هي الأدوية الموصوفة من زيارتك الأخيرة لنا، يرجى اختيار الدواء الذي ستستخدمه والنقر على \"استخدم واحد من ...\".",
 
 	CheckUpVisitReason:              "سبب الزيارة",
 	EnterCheckUpVisitReason:         "اختر سبب الزيارة",

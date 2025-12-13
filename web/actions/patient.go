@@ -643,6 +643,26 @@ func (a *Actions) CreatePatientCheckUp(params CreatePatientCheckUpParams) (Creat
 	})
 }
 
+type UseMedicineForVisitParams struct {
+	RequestContext
+	VisitId              string
+	PrescribedMedicineId string
+}
+
+type UseMedicineForVisitPayload struct {
+}
+
+func (a *Actions) UseMedicineForVisit(params UseMedicineForVisitParams) (UseMedicineForVisitPayload, error) {
+	return makeRequest[map[string]any, UseMedicineForVisitPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: fmt.Sprintf("/v1/patient/visit/%s/medicine/%s", params.VisitId, params.PrescribedMedicineId),
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{},
+	})
+}
+
 //================
 // Patient Card
 //================
@@ -675,6 +695,7 @@ type GetPatientLastVisitParams struct {
 }
 
 type GetPatientLastVisitPayload struct {
+	VisitId            uint                 `json:"visit_id"`
 	Patient            Patient              `json:"patient"`
 	VisitedAt          time.Time            `json:"visited_at"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`

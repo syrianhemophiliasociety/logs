@@ -98,7 +98,7 @@ func (pm *PrescribedMedicine) FromModel(m models.PrescribedMedicine, med models.
 	outMed := new(Medicine)
 	outMed.FromModel(med)
 	(*pm).Medicine = *outMed
-	(*pm).PrescribedMedicineId = med.Id
+	(*pm).PrescribedMedicineId = m.Id
 	(*pm).UsedAt = m.UsedAt
 }
 
@@ -115,6 +115,7 @@ type GetPatientLastVisitParams struct {
 }
 
 type GetPatientLastVisitPayload struct {
+	VisitId            uint                 `json:"visit_id"`
 	Patient            Patient              `json:"patient"`
 	VisitedAt          time.Time            `json:"visited_at"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
@@ -169,18 +170,29 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 		Patient:            *outPatient,
 		PrescribedMedicine: outMeds,
 		VisitedAt:          lastVisit.CreatedAt,
+		VisitId:            lastVisit.Id,
 	}, nil
 }
 
 type UseMedicineForVisitParams struct {
 	ActionContext
 	PrescribedMedicineId uint `json:"prescribed_medicine_id"`
+	VisitId              uint `json:"visit_id"`
 }
 
 type UseMedicineForVisitPayload struct {
 }
 
 func (a *Actions) UseMedicineForVisit(params UseMedicineForVisitParams) (UseMedicineForVisitPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteOwnVisit) {
+		return UseMedicineForVisitPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.UseMedicineForVisit(params.PrescribedMedicineId, params.VisitId)
+	if err != nil {
+		return UseMedicineForVisitPayload{}, err
+	}
+
 	return UseMedicineForVisitPayload{}, nil
 }
 

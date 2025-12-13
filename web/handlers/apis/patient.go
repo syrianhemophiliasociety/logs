@@ -264,3 +264,28 @@ func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, 
 
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
+
+func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	visitId := r.PathValue("visit_id")
+	medId := r.PathValue("med_id")
+
+	_, err = v.usecases.UseMedicineForVisit(actions.UseMedicineForVisitParams{
+		RequestContext:       ctx,
+		VisitId:              visitId,
+		PrescribedMedicineId: medId,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}

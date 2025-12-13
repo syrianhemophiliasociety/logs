@@ -1,24 +1,38 @@
 package pages
 
-import "shs-web/actions"
-import "shs-web/views/components"
-import "fmt"
-import "shs-web/i18n"
-import "strconv"
+import (
+	"fmt"
+	"shs-web/actions"
+	"shs-web/i18n"
+	"shs-web/views/components"
+	"shs-web/views/helpers"
+	"shs-web/views/ui"
+)
 
-templ patientMedForm(medicine actions.PrescribedMedicine) {
-	{ medicine.Name }
-	<button>use</button>
+templ patientMedForm(visitId uint, medicine actions.PrescribedMedicine) {
+	<button
+		class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]", "px-4" , "w-full" , "text-accent" }
+		hx-post={ fmt.Sprintf("/api/patient/visit/%d/medicine/%d", visitId, medicine.PrescribedMedicineId) }
+		hx-ext="json-enc"
+		hx-target="this"
+		hx-swap="none"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest call location.reload()"
+	>{ i18n.StringsCtx(ctx).UseOnePrescribedMedicineFmt(medicine.Name) }</button>
 }
 
-templ patientMedsSelect(meds []actions.PrescribedMedicine) {
+templ patientMedsSelect(visitId uint, meds []actions.PrescribedMedicine) {
 	{{
 		contents := make([]components.SelectContent, 0, len(meds))
 		for _, med := range meds {
+			if !med.UsedAt.IsZero() {
+				continue
+			}
 			contents = append(contents, components.SelectContent{
 				Title:   fmt.Sprintf("%s %s", med.Name, med.DoseUnit()),
-				TitleId: strconv.Itoa(int(med.PrescribedMedicineId)),
-				Content: patientMedForm(med),
+				TitleId: fmt.Sprintf("med-%d", med.PrescribedMedicineId),
+				Content: patientMedForm(visitId, med),
 			})
 		}
 	}}
@@ -30,6 +44,21 @@ templ patientMedsSelect(meds []actions.PrescribedMedicine) {
 }
 
 templ PatientMedicine(patientVisit actions.GetPatientLastVisitPayload) {
-	Meds for { patientVisit.Patient.FullName() }
-	@patientMedsSelect(patientVisit.PrescribedMedicine)
+	<div class={ "w-full", "flex", "flex-col", "gap-5", "justify-center", "items-center", "p-5" }>
+		@ui.MobileOnly() {
+			<div class={ "flex", "flex-col", "justify-center", "items-center", "gap-1", "h-min" }>
+				<img
+					width="120"
+					height="120"
+					src="/assets/images/logo.webp"
+					alt="SyrianHemophiliaSocietyLogs Logo"
+					class={ "w-[120px]", "h-[120px]", "rounded-md" }
+				/>
+				<h1 class={ "text-2xl", "font-bold", "text-center" }>{ i18n.StringsCtx(ctx).Title }</h1>
+			</div>
+		}
+		<h1 class={ "text-secondary", "text-2xl", "font-medium" }>{ i18n.StringsCtx(ctx).Hello }&nbsp;{ helpers.AccountCtx(ctx).DisplayName }&nbsp;👋</h1>
+		<p>{ i18n.StringsCtx(ctx).UseMedicineParagraph }</p>
+		@patientMedsSelect(patientVisit.VisitId, patientVisit.PrescribedMedicine)
+	</div>
 }

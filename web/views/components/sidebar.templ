@@ -20,9 +20,11 @@ templ Sidebar() {
 		<div class={ "w-full" }>
 			<nav class={ "p-5", "w-full" }>
 				<ul class={ "list-none", "flex", "flex-col", "gap-x-5", "max-w-60" }>
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", false, icons.Home())
-					</li>
+					if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOwnVisit) {
+						<li>
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", false, icons.Home())
+						</li>
+					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
 						<li>
 							@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false, icons.Patient())

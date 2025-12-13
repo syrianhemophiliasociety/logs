@@ -198,6 +198,10 @@ var english = Keys{
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("Patient visit at %s", date.Format(time.DateOnly))
 	},
+	UseOnePrescribedMedicineFmt: func(medicineName string) string {
+		return fmt.Sprintf("Use one of %s", medicineName)
+	},
+	UseMedicineParagraph: "Here are the prescribed medicines from the last time you visited us, kindly select the medicine you're going to use and click on \"Use one of ...\".",
 
 	CheckUpVisitReason:              "Visit reason",
 	EnterCheckUpVisitReason:         "Choose visit reason",
