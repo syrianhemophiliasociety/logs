@@ -45,6 +45,20 @@ const links = [
       document.getElementById("/management?mobile"),
     ],
   },
+  {
+    check: (l) => l.startsWith("/statistics"),
+    elements: [
+      document.getElementById("/statistics"),
+      document.getElementById("/statistics?mobile"),
+    ],
+  },
+  {
+    check: (l) => l.startsWith("/diagnoses"),
+    elements: [
+      document.getElementById("/diagnoses"),
+      document.getElementById("/diagnoses?mobile"),
+    ],
+  },
 ];
 
 function updateActiveNavLink() {
@@ -108,6 +122,16 @@ document.addEventListener("htmx:afterRequest", function (e) {
     if (newTitle) {
       document.title = newTitle + " - SyrianHemophiliaSocietyLogs";
     }
+  }
+});
+
+window.addEventListener("popstate", async (e) => {
+  const mainContentsEl = document.getElementById("main-contents");
+  if (!!mainContentsEl && !!e.target.location.pathname) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    await updateMainContent(e.target.location.pathname);
+    return;
   }
 });
 

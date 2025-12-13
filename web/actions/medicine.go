@@ -14,6 +14,10 @@ type Medicine struct {
 	Amount int    `json:"amount"`
 }
 
+func (m Medicine) DoseUnit() string {
+	return fmt.Sprintf("%d %s", m.Dose, m.Unit)
+}
+
 type ListAllMedicinesParams struct {
 	RequestContext
 }

@@ -28,6 +28,11 @@ templ Sidebar() {
 							@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false, icons.Patient())
 						</li>
 					}
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
+						<li>
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavStatistics, "/statistics", false, icons.Statistics())
+						</li>
+					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadMedicine) {
 						<li>
 							@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false, icons.Medicine())
@@ -41,6 +46,11 @@ templ Sidebar() {
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
 						<li>
 							@ImageRouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false, icons.BloodTest())
+						</li>
+					}
+					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
+						<li>
+							@ImageRouteLink(i18n.StringsCtx(ctx).NavDiagnoses, "/diagnoses", false, icons.Diagnoses())
 						</li>
 					}
 					if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadVirus) {

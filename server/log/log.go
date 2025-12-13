@@ -1,11 +1,17 @@
 package log
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 type logLevel string
 
 const (
-	// InfoLevel indicates that the printed log, is a harmless info.
+	// DebugLevel indicates that the printed log is something the developer is TRYING TO CATCH.
+	DebugLevel logLevel = "\033[35m[DEBUG]\033[0m"
+	// InfoLevel indicates that the printed log is a harmless info.
 	InfoLevel logLevel = "\033[32m[INFO]\033[0m"
 	// WarningLevel means things are getting heavier.
 	WarningLevel logLevel = "\033[33m[WARNING]\033[0m"
@@ -15,6 +21,21 @@ const (
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lmsgprefix | log.LUTC)
+}
+
+// Debugln prints a debug log with a new line.
+func Debugln(v ...any) {
+	Println(DebugLevel, v...)
+}
+
+// Debug prints a debug log.
+func Debug(v ...any) {
+	Print(DebugLevel, v...)
+}
+
+// Debugf prints a formatted debug log.
+func Debugf(format string, v ...any) {
+	Printf(DebugLevel, format, v...)
 }
 
 // Infoln prints an info log with a new line.
@@ -64,6 +85,9 @@ func Errorf(format string, v ...any) {
 
 // Println prints a log with a specific prefix with a new line.
 func Println(prefix logLevel, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprintln(os.Stderr, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Println(v...)
 	log.SetPrefix("")
@@ -71,6 +95,9 @@ func Println(prefix logLevel, v ...any) {
 
 // Print prints a log with a specific prefix.
 func Print(prefix logLevel, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprint(os.Stderr, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Print(v...)
 	log.SetPrefix("")
@@ -78,6 +105,9 @@ func Print(prefix logLevel, v ...any) {
 
 // Printf prints a formatted log with a specific prefix.
 func Printf(prefix logLevel, format string, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprintf(os.Stderr, format, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Printf(format, v...)
 	log.SetPrefix("")

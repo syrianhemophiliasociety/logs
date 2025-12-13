@@ -479,6 +479,65 @@ func (p *pagesHandler) HandlePatientBloodTestResultPage(w http.ResponseWriter, r
 	}, pages.PatientBloodTestResult(patient, patient.BloodTests[bloodTestResultIndex], bloodTests[bloodTestIndex])).Render(r.Context(), w)
 }
 
+func (p *pagesHandler) HandlePatientVisitPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	id := r.PathValue("id")
+	visitId, err := strconv.Atoi(r.PathValue("visit_id"))
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	patient, err := p.usecases.GetPatient(actions.GetPatientParams{
+		RequestContext: ctx,
+		PatientId:      id,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	visits, err := p.usecases.ListPatientVisits(actions.ListPatientVisitsParams{
+		RequestContext: ctx,
+		PatientId:      id,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	visitIndex := slices.IndexFunc(visits, func(v actions.Visit) bool {
+		return v.Id == uint(visitId)
+	})
+	if visitIndex < 0 {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
+		w.Header().Set("HX-Push-Url", fmt.Sprintf("/patient/%s/visit/%d", patient.PublicId, visitId))
+		pages.PatientVisit(patient, visits[visitIndex]).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPatient,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.PatientVisit(patient, visits[visitIndex])).Render(r.Context(), w)
+}
+
 func (p *pagesHandler) HandlePatientMedicationsPage(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
@@ -508,4 +567,52 @@ func (p *pagesHandler) HandlePatientMedicationsPage(w http.ResponseWriter, r *ht
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
 	}, pages.PatientMedicine(payload)).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleDiagnosesPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	_ = ctx
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
+		w.Header().Set("HX-Push-Url", "/diagnoses")
+		pages.Diagnoses().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPatient,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Diagnoses()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleStatisticsPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	_ = ctx
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
+		w.Header().Set("HX-Push-Url", "/statistics")
+		pages.Statistics().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavPatient,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Statistics()).Render(r.Context(), w)
 }

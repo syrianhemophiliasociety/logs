@@ -83,7 +83,9 @@ type PrescribedMedicine struct {
 }
 
 type Visit struct {
+	Id                 uint                 `json:"id"`
 	Reason             string               `json:"reason"`
+	ExtraNote          string               `json:"extra_note"`
 	VisitedAt          time.Time            `json:"visited_at"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
 }

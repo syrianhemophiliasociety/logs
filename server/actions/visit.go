@@ -6,7 +6,9 @@ import (
 )
 
 type Visit struct {
+	Id                 uint                 `json:"id"`
 	Reason             string               `json:"reason"`
+	ExtraNote          string               `json:"extra_note"`
 	VisitedAt          time.Time            `json:"visited_at"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
 }
@@ -67,11 +69,13 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 	}
 
 	for _, med := range params.PrescribedMedicines {
-		_, err = a.app.CreatePrescribedMedicine(models.PrescribedMedicine{
-			VisitId:    visit.Id,
-			PatientId:  patient.Id,
-			MedicineId: med.Id,
-		})
+		for range med.Amount {
+			_, err = a.app.CreatePrescribedMedicine(models.PrescribedMedicine{
+				VisitId:    visit.Id,
+				PatientId:  patient.Id,
+				MedicineId: med.Id,
+			})
+		}
 		if err != nil {
 			return CreatePatientVisitPayload{}, err
 		}
@@ -90,6 +94,22 @@ type PrescribedMedicine struct {
 	UsedAt               time.Time `json:"used_at"`
 }
 
+func (pm *PrescribedMedicine) FromModel(m models.PrescribedMedicine, med models.Medicine) {
+	outMed := new(Medicine)
+	outMed.FromModel(med)
+	(*pm).Medicine = *outMed
+	(*pm).PrescribedMedicineId = med.Id
+	(*pm).UsedAt = m.UsedAt
+}
+
+func (pm PrescribedMedicine) IntoModel(visitId, patientId, medicineId uint) models.PrescribedMedicine {
+	return models.PrescribedMedicine{
+		VisitId:    visitId,
+		PatientId:  patientId,
+		MedicineId: medicineId,
+	}
+}
+
 type GetPatientLastVisitParams struct {
 	ActionContext
 }
@@ -101,7 +121,7 @@ type GetPatientLastVisitPayload struct {
 }
 
 func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPatientLastVisitPayload, error) {
-	if !params.Account.HasPermission(models.AccountPermissionReadOtherVisits) {
+	if !params.Account.HasPermission(models.AccountPermissionReadOwnVisit) {
 		return GetPatientLastVisitPayload{}, ErrPermissionDenied{}
 	}
 
@@ -130,23 +150,16 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 		return GetPatientLastVisitPayload{}, err
 	}
 
-	medsMapped := make(map[uint]Medicine)
+	medsMapped := make(map[uint]models.Medicine)
 	for _, med := range meds {
-		medsMapped[med.Id] = Medicine{
-			Id:   med.Id,
-			Name: med.Name,
-			Dose: med.Dose,
-			Unit: med.Unit,
-		}
+		medsMapped[med.Id] = med
 	}
 
 	outMeds := make([]PrescribedMedicine, 0, len(prescribedMeds))
 	for _, pm := range prescribedMeds {
-		outMeds = append(outMeds, PrescribedMedicine{
-			Medicine:             medsMapped[pm.MedicineId],
-			PrescribedMedicineId: pm.Id,
-			UsedAt:               pm.UsedAt,
-		})
+		outMed := new(PrescribedMedicine)
+		outMed.FromModel(pm, medsMapped[pm.MedicineId])
+		outMeds = append(outMeds, *outMed)
 	}
 
 	outPatient := new(Patient)
@@ -197,10 +210,39 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 
 	outVisits := make([]Visit, 0, len(visits))
 	for _, visit := range visits {
+		prescribedMeds, err := a.app.ListPatientVisitPrescribedMedicine(visit.Id)
+		if err != nil {
+			return ListPatientVisitsPayload{}, err
+		}
+
+		medsIds := make([]uint, 0, len(prescribedMeds))
+		for _, pm := range prescribedMeds {
+			medsIds = append(medsIds, pm.MedicineId)
+		}
+
+		meds, err := a.app.ListMedicinesByIds(medsIds)
+		if err != nil {
+			return ListPatientVisitsPayload{}, err
+		}
+
+		medsMapped := make(map[uint]models.Medicine)
+		for _, med := range meds {
+			medsMapped[med.Id] = med
+		}
+
+		outMeds := make([]PrescribedMedicine, 0, len(prescribedMeds))
+		for _, pm := range prescribedMeds {
+			outMed := new(PrescribedMedicine)
+			outMed.FromModel(pm, medsMapped[pm.MedicineId])
+			outMeds = append(outMeds, *outMed)
+		}
+
 		outVisits = append(outVisits, Visit{
+			Id:                 visit.Id,
 			Reason:             string(visit.Reason),
+			ExtraNote:          visit.Notes,
 			VisitedAt:          visit.CreatedAt,
-			PrescribedMedicine: []PrescribedMedicine{},
+			PrescribedMedicine: outMeds,
 		})
 	}
 

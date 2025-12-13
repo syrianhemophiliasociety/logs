@@ -5,7 +5,9 @@ import "log"
 type logLevel string
 
 const (
-	// InfoLevel indicates that the printed log, is a harmless info.
+	// DebugLevel indicates that the printed log is something the developer is TRYING TO CATCH.
+	DebugLevel logLevel = "\033[35m[DEBUG]\033[0m"
+	// InfoLevel indicates that the printed log is a harmless info.
 	InfoLevel logLevel = "\033[32m[INFO]\033[0m"
 	// WarningLevel means things are getting heavier.
 	WarningLevel logLevel = "\033[33m[WARNING]\033[0m"
@@ -15,6 +17,21 @@ const (
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lmsgprefix | log.LUTC)
+}
+
+// Debugln prints a debug log with a new line.
+func Debugln(v ...any) {
+	Println(DebugLevel, v...)
+}
+
+// Debug prints a debug log.
+func Debug(v ...any) {
+	Print(DebugLevel, v...)
+}
+
+// Debugf prints a formatted debug log.
+func Debugf(format string, v ...any) {
+	Printf(DebugLevel, format, v...)
 }
 
 // Infoln prints an info log with a new line.

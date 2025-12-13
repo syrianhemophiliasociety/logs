@@ -16,7 +16,7 @@ templ patientMedsSelect(meds []actions.PrescribedMedicine) {
 		contents := make([]components.SelectContent, 0, len(meds))
 		for _, med := range meds {
 			contents = append(contents, components.SelectContent{
-				Title:   fmt.Sprintf("%s %d %s", med.Name, med.Dose, med.Unit),
+				Title:   fmt.Sprintf("%s %s", med.Name, med.DoseUnit()),
 				TitleId: strconv.Itoa(int(med.PrescribedMedicineId)),
 				Content: patientMedForm(med),
 			})

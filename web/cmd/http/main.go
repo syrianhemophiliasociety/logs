@@ -78,7 +78,10 @@ func main() {
 	pagesHandler.HandleFunc("GET /patients", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientsPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
 	pagesHandler.HandleFunc("GET /patient/{id}/blood-test-result/{btr_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientBloodTestResultPage)))
-	pagesHandler.HandleFunc("GET /patient/{id}/visit/{visit_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientPage)))
+	pagesHandler.HandleFunc("GET /patient/{id}/visit/{visit_id}", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientVisitPage)))
+	pagesHandler.HandleFunc("GET /diagnoses", contenttype.Html(authMiddleware.AuthPage(pages.HandleDiagnosesPage)))
+	pagesHandler.HandleFunc("GET /statistics", contenttype.Html(authMiddleware.AuthPage(pages.HandleStatisticsPage)))
+
 	pagesHandler.HandleFunc("GET /patient/medications", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientMedicationsPage)))
 
 	usernameLoginApi := apis.NewUsernameLoginApi(usecases)

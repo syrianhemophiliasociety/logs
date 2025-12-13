@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
@@ -44,7 +43,7 @@ templ medicineBrief(medicine actions.Medicine) {
 	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
 		<div class={ "flex", "gap-x-5" }>
 			<span class="min-w-20 text-lg text-secondary font-bold">{ medicine.Name }</span>
-			<span class="w-20 text-lg text-secondary">{ fmt.Sprintf("%d %s", medicine.Dose, medicine.Unit) }</span>
+			<span class="w-20 text-lg text-secondary">{ medicine.DoseUnit() }</span>
 			<span class="min-w-20 text-lg text-secondary">{ i18n.StringsCtx(ctx).MedicinePackageLeftFmt(medicine.Amount) }</span>
 		</div>
 		@components.DeleteButton("medicine", i18n.StringsCtx(ctx).Medicine, strconv.Itoa(int(medicine.Id)), medicine.Name, true)

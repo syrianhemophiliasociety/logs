@@ -377,7 +377,7 @@ templ medicineInCheckUp(medicines []actions.Medicine) {
 		options := make([]components.SelectOption, 0, len(medicines))
 		for _, m := range medicines {
 			options = append(options, components.SelectOption{
-				Name:  fmt.Sprintf("%s %d %s", m.Name, m.Dose, m.Unit),
+				Name:  fmt.Sprintf("%s %s", m.Name, m.DoseUnit()),
 				Value: strconv.Itoa(int(m.Id)),
 			})
 		}
@@ -455,17 +455,21 @@ templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine
 	</form>
 }
 
+templ patientVisitBrief(visit actions.Visit) {
+	<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
+		<span class={ "font-bold", "text-lg" }>
+			{ visit.VisitedAt.Format(time.DateOnly) }
+		</span>
+	</div>
+}
+
 templ patientListVisits(patient actions.Patient, visits []actions.Visit) {
 	if len(visits) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).TabsVisits) }</span>
 	} else {
 		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, visit := range visits {
-				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md" }>
-					<span class={ "font-bold", "text-lg" }>
-						{ visit.VisitedAt.Format(time.DateOnly) }
-					</span>
-				</div>
+				@components.JustLink(fmt.Sprintf("/patient/%s/visit/%d", patient.PublicId, visit.Id), "Patient visit", patientVisitBrief(visit))
 			}
 		}
 	}

@@ -1,0 +1,75 @@
+package pages
+
+import (
+	"shs-web/actions"
+	"shs-web/i18n"
+	"time"
+)
+
+templ PatientVisit(patient actions.Patient, visit actions.Visit) {
+	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-3" }>
+		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).VisitTitleFmt(visit.VisitedAt) } { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
+		<hr/>
+		<table class={ "w-1/3" }>
+			<tbody>
+				<tr>
+					<td><b>{ i18n.StringsCtx(ctx).PatientId }</b></td>
+					<td>{ patient.PublicId }</td>
+				</tr>
+				<tr>
+					<td><b>{ i18n.StringsCtx(ctx).CheckUpVisitReason }</b></td>
+					<td>
+						switch visit.Reason {
+							case "primary_prophylaxis":
+								{ i18n.StringsCtx(ctx).PrimaryProphylaxis }
+							case "secondary_prophylaxis":
+								{ i18n.StringsCtx(ctx).SecondaryProphylaxis }
+							case "surgery":
+								{ i18n.StringsCtx(ctx).Surgery }
+							case "joint_evaluation":
+								{ i18n.StringsCtx(ctx).JointEvaluation }
+							case "joint_injection":
+								{ i18n.StringsCtx(ctx).JointInjection }
+							case "hemelibra":
+								{ i18n.StringsCtx(ctx).Hemelibra }
+							case "home_treatment":
+								{ i18n.StringsCtx(ctx).TreatmentAtHome }
+							case "active_bleeding":
+								{ i18n.StringsCtx(ctx).ActiveBleeding }
+							default:
+								"N/A"
+						}
+					</td>
+				</tr>
+				if visit.ExtraNote != "" {
+					<tr>
+						<td><b>{ i18n.StringsCtx(ctx).CheckUpExtraReason }</b></td>
+						<td>{ visit.ExtraNote }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<hr/>
+		<h2 class="w-full font-bold text-xl text-secondary">{ i18n.StringsCtx(ctx).CheckUpPrescribedMedicines } </h2>
+		for _, pm := range visit.PrescribedMedicine {
+			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between" }>
+				<div>
+					<span class={ "font-bold", "text-lg" }>
+						{ pm.Name }
+					</span>
+					<span class={ "" }>{ pm.DoseUnit() }</span>
+				</div>
+				<div>
+					<span class={ "" }>
+						{ i18n.StringsCtx(ctx).PrescribedMedicineUsedAt }&colon;
+						if pm.UsedAt.IsZero() {
+							N/A
+						} else {
+							{ pm.UsedAt.Format(time.DateOnly) }
+						}
+					</span>
+				</div>
+			</div>
+		}
+	</div>
+}

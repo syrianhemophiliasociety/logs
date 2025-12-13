@@ -3,6 +3,7 @@ package i18n
 import (
 	"context"
 	"shs-web/handlers/middlewares/locale"
+	"time"
 )
 
 type Keys struct {
@@ -48,6 +49,8 @@ type Keys struct {
 	NavViruses    string
 	NavManagement string
 	NavAccount    string
+	NavStatistics string
+	NavDiagnoses  string
 
 	TabsList    string
 	TabsSearch  string
@@ -175,6 +178,7 @@ type Keys struct {
 	JointsLeftKnee                string
 	JointsRightElbow              string
 	JointsLeftElbow               string
+	VisitTitleFmt                 func(date time.Time) string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string
@@ -183,6 +187,9 @@ type Keys struct {
 	CheckUpAddPrescribedMedicine    string
 	CheckUpExtraReason              string
 	EnterCheckUpExtraReason         string
+	PrescribedAmount                string
+	UsedAmount                      string
+	PrescribedMedicineUsedAt        string
 
 	NationalitySyrian      string
 	NationalityPalestinian string
