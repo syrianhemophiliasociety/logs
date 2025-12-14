@@ -128,6 +128,8 @@ var english = Keys{
 	Hemelibra:                     "Hemelibra",
 	TreatmentAtHome:               "Treatment at home",
 	ActiveBleeding:                "Active bleeding",
+	ValueInsideRange:              "Value inside the range",
+	ValueOutsideRange:             "Value outside the range",
 	Account:                       "Account",
 	Accounts:                      "Accounts",
 	AccountUsername:               "Username",

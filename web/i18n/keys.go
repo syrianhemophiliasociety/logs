@@ -109,6 +109,8 @@ type Keys struct {
 	Hemelibra                         string
 	TreatmentAtHome                   string
 	ActiveBleeding                    string
+	ValueInsideRange                  string
+	ValueOutsideRange                 string
 
 	Account                  string
 	Accounts                 string

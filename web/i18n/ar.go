@@ -130,6 +130,8 @@ var arabic = Keys{
 	Hemelibra:                     "هيمليبرا",
 	TreatmentAtHome:               "العلاج المنزلي",
 	ActiveBleeding:                "نزف حالي",
+	ValueInsideRange:              "Value inside the range",
+	ValueOutsideRange:             "Value outside the range",
 	Account:                       "الاسم",
 	Accounts:                      "الحسابات",
 	AccountUsername:               "اسم المستخدم",
@@ -204,11 +206,12 @@ var arabic = Keys{
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))
 	},
+
 	UseOnePrescribedMedicineFmt: func(medicineName string) string {
 		return fmt.Sprintf("استخدم واحد من %s", medicineName)
 	},
-	UseMedicineParagraph: "هذه هي الأدوية الموصوفة من زيارتك الأخيرة لنا، يرجى اختيار الدواء الذي ستستخدمه والنقر على \"استخدم واحد من ...\".",
 
+	UseMedicineParagraph:            "هذه هي الأدوية الموصوفة من زيارتك الأخيرة لنا، يرجى اختيار الدواء الذي ستستخدمه والنقر على \"استخدم واحد من ...\".",
 	CheckUpVisitReason:              "سبب الزيارة",
 	EnterCheckUpVisitReason:         "اختر سبب الزيارة",
 	CheckUpPrescribedMedicines:      "الادوية الموصوفة",

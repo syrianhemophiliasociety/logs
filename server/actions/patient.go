@@ -173,7 +173,7 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 		fields := make([]BloodTestFilledField, 0, len(btr.FilledFields))
 		for _, field := range btr.FilledFields {
 			fields = append(fields, BloodTestFilledField{
-				BloodTestFieldId: field.Id,
+				BloodTestFieldId: field.BloodTestFieldId,
 				Name:             bloodTestFieldNames[field.BloodTestFieldId],
 				Unit:             bloodTestFieldUnits[field.BloodTestFieldId],
 				ValueNumber:      field.ValueNumber,

@@ -30,7 +30,7 @@ type BloodTestFilledField struct {
 	BloodTestFieldId uint   `json:"blood_test_field_id"`
 	Name             string `json:"name"`
 	Unit             string `json:"unit"`
-	ValueNumber      uint   `json:"value_number"`
+	ValueNumber      int    `json:"value_number"`
 	ValueString      string `json:"value_string"`
 }
 
@@ -333,7 +333,7 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 			BloodTestFieldId: uint(fieldId),
 			Name:             fieldName,
 			Unit:             "",
-			ValueNumber:      uint(testResultInt),
+			ValueNumber:      testResultInt,
 			ValueString:      testResult,
 		})
 	}

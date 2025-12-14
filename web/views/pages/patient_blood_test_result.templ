@@ -1,11 +1,30 @@
 package pages
 
 import (
+	"context"
 	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
+	"shs-web/log"
 	"shs-web/views/components"
+	"slices"
 )
+
+func bloodTestFieldRange(ctx context.Context, filledField actions.BloodTestFilledField, bt actions.BloodTest) string {
+	fieldIndex := slices.IndexFunc(bt.Fields, func(f actions.BloodTestField) bool {
+		log.Debugln(filledField.BloodTestFieldId, f.Id)
+		return f.Id == filledField.BloodTestFieldId
+	})
+	if fieldIndex < 0 {
+		return "n"
+	}
+
+	if filledField.ValueNumber < bt.Fields[fieldIndex].MinValueNumber || filledField.ValueNumber > bt.Fields[fieldIndex].MaxValueNumber {
+		return i18n.StringsCtx(ctx).ValueOutsideRange
+	}
+
+	return i18n.StringsCtx(ctx).ValueInsideRange
+}
 
 templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResult, bt actions.BloodTest) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
@@ -76,6 +95,9 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 							</td>
 							<td>
 								{ btField.ValueString } { btField.Unit }
+							</td>
+							<td>
+								{ bloodTestFieldRange(ctx, btField, bt) }
 							</td>
 						</tr>
 					}
