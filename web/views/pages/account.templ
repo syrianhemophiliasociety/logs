@@ -1,11 +1,16 @@
 package pages
 
 import (
+	"fmt"
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
 	"strconv"
 )
+
+func permissionText(permissionType, resourceName string) string {
+	return fmt.Sprintf("%s %s", permissionType, resourceName)
+}
 
 templ accountPermissionsForm(account actions.Account) {
 	<span class="w-full text-xl text-secondary">{ i18n.StringsCtx(ctx).AccountPermissions }&colon;</span>
@@ -17,7 +22,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadAccounts),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read accounts",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).Accounts),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -28,7 +33,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteAccounts),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write accounts",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).Accounts),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -39,7 +44,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadPatient),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read patient",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavPatients),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -50,7 +55,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWritePatient),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write patient",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavPatients),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -61,7 +66,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadMedicine),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read medicine",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavMedicine),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -72,7 +77,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteMedicine),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write medicine",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavMedicine),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -83,7 +88,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadVirus),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read virus",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavViruses),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -94,7 +99,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteVirus),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write virus",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavViruses),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -105,7 +110,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadBloodTest),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read blood test",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavBloodTests),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -116,7 +121,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteBloodTest),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write blood test",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavBloodTests),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -127,7 +132,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionReadOtherVisits),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Read visits",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).TabsVisits),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -138,7 +143,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteOtherVisits),
 		Required:    false,
 		Autofocus:   false,
-		Title:       "Write visits",
+		Title:       permissionText(i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).TabsVisits),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	//

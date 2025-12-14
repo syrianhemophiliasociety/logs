@@ -89,18 +89,8 @@ func (c *Cache) InvalidateAuthenticatedAccount(sessionToken string) error {
 }
 
 func (c *Cache) InvalidateAuthenticatedAccountById(accountId uint) error {
-	res := c.client.Get(context.Background(), accountIdToTokenKey(accountId))
-	if res == nil {
-		return &app.ErrNotFound{
-			ResourceName: "account",
-		}
-	}
-	sessionToken, err := res.Result()
-	if err == redis.Nil {
-		return &app.ErrNotFound{
-			ResourceName: "account",
-		}
-	} else if err != nil {
+	sessionToken, err := c.client.Get(context.Background(), accountIdToTokenKey(accountId)).Result()
+	if err != nil && err != redis.Nil {
 		return err
 	}
 
@@ -109,10 +99,8 @@ func (c *Cache) InvalidateAuthenticatedAccountById(accountId uint) error {
 		return err
 	}
 
-	err = c.client.Del(context.Background(), accountTokenKey(sessionToken)).Err()
-	if err != nil {
-		return err
-	}
+	// ignored in the case of expiration
+	_ = c.client.Del(context.Background(), accountTokenKey(sessionToken)).Err()
 
 	return nil
 }
