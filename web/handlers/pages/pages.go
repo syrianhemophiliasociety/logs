@@ -228,6 +228,53 @@ func (p *pagesHandler) HandleBloodTestsPage(w http.ResponseWriter, r *http.Reque
 	}, pages.BloodTests(bloodTests)).Render(r.Context(), w)
 }
 
+func (p *pagesHandler) HandleBloodTestPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	bloodTests, err := p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("Something went wrong").
+			Render(r.Context(), w)
+		return
+	}
+
+	bloodTestIndex := slices.IndexFunc(bloodTests, func(bt actions.BloodTest) bool {
+		return bt.Id == uint(id)
+	})
+	if bloodTestIndex < 0 {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavBloodTests)
+		w.Header().Set("HX-Push-Url", "/blood-test/"+strconv.Itoa(id))
+		pages.BloodTest(bloodTests[bloodTestIndex]).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavBloodTests,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.BloodTest(bloodTests[bloodTestIndex])).Render(r.Context(), w)
+}
+
 func (p *pagesHandler) HandleManagementPage(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {

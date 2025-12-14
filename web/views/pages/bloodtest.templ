@@ -1,0 +1,33 @@
+package pages
+
+import (
+	"shs-web/actions"
+	"shs-web/i18n"
+)
+
+templ BloodTest(bloodTest actions.BloodTest) {
+	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
+		<h1 class="font-bold text-2xl text-secondary w-full">{ i18n.StringsCtx(ctx).BloodTest } - { bloodTest.Name }</h1>
+		<hr/>
+		<table class={ "w-1/3" }>
+			<thead>
+				<tr>
+					<td>
+						<b>{ i18n.StringsCtx(ctx).BloodTestFieldName }</b>
+					</td>
+					<td>
+						<b>{ i18n.StringsCtx(ctx).BloodTestFieldUnit }</b>
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				for _, field := range bloodTest.Fields {
+					<tr>
+						<td>{ field.Name }</td>
+						<td>{ field.Unit }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

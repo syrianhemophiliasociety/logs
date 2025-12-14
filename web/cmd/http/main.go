@@ -73,6 +73,7 @@ func main() {
 	pagesHandler.HandleFunc("GET /medicines", contenttype.Html(authMiddleware.AuthPage(pages.HandleMedicinesPage)))
 	pagesHandler.HandleFunc("GET /medicine/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandleMedicinePage)))
 	pagesHandler.HandleFunc("GET /blood-tests", contenttype.Html(authMiddleware.AuthPage(pages.HandleBloodTestsPage)))
+	pagesHandler.HandleFunc("GET /blood-test/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandleBloodTestPage)))
 	pagesHandler.HandleFunc("GET /management", contenttype.Html(authMiddleware.AuthPage(pages.HandleManagementPage)))
 	pagesHandler.HandleFunc("GET /management/account/{id}", contenttype.Html(authMiddleware.AuthPage(pages.HandleAccountManagementPage)))
 	pagesHandler.HandleFunc("GET /patients", contenttype.Html(authMiddleware.AuthPage(pages.HandlePatientsPage)))
