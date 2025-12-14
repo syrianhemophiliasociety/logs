@@ -7,7 +7,6 @@ import (
 	"shs-web/views/components"
 	"shs-web/views/helpers"
 	"shs-web/views/icons"
-	"shs-web/views/ui"
 )
 
 func lang(ctx context.Context) string {
@@ -93,9 +92,7 @@ templ Default(props PageProps, content templ.Component) {
 				class={ "text-secondary", "flex" }
 				style="width: 100%; height: 100dvh;"
 			>
-				@ui.DesktopOnly() {
-					@components.Sidebar()
-				}
+				@components.Sidebar()
 				<div
 					id="main-contents"
 					style="display: contents; width: 100%; height: 100%;"

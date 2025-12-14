@@ -4,8 +4,79 @@ import "shs-web/i18n"
 import "shs-web/views/helpers"
 import "shs-web/actions"
 import "shs-web/views/icons"
+import "shs-web/views/ui"
 
 templ Sidebar() {
+	@ui.DesktopOnly() {
+		@desktopSidebar()
+	}
+	@ui.MobileOnly() {
+		@mobileNavbar()
+	}
+}
+
+templ mobileNavbar() {
+	<div
+		class={ "fixed", "bottom-0", "left-0", "h-auto", "w-full", }
+	>
+		<nav
+			class={
+				"bg-primary", "h-[55px]", "m-[5px]", "rounded-[10px]", "flex", "justify-center",
+				"items-center", "shadow-xs", "shadow-secondary",
+			}
+		>
+			<ul class={ "w-full", "m-0", "p-5", "px-14", "list-none", "flex", "justify-center" }>
+				if !helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOwnVisit) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", true, icons.Home())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", true, icons.Patient())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavStatistics, "/statistics", true, icons.Statistics())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadMedicine) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", true, icons.Medicine())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOwnVisit) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", true, icons.Medicine())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", true, icons.BloodTest())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavDiagnoses, "/diagnoses", true, icons.Diagnoses())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadVirus) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", true, icons.Virus())
+					</li>
+				}
+				if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadAccounts) {
+					<li>
+						@ImageRouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", true, icons.Management())
+					</li>
+				}
+			</ul>
+		</nav>
+	</div>
+}
+
+templ desktopSidebar() {
 	<div class={ "min-w-[270px]", "w-[270px]", "max-w-[270px]", "h-full", "border-e", "border-e-secondary", "flex", "flex-col", "justify-between" }>
 		<div class={ "flex", "flex-col", "justify-center", "items-center", "gap-1", "h-min" }>
 			<img

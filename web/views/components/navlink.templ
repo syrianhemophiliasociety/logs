@@ -50,7 +50,9 @@ templ ImageRouteLink(title, path string, isMobile bool, child templ.Component) {
 		>
 			<div class={ "flex", "gap-x-3", "items-center", }>
 				@child
-				{ title }
+				if !isMobile {
+					{ title }
+				}
 			</div>
 		</div>
 	</a>
