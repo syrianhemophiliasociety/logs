@@ -91,6 +91,10 @@ type Keys struct {
 	EnterBloodTestFieldName           string
 	BloodTestFieldUnit                string
 	EnterBloodTestFieldUnit           string
+	BloodTestFieldMinValue            string
+	EnterBloodTestFieldMinValue       string
+	BloodTestFieldMaxValue            string
+	EnterBloodTestFieldMaxValue       string
 	EnterBloodTestResultFieldValueFmt func(unit string) string
 	RemoveBloodTest                   string
 	BloodTestDoLater                  string

@@ -97,16 +97,20 @@ var english = Keys{
 		}
 	},
 
-	BloodTest:               "Blood test",
-	BloodTestResult:         "Blood test result",
-	BloodTestDetails:        "Blood test details",
-	BloodTestName:           "Blood test name",
-	EnterBloodTestName:      "Enter blood test's name",
-	BloodTestFields:         "Fields",
-	BloodTestFieldName:      "Blood test field name",
-	EnterBloodTestFieldName: "Enter blood test field's name",
-	BloodTestFieldUnit:      "Blood test field' unit",
-	EnterBloodTestFieldUnit: "Select blood test field's unit",
+	BloodTest:                   "Blood test",
+	BloodTestResult:             "Blood test result",
+	BloodTestDetails:            "Blood test details",
+	BloodTestName:               "Blood test name",
+	EnterBloodTestName:          "Enter blood test's name",
+	BloodTestFields:             "Fields",
+	BloodTestFieldName:          "Blood test field name",
+	EnterBloodTestFieldName:     "Enter blood test field's name",
+	BloodTestFieldUnit:          "Blood test field' unit",
+	EnterBloodTestFieldUnit:     "Select blood test field's unit",
+	BloodTestFieldMinValue:      "Blood test field min value",
+	EnterBloodTestFieldMinValue: "Enter blood test min value",
+	BloodTestFieldMaxValue:      "Blood test field max value",
+	EnterBloodTestFieldMaxValue: "Enter blood test field max value",
 	EnterBloodTestResultFieldValueFmt: func(unit string) string {
 		return fmt.Sprintf("Enter result value in %s", unit)
 	},
@@ -198,11 +202,12 @@ var english = Keys{
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("Patient visit at %s", date.Format(time.DateOnly))
 	},
+
 	UseOnePrescribedMedicineFmt: func(medicineName string) string {
 		return fmt.Sprintf("Use one of %s", medicineName)
 	},
-	UseMedicineParagraph: "Here are the prescribed medicines from the last time you visited us, kindly select the medicine you're going to use and click on \"Use one of ...\".",
 
+	UseMedicineParagraph:            "Here are the prescribed medicines from the last time you visited us, kindly select the medicine you're going to use and click on \"Use one of ...\".",
 	CheckUpVisitReason:              "Visit reason",
 	EnterCheckUpVisitReason:         "Choose visit reason",
 	CheckUpPrescribedMedicines:      "Prescribed medicines",

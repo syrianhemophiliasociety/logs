@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 type RequestBloodTest struct {
@@ -10,6 +11,8 @@ type RequestBloodTest struct {
 	Name       string   `json:"name"`
 	FieldNames []string `json:"blood_test_field_name"`
 	FieldUnits []string `json:"blood_test_field_unit"`
+	MinValues  []string `json:"blood_test_field_min_value"`
+	MaxValues  []string `json:"blood_test_field_max_value"`
 }
 
 type RequestBloodTestSingle struct {
@@ -17,12 +20,18 @@ type RequestBloodTestSingle struct {
 	Name      string `json:"name"`
 	FieldName string `json:"blood_test_field_name"`
 	FieldUnit string `json:"blood_test_field_unit"`
+	MinValue  string `json:"blood_test_field_min_value"`
+	MaxValue  string `json:"blood_test_field_max_value"`
 }
 
 type BloodTestField struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-	Unit string `json:"unit"`
+	Id             uint   `json:"id"`
+	Name           string `json:"name"`
+	Unit           string `json:"unit"`
+	MinValueNumber int    `json:"min_value_number"`
+	MinValueString string `json:"min_value_string"`
+	MaxValueNumber int    `json:"max_value_number"`
+	MaxValueString string `json:"max_value_string"`
 }
 
 type BloodTest struct {
@@ -69,17 +78,30 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 	if params.NewBloodTest.Name != "" {
 		newBloodTest.Name = params.NewBloodTest.Name
 		for i := range len(params.NewBloodTest.FieldNames) {
+			minValue, _ := strconv.Atoi(params.NewBloodTest.MinValues[i])
+			maxValue, _ := strconv.Atoi(params.NewBloodTest.MaxValues[i])
+
 			newBloodTest.Fields = append(newBloodTest.Fields, BloodTestField{
-				Name: params.NewBloodTest.FieldNames[i],
-				Unit: params.NewBloodTest.FieldUnits[i],
+				Name:           params.NewBloodTest.FieldNames[i],
+				Unit:           params.NewBloodTest.FieldUnits[i],
+				MinValueString: params.NewBloodTest.MinValues[i],
+				MinValueNumber: minValue,
+				MaxValueString: params.NewBloodTest.MaxValues[i],
+				MaxValueNumber: maxValue,
 			})
 		}
 	}
 	if params.NewBloodTestSingle.Name != "" {
 		newBloodTest.Name = params.NewBloodTestSingle.Name
+		minValue, _ := strconv.Atoi(params.NewBloodTestSingle.MinValue)
+		maxValue, _ := strconv.Atoi(params.NewBloodTestSingle.MaxValue)
 		newBloodTest.Fields = append(newBloodTest.Fields, BloodTestField{
-			Name: params.NewBloodTestSingle.FieldName,
-			Unit: params.NewBloodTestSingle.FieldUnit,
+			Name:           params.NewBloodTestSingle.FieldName,
+			Unit:           params.NewBloodTestSingle.FieldUnit,
+			MinValueString: params.NewBloodTestSingle.MinValue,
+			MinValueNumber: minValue,
+			MaxValueString: params.NewBloodTestSingle.MaxValue,
+			MaxValueNumber: maxValue,
 		})
 	}
 

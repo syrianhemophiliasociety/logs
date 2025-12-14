@@ -73,9 +73,9 @@ templ newBloodTest() {
 					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestName,
 				})
 				<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestFields }</p>
-				<div id="blood_tests">
-					<div id="blood_test_field" class={ "flex", "flex-row", "justify-between", "gap-5" }>
-						<div class={ "block", }>
+				<div id="blood_tests" class={ "flex", "flex-col", "gap-5" }>
+					<div id="blood_test_field" class={ "flex", "flex-col", "justify-between", "gap-3" }>
+						<div class={ "flex", "gap-x-3" }>
 							@components.Input(components.InputOptions{
 								Id:          "blood_test_field_name",
 								Name:        "blood_test_field_name",
@@ -85,8 +85,6 @@ templ newBloodTest() {
 								Title:       i18n.StringsCtx(ctx).BloodTestFieldName,
 								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldName,
 							})
-						</div>
-						<div class={ "block" }>
 							@components.Select(components.SelectParams{
 								Id:          "blood_test_field_unit",
 								Name:        i18n.StringsCtx(ctx).BloodTestFieldUnit,
@@ -125,19 +123,41 @@ templ newBloodTest() {
 								},
 							})
 						</div>
+						<div class={ "flex", "gap-x-3" }>
+							@components.Input(components.InputOptions{
+								Id:          "blood_test_field_min_value",
+								Name:        "blood_test_field_min_value",
+								Type:        components.InputTypeNumber,
+								Required:    false,
+								Autofocus:   false,
+								Title:       i18n.StringsCtx(ctx).BloodTestFieldMinValue,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldMinValue,
+								Value:       "0",
+							})
+							@components.Input(components.InputOptions{
+								Id:          "blood_test_field_max_value",
+								Name:        "blood_test_field_max_value",
+								Type:        components.InputTypeNumber,
+								Required:    false,
+								Autofocus:   false,
+								Title:       i18n.StringsCtx(ctx).BloodTestFieldMaxValue,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldMaxValue,
+								Value:       "0",
+							})
+						</div>
 					</div>
+				</div>
+				<div>
+					<button
+						type="button"
+						class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+						_="on click put #blood_test_field's outerHTML at the end of #blood_tests"
+					>
+						{ i18n.StringsCtx(ctx).FormsNewField }
+					</button>
 				</div>
 				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
 					{ i18n.StringsCtx(ctx).FormsSubmit }
-				</button>
-			</div>
-			<div>
-				<button
-					type="button"
-					class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
-					_="on click put #blood_test_field's outerHTML at the end of #blood_tests"
-				>
-					{ i18n.StringsCtx(ctx).FormsNewField }
 				</button>
 			</div>
 		</form>

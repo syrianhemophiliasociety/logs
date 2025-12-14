@@ -14,7 +14,7 @@ type BloodTestFilledField struct {
 	BloodTestFieldId uint                 `json:"blood_test_field_id"`
 	Name             string               `json:"name"`
 	Unit             models.BlootTestUnit `json:"unit"`
-	ValueNumber      uint                 `json:"value_number"`
+	ValueNumber      int                  `json:"value_number"`
 	ValueString      string               `json:"value_string"`
 }
 

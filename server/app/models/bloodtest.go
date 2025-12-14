@@ -69,21 +69,14 @@ func BloodTestUnits() []BlootTestUnit {
 }
 
 type BloodTestField struct {
-	Id          uint          `gorm:"primaryKey;autoIncrement"`
-	BloodTestId uint          `gorm:"not null"`
-	Name        string        `gorm:"not null"`
-	Unit        BlootTestUnit `gorm:"not null"`
-
-	CreatedAt time.Time `gorm:"index;not null"`
-	UpdatedAt time.Time
-}
-
-type BloodTestFilledField struct {
-	Id                uint `gorm:"primaryKey;autoIncrement"`
-	BloodTestResultId uint
-	BloodTestFieldId  uint
-	ValueNumber       uint
-	ValueString       string
+	Id             uint          `gorm:"primaryKey;autoIncrement"`
+	BloodTestId    uint          `gorm:"not null"`
+	Name           string        `gorm:"not null"`
+	Unit           BlootTestUnit `gorm:"not null"`
+	MinValueNumber int
+	MinValueString string
+	MaxValueNumber int
+	MaxValueString string
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
@@ -110,6 +103,17 @@ func (bt *BloodTest) AfterDelete(tx *gorm.DB) error {
 	}
 
 	return nil
+}
+
+type BloodTestFilledField struct {
+	Id                uint `gorm:"primaryKey;autoIncrement"`
+	BloodTestResultId uint
+	BloodTestFieldId  uint
+	ValueNumber       int
+	ValueString       string
+
+	CreatedAt time.Time `gorm:"index;not null"`
+	UpdatedAt time.Time
 }
 
 type BloodTestResult struct {

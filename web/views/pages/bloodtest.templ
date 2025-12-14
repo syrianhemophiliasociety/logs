@@ -18,6 +18,12 @@ templ BloodTest(bloodTest actions.BloodTest) {
 					<td>
 						<b>{ i18n.StringsCtx(ctx).BloodTestFieldUnit }</b>
 					</td>
+					<td>
+						<b>{ i18n.StringsCtx(ctx).BloodTestFieldMinValue }</b>
+					</td>
+					<td>
+						<b>{ i18n.StringsCtx(ctx).BloodTestFieldMaxValue }</b>
+					</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -25,6 +31,8 @@ templ BloodTest(bloodTest actions.BloodTest) {
 					<tr>
 						<td>{ field.Name }</td>
 						<td>{ field.Unit }</td>
+						<td>{ field.MinValueString }</td>
+						<td>{ field.MaxValueString }</td>
 					</tr>
 				}
 			</tbody>

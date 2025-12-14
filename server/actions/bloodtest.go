@@ -6,9 +6,13 @@ import (
 )
 
 type BloodTestField struct {
-	Id   uint                 `json:"id"`
-	Name string               `json:"name"`
-	Unit models.BlootTestUnit `json:"unit"`
+	Id             uint                 `json:"id"`
+	Name           string               `json:"name"`
+	Unit           models.BlootTestUnit `json:"unit"`
+	MinValueNumber int                  `json:"min_value_number"`
+	MinValueString string               `json:"min_value_string"`
+	MaxValueNumber int                  `json:"max_value_number"`
+	MaxValueString string               `json:"max_value_string"`
 }
 
 type BloodTest struct {
@@ -21,8 +25,12 @@ func (bt BloodTest) IntoModel() models.BloodTest {
 	bloodTestFields := make([]models.BloodTestField, 0, len(bt.Fields))
 	for _, field := range bt.Fields {
 		bloodTestFields = append(bloodTestFields, models.BloodTestField{
-			Name: field.Name,
-			Unit: field.Unit,
+			Name:           field.Name,
+			Unit:           field.Unit,
+			MinValueNumber: field.MinValueNumber,
+			MinValueString: field.MinValueString,
+			MaxValueNumber: field.MaxValueNumber,
+			MaxValueString: field.MaxValueString,
 		})
 	}
 	return models.BloodTest{
@@ -35,9 +43,13 @@ func (bt *BloodTest) FromModel(bloodTest models.BloodTest) {
 	btFields := make([]BloodTestField, 0, len(bloodTest.Fields))
 	for _, field := range bloodTest.Fields {
 		btFields = append(btFields, BloodTestField{
-			Id:   field.Id,
-			Name: field.Name,
-			Unit: field.Unit,
+			Id:             field.Id,
+			Name:           field.Name,
+			Unit:           field.Unit,
+			MinValueNumber: field.MinValueNumber,
+			MinValueString: field.MinValueString,
+			MaxValueNumber: field.MaxValueNumber,
+			MaxValueString: field.MaxValueString,
 		})
 	}
 
