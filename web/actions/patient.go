@@ -87,6 +87,8 @@ type Visit struct {
 	Reason             string               `json:"reason"`
 	ExtraNote          string               `json:"extra_note"`
 	VisitedAt          time.Time            `json:"visited_at"`
+	PatientWeight      float64              `json:"patient_weight"`
+	PatientHeight      float64              `json:"patient_height"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
 }
 
@@ -533,6 +535,8 @@ func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayloa
 type CreateCheckUpRequest struct {
 	VisitReason         string
 	VisitExtraDetails   string
+	PatientWeight       float64
+	PatientHeight       float64
 	PrescribedMedicines []Medicine
 }
 
@@ -548,6 +552,8 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 		visitExtraDetailsKey = "visit_extra_details"
 		medicineIdsKey       = "medicine_id"
 		medicineAmountKey    = "amount"
+		patientWeightKey     = "patient_weight"
+		patientHeightKey     = "patient_height"
 	)
 
 	var ok bool
@@ -556,6 +562,11 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 		return errors.New("missing visit_reason")
 	}
 	(*v).VisitExtraDetails, _ = data[visitExtraDetailsKey].(string)
+	weight, _ := data[patientWeightKey].(string)
+	height, _ := data[patientHeightKey].(string)
+
+	(*v).PatientWeight, _ = strconv.ParseFloat(weight, 64)
+	(*v).PatientHeight, _ = strconv.ParseFloat(height, 64)
 
 	_, ok = data[medicineIdsKey]
 	if !ok {

@@ -7,7 +7,7 @@ import (
 
 var arabic = Keys{
 	Title:                   "الجمعية السورية لمرضى الناعور",
-	Description:             "منصة متابعة رعاية المرضى للجمعية السورية لمرضى الناعور",
+	Description:             "سجل الاضطرابات النزفية للجمعية السورية لمرضى الناعور",
 	Hello:                   "مرحبا",
 	ErrorSomethingWentWrong: "حدث خطأ ما",
 	ErrorPermissionDenied:   "صلاحية غير كافية",
@@ -109,10 +109,10 @@ var arabic = Keys{
 	EnterBloodTestFieldName:     "أدخل اسم الجزء من التحليل",
 	BloodTestFieldUnit:          "واحدة قياس الجزء من التحليل",
 	EnterBloodTestFieldUnit:     "اختر واحدة قياس الجزء من التحليل",
-	BloodTestFieldMinValue:      "Blood test field min value",
-	EnterBloodTestFieldMinValue: "Enter blood test min value",
-	BloodTestFieldMaxValue:      "Blood test field max value",
-	EnterBloodTestFieldMaxValue: "Enter blood test field max value",
+	BloodTestFieldMinValue:      "القيمة الصغرى للمجال المرجعي",
+	EnterBloodTestFieldMinValue: "أدخل القيمة الصغرى للمجال المرجعي",
+	BloodTestFieldMaxValue:      "القيمة الكبرى للمجال المرجعي",
+	EnterBloodTestFieldMaxValue: "أدخل القيمة الكبرى للمجال المرجعي",
 	EnterBloodTestResultFieldValueFmt: func(unit string) string {
 		return fmt.Sprintf("أدخل قيمة النتيجة في %s", unit)
 	},
@@ -130,8 +130,8 @@ var arabic = Keys{
 	Hemelibra:                     "هيمليبرا",
 	TreatmentAtHome:               "العلاج المنزلي",
 	ActiveBleeding:                "نزف حالي",
-	ValueInsideRange:              "Value inside the range",
-	ValueOutsideRange:             "Value outside the range",
+	ValueInsideRange:              "القيمة داخل المجال المرجعي",
+	ValueOutsideRange:             "القيمة خارج المجال المرجعي",
 	Account:                       "الاسم",
 	Accounts:                      "الحسابات",
 	AccountUsername:               "اسم المستخدم",
@@ -201,8 +201,8 @@ var arabic = Keys{
 	JointsLeftAnkle:               "الكاحل الأيسر",
 	JointsRightKnee:               "الركبة اليمنى",
 	JointsLeftKnee:                "الركبة اليسرى",
-	JointsRightElbow:              "الكوع الأيمن",
-	JointsLeftElbow:               "الكوع الأيسر",
+	JointsRightElbow:              "المرفق الأيمن",
+	JointsLeftElbow:               "المرفق الأيسر",
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))
 	},
@@ -219,6 +219,10 @@ var arabic = Keys{
 	CheckUpAddPrescribedMedicine:    "اضف دواء",
 	CheckUpExtraReason:              "ملاحظة اضافية",
 	EnterCheckUpExtraReason:         "ادخل الملاحظة الاضافية",
+	CheckUpPatientWeight:            "وزن المريض",
+	EnterCheckUpPatientWeight:       "ادخل وزن المريض",
+	CheckUpPatientHeight:            "طول المريض",
+	EnterCheckUpPatientHeight:       "ادخل طول المريض",
 	PrescribedAmount:                "الكمية الموصوفة",
 	UsedAmount:                      "الكمية المستخدمة",
 	PrescribedMedicineUsedAt:        "استخدم في",

@@ -195,6 +195,10 @@ type Keys struct {
 	CheckUpAddPrescribedMedicine    string
 	CheckUpExtraReason              string
 	EnterCheckUpExtraReason         string
+	CheckUpPatientWeight            string
+	EnterCheckUpPatientWeight       string
+	CheckUpPatientHeight            string
+	EnterCheckUpPatientHeight       string
 	PrescribedAmount                string
 	UsedAmount                      string
 	PrescribedMedicineUsedAt        string

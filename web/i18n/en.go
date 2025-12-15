@@ -7,7 +7,7 @@ import (
 
 var english = Keys{
 	Title:                   "Syrian Hemophilia Society",
-	Description:             "A patient care follow up platform for Syrian Hemophilia Society.",
+	Description:             "A patient care follow up logs for Syrian Hemophilia Society.",
 	Hello:                   "Hello",
 	ErrorSomethingWentWrong: "Something went wrong",
 	ErrorPermissionDenied:   "Permission denied",
@@ -217,6 +217,10 @@ var english = Keys{
 	CheckUpAddPrescribedMedicine:    "Add medicine",
 	CheckUpExtraReason:              "Extra note",
 	EnterCheckUpExtraReason:         "Enter extra note",
+	CheckUpPatientWeight:            "Patient weight",
+	EnterCheckUpPatientWeight:       "Enter patient weight",
+	CheckUpPatientHeight:            "Patient height",
+	EnterCheckUpPatientHeight:       "Enter patient height",
 	PrescribedAmount:                "Prescribed amount",
 	UsedAmount:                      "Used amount",
 	PrescribedMedicineUsedAt:        "Used at",

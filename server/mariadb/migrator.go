@@ -28,6 +28,7 @@ func Migrate() error {
 		new(models.PatientId),
 		new(models.PatientUseMedicine),
 		new(models.PrescribedMedicine),
+		new(models.JointsEvaluation),
 	)
 	if err != nil {
 		return err
@@ -48,6 +49,7 @@ func Migrate() error {
 		"prescribed_medicines",
 		"viri",
 		"visits",
+		"joints_evaluations",
 	} {
 		err = dbConn.Exec("ALTER TABLE " + tableName + " CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci").Error
 		if err != nil {

@@ -54,7 +54,7 @@ func (a *App) UpdateAccount(id uint, newAccount models.Account) error {
 			return err
 		}
 
-		if err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(newAccount.Password)); err != nil {
+		if err = bcrypt.CompareHashAndPassword([]byte(oldAccount.Password), []byte(newAccount.Password)); err != nil {
 			err = a.repo.UpdateAccountPassword(id, string(hashedPassword))
 			if err != nil {
 				return err

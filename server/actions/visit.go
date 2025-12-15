@@ -10,6 +10,8 @@ type Visit struct {
 	Reason             string               `json:"reason"`
 	ExtraNote          string               `json:"extra_note"`
 	VisitedAt          time.Time            `json:"visited_at"`
+	PatientWeight      float64              `json:"patient_weight"`
+	PatientHeight      float64              `json:"patient_height"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
 }
 
@@ -18,6 +20,8 @@ type CreatePatientVisitParams struct {
 	PatientId           string
 	VisitReason         string     `json:"visit_reason"`
 	VisitExtraDetails   string     `json:"visit_extra_details"`
+	PatientWeight       float64    `json:"patient_weight"`
+	PatientHeight       float64    `json:"patient_height"`
 	PrescribedMedicines []Medicine `json:"prescribed_medicines"`
 }
 
@@ -60,9 +64,11 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 	}
 
 	visit, err := a.app.CreatePatientVisit(models.Visit{
-		PatientId: patient.Id,
-		Reason:    models.VisitReason(params.VisitReason),
-		Notes:     params.VisitExtraDetails,
+		PatientId:     patient.Id,
+		Reason:        models.VisitReason(params.VisitReason),
+		Notes:         params.VisitExtraDetails,
+		PatientWeight: params.PatientWeight,
+		PatientHeight: params.PatientHeight,
 	})
 	if err != nil {
 		return CreatePatientVisitPayload{}, err
@@ -118,6 +124,8 @@ type GetPatientLastVisitPayload struct {
 	VisitId            uint                 `json:"visit_id"`
 	Patient            Patient              `json:"patient"`
 	VisitedAt          time.Time            `json:"visited_at"`
+	PatientWeight      float64              `json:"patient_weight"`
+	PatientHeight      float64              `json:"patient_height"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
 }
 
@@ -171,6 +179,8 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 		PrescribedMedicine: outMeds,
 		VisitedAt:          lastVisit.CreatedAt,
 		VisitId:            lastVisit.Id,
+		PatientWeight:      lastVisit.PatientWeight,
+		PatientHeight:      lastVisit.PatientHeight,
 	}, nil
 }
 
@@ -255,6 +265,8 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 			ExtraNote:          visit.Notes,
 			VisitedAt:          visit.CreatedAt,
 			PrescribedMedicine: outMeds,
+			PatientWeight:      visit.PatientWeight,
+			PatientHeight:      visit.PatientHeight,
 		})
 	}
 

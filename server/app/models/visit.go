@@ -16,10 +16,12 @@ const (
 )
 
 type Visit struct {
-	Id        uint        `gorm:"primaryKey;autoIncrement"`
-	PatientId uint        `gorm:"index;not null"`
-	Reason    VisitReason `gorm:"not null"`
-	Notes     string
+	Id            uint        `gorm:"primaryKey;autoIncrement"`
+	PatientId     uint        `gorm:"index;not null"`
+	Reason        VisitReason `gorm:"not null"`
+	Notes         string
+	PatientWeight float64
+	PatientHeight float64
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

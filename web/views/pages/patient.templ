@@ -291,6 +291,7 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me"
 	>
 		@components.Input(components.InputOptions{
 			Id:        "do_later",
@@ -409,6 +410,7 @@ templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me"
 	>
 		<div class={ "flex", "flex-col", "gap-5", "justify-between" }>
 			@components.Select(components.SelectParams{
@@ -435,6 +437,26 @@ templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine
 				Autofocus:   false,
 				Title:       i18n.StringsCtx(ctx).CheckUpExtraReason,
 				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpExtraReason,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "patient_weight",
+				Name:        "patient_weight",
+				Type:        components.InputTypeNumberFloat,
+				Required:    false,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).CheckUpPatientWeight,
+				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpPatientWeight,
+				Value:       "0.0",
+			})
+			@components.Input(components.InputOptions{
+				Id:          "patient_height",
+				Name:        "patient_height",
+				Type:        components.InputTypeNumberFloat,
+				Required:    false,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).CheckUpPatientHeight,
+				Placeholder: i18n.StringsCtx(ctx).EnterCheckUpPatientHeight,
+				Value:       "0.0",
 			})
 			<div id="prescribed_medicines" class={ "flex", "flex-col", "gap-3" }>
 				<div id="single_medicine" class={ "flex", "gap-3" }>
@@ -504,6 +526,7 @@ templ patientCreateJointsEvaluation(patient actions.Patient) {
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me"
 	>
 		<div class={ "flex", "gap-10", "justify-between" }>
 			@components.Input(components.InputOptions{

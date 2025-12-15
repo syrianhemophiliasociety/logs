@@ -659,20 +659,20 @@ func (r *Repository) findOrCreateLastPatientId() (models.PatientId, error) {
 			Find(&patientIds).
 			Error,
 	)
-	lastPatientId := patientIds[0]
+	lastPatientId := models.PatientId{
+		PublicId: 1,
+	}
+	if len(patientIds) > 0 {
+		lastPatientId = patientIds[0]
+	}
 	if err != nil {
-		lastPatientId = models.PatientId{
-			PublicId: 1,
-		}
 		err = tryWrapDbError(
 			r.client.
 				Model(new(models.PatientId)).
 				Create(&lastPatientId).
 				Error,
 		)
-		return models.PatientId{
-			PublicId: 1,
-		}, err
+		return lastPatientId, err
 	}
 
 	err = tryWrapDbError(

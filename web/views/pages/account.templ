@@ -184,6 +184,7 @@ templ Account(account actions.Account) {
 				hx-swap="none"
 				data-loading-target="#loading"
 				data-loading-class-remove="hidden"
+				_="on htmx:afterRequest reset() me"
 			>
 				<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
 					@components.Input(components.InputOptions{
