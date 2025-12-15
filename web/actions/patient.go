@@ -27,11 +27,11 @@ type JointsEvaluation struct {
 }
 
 type BloodTestFilledField struct {
-	BloodTestFieldId uint   `json:"blood_test_field_id"`
-	Name             string `json:"name"`
-	Unit             string `json:"unit"`
-	ValueNumber      int    `json:"value_number"`
-	ValueString      string `json:"value_string"`
+	BloodTestFieldId uint    `json:"blood_test_field_id"`
+	Name             string  `json:"name"`
+	Unit             string  `json:"unit"`
+	ValueNumber      float64 `json:"value_number"`
+	ValueString      string  `json:"value_string"`
 }
 
 type BloodTestResult struct {
@@ -326,7 +326,7 @@ func (p *PatientBloodTests) UnmarshalJSON(payload []byte) error {
 			continue
 		}
 
-		testResultInt, _ := strconv.Atoi(testResult)
+		testResultInt, _ := strconv.ParseFloat(testResult, 64)
 
 		bloodTestNames[uint(id)] = name
 		bloodTestsFields[uint(id)] = append(bloodTestsFields[uint(id)], BloodTestFilledField{

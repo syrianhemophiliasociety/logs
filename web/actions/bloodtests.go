@@ -25,13 +25,13 @@ type RequestBloodTestSingle struct {
 }
 
 type BloodTestField struct {
-	Id             uint   `json:"id"`
-	Name           string `json:"name"`
-	Unit           string `json:"unit"`
-	MinValueNumber int    `json:"min_value_number"`
-	MinValueString string `json:"min_value_string"`
-	MaxValueNumber int    `json:"max_value_number"`
-	MaxValueString string `json:"max_value_string"`
+	Id             uint    `json:"id"`
+	Name           string  `json:"name"`
+	Unit           string  `json:"unit"`
+	MinValueNumber float64 `json:"min_value_number"`
+	MinValueString string  `json:"min_value_string"`
+	MaxValueNumber float64 `json:"max_value_number"`
+	MaxValueString string  `json:"max_value_string"`
 }
 
 type BloodTest struct {
@@ -78,8 +78,8 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 	if params.NewBloodTest.Name != "" {
 		newBloodTest.Name = params.NewBloodTest.Name
 		for i := range len(params.NewBloodTest.FieldNames) {
-			minValue, _ := strconv.Atoi(params.NewBloodTest.MinValues[i])
-			maxValue, _ := strconv.Atoi(params.NewBloodTest.MaxValues[i])
+			minValue, _ := strconv.ParseFloat(params.NewBloodTest.MinValues[i], 64)
+			maxValue, _ := strconv.ParseFloat(params.NewBloodTest.MaxValues[i], 64)
 
 			newBloodTest.Fields = append(newBloodTest.Fields, BloodTestField{
 				Name:           params.NewBloodTest.FieldNames[i],
@@ -93,8 +93,8 @@ func (a *Actions) CreateBloodTest(params CreateBloodTestParams) (CreateBloodTest
 	}
 	if params.NewBloodTestSingle.Name != "" {
 		newBloodTest.Name = params.NewBloodTestSingle.Name
-		minValue, _ := strconv.Atoi(params.NewBloodTestSingle.MinValue)
-		maxValue, _ := strconv.Atoi(params.NewBloodTestSingle.MaxValue)
+		minValue, _ := strconv.ParseFloat(params.NewBloodTestSingle.MinValue, 64)
+		maxValue, _ := strconv.ParseFloat(params.NewBloodTestSingle.MaxValue, 64)
 		newBloodTest.Fields = append(newBloodTest.Fields, BloodTestField{
 			Name:           params.NewBloodTestSingle.FieldName,
 			Unit:           params.NewBloodTestSingle.FieldUnit,

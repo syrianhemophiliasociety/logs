@@ -14,6 +14,7 @@ const (
 	InputTypeImage         InputType = "image"
 	InputTypeMonth         InputType = "month"
 	InputTypeNumber        InputType = "number"
+	InputTypeNumberFloat   InputType = "number_float"
 	InputTypePassword      InputType = "password"
 	InputTypeRadio         InputType = "radio"
 	InputTypeRange         InputType = "range"
@@ -47,7 +48,12 @@ templ Input(options InputOptions) {
 		<label class={ "text-secondary", "text-[16px]" } for={ options.Id }>{ options.Title }</label>
 		<input
 			id={ options.Id }
-			type={ options.Type }
+			if options.Type == InputTypeNumberFloat {
+				type={ InputTypeNumber }
+				step="0.001"
+			} else {
+				type={ options.Type }
+			}
 			if options.Required {
 				required
 			}

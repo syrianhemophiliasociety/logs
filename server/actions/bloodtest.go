@@ -9,9 +9,9 @@ type BloodTestField struct {
 	Id             uint                 `json:"id"`
 	Name           string               `json:"name"`
 	Unit           models.BlootTestUnit `json:"unit"`
-	MinValueNumber int                  `json:"min_value_number"`
+	MinValueNumber float64              `json:"min_value_number"`
 	MinValueString string               `json:"min_value_string"`
-	MaxValueNumber int                  `json:"max_value_number"`
+	MaxValueNumber float64              `json:"max_value_number"`
 	MaxValueString string               `json:"max_value_string"`
 }
 
