@@ -109,7 +109,7 @@ type BloodTestFilledField struct {
 	Id                uint `gorm:"primaryKey;autoIncrement"`
 	BloodTestResultId uint
 	BloodTestFieldId  uint
-	ValueNumber       int
+	ValueNumber       float64
 	ValueString       string
 
 	CreatedAt time.Time `gorm:"index;not null"`
