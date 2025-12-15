@@ -73,9 +73,9 @@ type BloodTestField struct {
 	BloodTestId    uint          `gorm:"not null"`
 	Name           string        `gorm:"not null"`
 	Unit           BlootTestUnit `gorm:"not null"`
-	MinValueNumber int
+	MinValueNumber float64
 	MinValueString string
-	MaxValueNumber int
+	MaxValueNumber float64
 	MaxValueString string
 
 	CreatedAt time.Time `gorm:"index;not null"`
