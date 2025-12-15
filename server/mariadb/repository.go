@@ -104,11 +104,6 @@ func (r *Repository) ListAllAccounts() ([]models.Account, error) {
 			Find(&accounts).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "account",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -311,11 +306,6 @@ func (r *Repository) ListAllBloodTests() ([]models.BloodTest, error) {
 			Find(&bloodTests).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "blood_test",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -356,11 +346,6 @@ func (r *Repository) ListPatientBloodTestResults(patientId uint) ([]models.Blood
 			Find(&bloodTestResults).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "blood_test_result",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -500,11 +485,6 @@ func (r *Repository) ListAllViri() ([]models.Virus, error) {
 			Find(&viri).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "virus",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -526,11 +506,6 @@ func (r *Repository) ListViriForPatient(patientId uint) ([]models.Virus, error) 
 			Find(&viri).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "virus",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -589,11 +564,6 @@ func (r *Repository) ListAllMedicines() ([]models.Medicine, error) {
 			Find(&medicines).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "medicine",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -611,11 +581,6 @@ func (r *Repository) ListMedicinesByIds(ids []uint) ([]models.Medicine, error) {
 			Find(&medicines).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "medicine",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -871,11 +836,6 @@ func (r *Repository) ListLastPatients(limit int) ([]models.Patient, error) {
 			Find(&patients).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "patient",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -920,10 +880,6 @@ func (r *Repository) DeletePatient(id uint) error {
 	return nil
 }
 
-func (r *Repository) ListMedicinesForVisit(visitId uint) ([]models.Medicine, error) {
-	return nil, errors.New("not implemented")
-}
-
 func (r *Repository) CreatePatientVisit(visit models.Visit) (models.Visit, error) {
 	visit.CreatedAt = time.Now().UTC()
 	visit.UpdatedAt = time.Now().UTC()
@@ -956,11 +912,6 @@ func (r *Repository) ListPatientVisits(patientId uint) ([]models.Visit, error) {
 			Find(&visits).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "visit",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -1052,11 +1003,6 @@ func (r *Repository) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.
 			Find(&prescribedMeds).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "prescribed_medicine",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -1216,11 +1162,6 @@ func (r *Repository) ListJointEvaluationsForPatient(patientId uint) ([]models.Jo
 			Find(&jes).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); ok {
-		return nil, &app.ErrNotFound{
-			ResourceName: "joints_evaluation",
-		}
-	}
 	if err != nil {
 		return nil, err
 	}
