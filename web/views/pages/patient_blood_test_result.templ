@@ -41,7 +41,7 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 				hx-swap="innerHTML"
 				data-loading-target="#loading"
 				data-loading-class-remove="hidden"
-				_="on htmx:afterRequest call location.reload()"
+				_="on htmx:afterRequest reset() me then call location.reload()"
 			>
 				for i := 0; i < len(bt.Fields); i++ {
 					<div class={ "flex", "gap-10", "justify-between" }>

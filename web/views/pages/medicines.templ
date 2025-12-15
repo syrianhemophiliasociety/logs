@@ -63,7 +63,7 @@ templ newMedicine() {
 			hx-swap="innerHTML"
 			data-loading-target="#loading"
 			data-loading-class-remove="hidden"
-			_="on htmx:afterRequest reset() me"
+			_="on htmx:afterRequest reset() me then call Router.removeSearchQuery('tab') then call location.reload()"
 		>
 			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
 				@components.Input(components.InputOptions{

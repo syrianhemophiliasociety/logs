@@ -291,7 +291,7 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
-		_="on htmx:afterRequest reset() me"
+		_="on htmx:afterRequest reset() me then call location.reload()"
 	>
 		@components.Input(components.InputOptions{
 			Id:        "do_later",
@@ -410,7 +410,7 @@ templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
-		_="on htmx:afterRequest reset() me"
+		_="on htmx:afterRequest reset() me then call location.reload()"
 	>
 		<div class={ "flex", "flex-col", "gap-5", "justify-between" }>
 			@components.Select(components.SelectParams{
@@ -526,7 +526,7 @@ templ patientCreateJointsEvaluation(patient actions.Patient) {
 		hx-swap="innerHTML"
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
-		_="on htmx:afterRequest reset() me"
+		_="on htmx:afterRequest reset() me then call location.reload()"
 	>
 		<div class={ "flex", "gap-10", "justify-between" }>
 			@components.Input(components.InputOptions{
