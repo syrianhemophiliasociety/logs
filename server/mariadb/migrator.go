@@ -6,7 +6,27 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm/schema"
 )
+
+var migratableModels = []schema.Tabler{
+	new(models.Account),
+	new(models.Virus),
+	new(models.Medicine),
+	new(models.Visit),
+	new(models.BloodTest),
+	new(models.BloodTestResult),
+	new(models.BloodTestField),
+	new(models.BloodTestFilledField),
+	new(models.Address),
+	new(models.Patient),
+	new(models.PatientId),
+	new(models.PatientUseMedicine),
+	new(models.PrescribedMedicine),
+	new(models.JointsEvaluation),
+	new(models.Diagnosis),
+	new(models.DiagnosisResult),
+}
 
 func Migrate() error {
 	dbConn, err := dbConnector()
@@ -14,44 +34,15 @@ func Migrate() error {
 		return err
 	}
 
-	err = dbConn.Debug().AutoMigrate(
-		new(models.Account),
-		new(models.Virus),
-		new(models.Medicine),
-		new(models.Visit),
-		new(models.BloodTest),
-		new(models.BloodTestResult),
-		new(models.BloodTestField),
-		new(models.BloodTestFilledField),
-		new(models.Address),
-		new(models.Patient),
-		new(models.PatientId),
-		new(models.PatientUseMedicine),
-		new(models.PrescribedMedicine),
-		new(models.JointsEvaluation),
-	)
-	if err != nil {
-		return err
+	for _, table := range migratableModels {
+		err = dbConn.Debug().AutoMigrate(table)
+		if err != nil {
+			return err
+		}
 	}
 
-	for _, tableName := range []string{
-		"accounts",
-		"addresses",
-		"blood_test_fields",
-		"blood_test_filled_fields",
-		"blood_test_results",
-		"blood_tests",
-		"did_blood_tests",
-		"has_viri",
-		"medicines",
-		"patient_use_medicines",
-		"patients",
-		"prescribed_medicines",
-		"viri",
-		"visits",
-		"joints_evaluations",
-	} {
-		err = dbConn.Exec("ALTER TABLE " + tableName + " CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci").Error
+	for _, table := range migratableModels {
+		err = dbConn.Exec("ALTER TABLE " + table.TableName() + " CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci").Error
 		if err != nil {
 			return err
 		}

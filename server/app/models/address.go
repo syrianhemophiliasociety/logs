@@ -11,3 +11,7 @@ type Address struct {
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
 }
+
+func (Address) TableName() string {
+	return "addresses"
+}

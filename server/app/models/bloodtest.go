@@ -82,6 +82,10 @@ type BloodTestField struct {
 	UpdatedAt time.Time
 }
 
+func (BloodTestField) TableName() string {
+	return "blood_test_fields"
+}
+
 type BloodTest struct {
 	Id     uint             `gorm:"primaryKey;autoIncrement"`
 	Name   string           `gorm:"not null"`
@@ -89,6 +93,10 @@ type BloodTest struct {
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
+}
+
+func (BloodTest) TableName() string {
+	return "blood_tests"
 }
 
 func (bt *BloodTest) AfterDelete(tx *gorm.DB) error {
@@ -116,6 +124,10 @@ type BloodTestFilledField struct {
 	UpdatedAt time.Time
 }
 
+func (BloodTestFilledField) TableName() string {
+	return "blood_test_filled_fields"
+}
+
 type BloodTestResult struct {
 	Id           uint                   `gorm:"primaryKey;autoIncrement"`
 	BloodTestId  uint                   `gorm:"not null"`
@@ -125,4 +137,8 @@ type BloodTestResult struct {
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
+}
+
+func (BloodTestResult) TableName() string {
+	return "blood_test_results"
 }

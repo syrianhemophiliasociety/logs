@@ -10,3 +10,7 @@ type Virus struct {
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
 }
+
+func (Virus) TableName() string {
+	return "viruses"
+}

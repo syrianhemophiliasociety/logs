@@ -475,42 +475,42 @@ func (r *Repository) DeleteVirus(id uint) error {
 	return nil
 }
 
-func (r *Repository) ListAllViri() ([]models.Virus, error) {
-	var viri []models.Virus
+func (r *Repository) ListAllViruses() ([]models.Virus, error) {
+	var viruses []models.Virus
 
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Virus)).
 			Preload("IdentifyingBloodTests").
-			Find(&viri).
+			Find(&viruses).
 			Error,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return viri, nil
+	return viruses, nil
 }
 
-func (r *Repository) ListViriForPatient(patientId uint) ([]models.Virus, error) {
-	viri := make([]models.Virus, 0)
+func (r *Repository) ListVirusesForPatient(patientId uint) ([]models.Virus, error) {
+	viruses := make([]models.Virus, 0)
 
-	query := `SELECT viri.id, viri.name
-	FROM viri
-		JOIN has_viri ON viri.id = has_viri.virus_id
-	WHERE has_viri.patient_id = ?`
+	query := fmt.Sprintf(`SELECT %s.id, viruses.name
+	FROM viruses
+		JOIN has_viruses ON %s.id = has_viruses.virus_id
+	WHERE has_viruses.patient_id = ?`, models.Virus{}.TableName(), models.Virus{}.TableName())
 
 	err := tryWrapDbError(
 		r.client.
 			Raw(query, patientId).
-			Find(&viri).
+			Find(&viruses).
 			Error,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return viri, nil
+	return viruses, nil
 }
 
 func (r *Repository) CreateMedicine(medicine models.Medicine) (models.Medicine, error) {
@@ -633,7 +633,7 @@ func (r *Repository) GetMedicine(id uint) (models.Medicine, error) {
 func (r *Repository) DecrementMedicineAmount(id uint, amount int) error {
 	err := tryWrapDbError(
 		r.client.
-			Exec("UPDATE medicines SET amount = amount - ? WHERE id = ?;", amount, id).
+			Exec(fmt.Sprintf("UPDATE %s SET amount = amount - ? WHERE id = ?;", models.Medicine{}.TableName()), amount, id).
 			Error,
 	)
 
@@ -855,7 +855,7 @@ func (r *Repository) DeletePatient(id uint) error {
 
 	err = tryWrapDbError(
 		r.client.
-			Exec("DELETE FROM has_viri WHERE patient_id = ?", id).
+			Exec("DELETE FROM has_viruses WHERE patient_id = ?", id).
 			Error,
 	)
 	if err != nil {

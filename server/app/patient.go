@@ -15,12 +15,12 @@ func (a *App) GetPatientById(id uint) (models.Patient, error) {
 		return models.Patient{}, err
 	}
 
-	viri, err := a.repo.ListViriForPatient(patient.Id)
+	viruses, err := a.repo.ListVirusesForPatient(patient.Id)
 	if err != nil {
 		return models.Patient{}, err
 	}
 
-	patient.Viri = viri
+	patient.Viruses = viruses
 
 	bloodTests, err := a.repo.ListPatientBloodTestResults(patient.Id)
 	if err != nil {
@@ -47,12 +47,12 @@ func (a *App) GetFullPatientByPublicId(publicId string) (models.Patient, error) 
 		return models.Patient{}, err
 	}
 
-	viri, err := a.repo.ListViriForPatient(patient.Id)
+	viruses, err := a.repo.ListVirusesForPatient(patient.Id)
 	if err != nil {
 		return models.Patient{}, err
 	}
 
-	patient.Viri = viri
+	patient.Viruses = viruses
 
 	bloodTests, err := a.repo.ListPatientBloodTestResults(patient.Id)
 	if err != nil {

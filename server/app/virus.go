@@ -10,6 +10,6 @@ func (a *App) DeleteVirus(id uint) error {
 	return a.repo.DeleteVirus(id)
 }
 
-func (a *App) ListAllViri() ([]models.Virus, error) {
-	return a.repo.ListAllViri()
+func (a *App) ListAllViruses() ([]models.Virus, error) {
+	return a.repo.ListAllViruses()
 }

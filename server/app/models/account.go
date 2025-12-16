@@ -46,6 +46,10 @@ type Account struct {
 	UpdatedAt time.Time
 }
 
+func (Account) TableName() string {
+	return "accounts"
+}
+
 func (a Account) CheckType(accountTypes ...AccountType) error {
 	if a.Type == AccountTypeSuperAdmin {
 		return nil

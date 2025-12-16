@@ -10,6 +10,14 @@ import (
 	"time"
 )
 
+type DiagnosisResult struct {
+	Diagnosis
+	Id          uint `json:"id"`
+	DiagnosisId uint `json:"diagnosis_id"`
+
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type BloodTestFilledField struct {
 	BloodTestFieldId uint                 `json:"blood_test_field_id"`
 	Name             string               `json:"name"`
@@ -60,14 +68,14 @@ type Patient struct {
 	BATScore            uint               `json:"bat_score"`
 	FamilyHistoryExists bool               `json:"family_history_exists"`
 	FirstVisitReason    string             `json:"first_visit_reason"`
-	Viri                []Virus            `json:"viruses"`
+	Viruses             []Virus            `json:"viruses"`
 	BloodTestResults    []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
 }
 
 func (p Patient) IntoModel() models.Patient {
-	viruses := make([]models.Virus, 0, len(p.Viri))
-	for _, v := range p.Viri {
+	viruses := make([]models.Virus, 0, len(p.Viruses))
+	for _, v := range p.Viruses {
 		viruses = append(viruses, models.Virus{
 			Id:   v.Id,
 			Name: v.Name,
@@ -119,7 +127,7 @@ func (p Patient) IntoModel() models.Patient {
 		FamilyHistoryExists: p.FamilyHistoryExists,
 		FirstVisitReason:    models.PatientFirstVisitReason(p.FirstVisitReason),
 		BATScore:            p.BATScore,
-		Viri:                viruses,
+		Viruses:             viruses,
 		BloodTestResults:    bloodTestResults,
 	}
 }
@@ -200,10 +208,10 @@ func (p *Patient) WithJointsEvaluations(jointsEvaluations []models.JointsEvaluat
 	}
 }
 
-func (p *Patient) WithViruses(patientViri []models.Virus, viri []models.Virus) {
-	(*p).Viri = make([]Virus, 0, len(patientViri))
-	for _, v := range patientViri {
-		(*p).Viri = append((*p).Viri, Virus{
+func (p *Patient) WithViruses(patientViruses []models.Virus, viruses []models.Virus) {
+	(*p).Viruses = make([]Virus, 0, len(patientViruses))
+	for _, v := range patientViruses {
+		(*p).Viruses = append((*p).Viruses, Virus{
 			Id:   v.Id,
 			Name: v.Name,
 		})
@@ -275,7 +283,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		PhoneNumber:         params.NewPatient.PhoneNumber,
 		BATScore:            params.NewPatient.BATScore,
 		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		Viri:                []models.Virus{},
+		Viruses:             []models.Virus{},
 		BloodTestResults:    []models.BloodTestResult{},
 		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
 	}
@@ -557,7 +565,7 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 
 	outPatient := &Patient{}
 	outPatient.FromModel(patient)
-	outPatient.WithViruses(patient.Viri, nil)
+	outPatient.WithViruses(patient.Viruses, nil)
 	outPatient.WithBloodTestResults(patient.BloodTestResults, bloodTests)
 	outPatient.WithJointsEvaluations(patient.JointsEvaluations)
 

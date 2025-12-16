@@ -27,6 +27,10 @@ type Visit struct {
 	UpdatedAt time.Time
 }
 
+func (Visit) TableName() string {
+	return "visits"
+}
+
 type PrescribedMedicine struct {
 	Id         uint `gorm:"primaryKey;autoIncrement"`
 	VisitId    uint `gorm:"not null;index"`
@@ -36,4 +40,8 @@ type PrescribedMedicine struct {
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
+}
+
+func (PrescribedMedicine) TableName() string {
+	return "prescribed_medicines"
 }

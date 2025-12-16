@@ -17,3 +17,7 @@ type Medicine struct {
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
 }
+
+func (Medicine) TableName() string {
+	return "medicines"
+}

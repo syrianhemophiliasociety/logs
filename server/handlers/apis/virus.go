@@ -44,14 +44,14 @@ func (e *virusApi) HandleCreateVirus(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (e *virusApi) HandleListViri(w http.ResponseWriter, r *http.Request) {
+func (e *virusApi) HandleListViruses(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		handleErrorResponse(w, err)
 		return
 	}
 
-	payload, err := e.usecases.ListAllViri(actions.ListAllViriParams{
+	payload, err := e.usecases.ListAllViruses(actions.ListAllVirusesParams{
 		ActionContext: ctx,
 	})
 	if err != nil {

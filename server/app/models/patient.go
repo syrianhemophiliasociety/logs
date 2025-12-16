@@ -42,12 +42,16 @@ type Patient struct {
 	FirstVisitReason    PatientFirstVisitReason `gorm:"not null"`
 	BATScore            uint                    `gorm:"not null"`
 	// TODO: keep only in the action's model
-	Viri              []Virus            `gorm:"many2many:has_viri;"`
+	Viruses           []Virus            `gorm:"many2many:has_viruses;"`
 	BloodTestResults  []BloodTestResult  `gorm:"many2many:did_blood_tests;"`
 	JointsEvaluations []JointsEvaluation `gorm:"many2many:patient_joint_evaluation;"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
+}
+
+func (Patient) TableName() string {
+	return "patients"
 }
 
 type PatientUseMedicine struct {
@@ -60,7 +64,15 @@ type PatientUseMedicine struct {
 	UpdatedAt time.Time
 }
 
+func (PatientUseMedicine) TableName() string {
+	return "patients_use_medicines"
+}
+
 type PatientId struct {
 	Id       uint `gorm:"primaryKey;autoIncrement"`
 	PublicId uint `gorm:"not null;index"`
+}
+
+func (PatientId) TableName() string {
+	return "patient_ids"
 }

@@ -67,7 +67,7 @@ type Patient struct {
 	BATScore            uint               `json:"bat_score"`
 	FamilyHistoryExists bool               `json:"family_history_exists"`
 	FirstVisitReason    string             `json:"first_visit_reason"`
-	Viri                []Virus            `json:"viruses"`
+	Viruses             []Virus            `json:"viruses"`
 	BloodTests          []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
 }

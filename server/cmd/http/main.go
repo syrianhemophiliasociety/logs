@@ -77,7 +77,7 @@ func main() {
 	v1ApisHandler.HandleFunc("DELETE /bloodtest/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
 
 	v1ApisHandler.HandleFunc("POST /virus", authMiddleware.AuthApi(virusApi.HandleCreateVirus))
-	v1ApisHandler.HandleFunc("GET /virus/all", authMiddleware.AuthApi(virusApi.HandleListViri))
+	v1ApisHandler.HandleFunc("GET /virus/all", authMiddleware.AuthApi(virusApi.HandleListViruses))
 	v1ApisHandler.HandleFunc("DELETE /virus/{id}", authMiddleware.AuthApi(virusApi.HandleDeleteVirus))
 
 	v1ApisHandler.HandleFunc("POST /medicine", authMiddleware.AuthApi(medicineApi.HandleCreateMedicine))

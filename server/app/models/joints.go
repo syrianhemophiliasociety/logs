@@ -15,3 +15,7 @@ type JointsEvaluation struct {
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
 }
+
+func (JointsEvaluation) TableName() string {
+	return "joints_evaluations"
+}

@@ -72,33 +72,33 @@ func (a *Actions) DeleteVirus(params DeleteVirusParams) (DeleteVirusPayload, err
 	return DeleteVirusPayload{}, nil
 }
 
-type ListAllViriParams struct {
+type ListAllVirusesParams struct {
 	ActionContext
 	NewVirus Virus `json:"new_virus"`
 }
 
-type ListAllViriPayload struct {
+type ListAllVirusesPayload struct {
 	Data []Virus `json:"data"`
 }
 
-func (a *Actions) ListAllViri(params ListAllViriParams) (ListAllViriPayload, error) {
+func (a *Actions) ListAllViruses(params ListAllVirusesParams) (ListAllVirusesPayload, error) {
 	if !params.Account.HasPermission(models.AccountPermissionReadVirus) {
-		return ListAllViriPayload{}, ErrPermissionDenied{}
+		return ListAllVirusesPayload{}, ErrPermissionDenied{}
 	}
 
-	viri, err := a.app.ListAllViri()
+	viruses, err := a.app.ListAllViruses()
 	if err != nil {
-		return ListAllViriPayload{}, err
+		return ListAllVirusesPayload{}, err
 	}
 
-	outViri := make([]Virus, 0, len(viri))
-	for _, virus := range viri {
+	outViruses := make([]Virus, 0, len(viruses))
+	for _, virus := range viruses {
 		outVirus := new(Virus)
 		outVirus.FromModel(virus)
-		outViri = append(outViri, *outVirus)
+		outViruses = append(outViruses, *outVirus)
 	}
 
-	return ListAllViriPayload{
-		Data: outViri,
+	return ListAllVirusesPayload{
+		Data: outViruses,
 	}, nil
 }

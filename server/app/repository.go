@@ -30,8 +30,8 @@ type Repository interface {
 
 	CreateVirus(virus models.Virus) (models.Virus, error)
 	DeleteVirus(id uint) error
-	ListAllViri() ([]models.Virus, error)
-	ListViriForPatient(patientId uint) ([]models.Virus, error)
+	ListAllViruses() ([]models.Virus, error)
+	ListVirusesForPatient(patientId uint) ([]models.Virus, error)
 
 	CreateMedicine(medicine models.Medicine) (models.Medicine, error)
 	DeleteMedicine(id uint) error

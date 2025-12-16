@@ -30,7 +30,7 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				Title:     i18n.StringsCtx(ctx).NavViruses,
 				TitleId:   "viruses",
 				GroupName: "Patient",
-				Content:   patientViruses(patient, patient.Viri),
+				Content:   patientViruses(patient, patient.Viruses),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).TabsVisits,
