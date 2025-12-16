@@ -624,12 +624,19 @@ func (p *pagesHandler) HandleDiagnosesPage(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	_ = ctx
+	diagnoses, err := p.usecases.ListAllDiagnoses(actions.ListAllDiagnosesParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
 
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
 		w.Header().Set("HX-Push-Url", "/diagnoses")
-		pages.Diagnoses().Render(r.Context(), w)
+		pages.Diagnoses(diagnoses.Data).Render(r.Context(), w)
 		return
 	}
 
@@ -637,7 +644,7 @@ func (p *pagesHandler) HandleDiagnosesPage(w http.ResponseWriter, r *http.Reques
 		Title:    i18n.StringsCtx(r.Context()).NavPatient,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Diagnoses()).Render(r.Context(), w)
+	}, pages.Diagnoses(diagnoses.Data)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandleStatisticsPage(w http.ResponseWriter, r *http.Request) {

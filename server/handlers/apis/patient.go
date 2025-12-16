@@ -43,14 +43,14 @@ func (e *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request)
 	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (e *patientApi) HandleCreatePatientBloodTest(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleCreatePatientBloodTestResult(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		handleErrorResponse(w, err)
 		return
 	}
 
-	var reqBody actions.CreatePatientBloodTestParams
+	var reqBody actions.CreatePatientBloodTestResultParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
 		handleErrorResponse(w, err)
@@ -58,9 +58,34 @@ func (e *patientApi) HandleCreatePatientBloodTest(w http.ResponseWriter, r *http
 	}
 	reqBody.ActionContext = ctx
 
-	payload, err := e.usecases.CreatePatientBloodTest(reqBody)
+	payload, err := e.usecases.CreatePatientBloodTestResult(reqBody)
 	if err != nil {
 		log.Errorf("[PATIENT API]: Failed to create patient's blood test: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleCreatePatientDiagnosisResult(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var reqBody actions.CreatePatientDiagnosisResultParams
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+	reqBody.ActionContext = ctx
+
+	payload, err := e.usecases.CreatePatientDiagnosisResult(reqBody)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to create patient's diagnosis result: %+v, error: %s\n", reqBody, err.Error())
 		handleErrorResponse(w, err)
 		return
 	}

@@ -14,6 +14,15 @@ import (
 // Types
 //================
 
+type DiagnosisResult struct {
+	Diagnosis
+	Id          uint      `json:"id"`
+	DiagnosisId uint      `json:"diagnosis_id"`
+	DiagnosedAt time.Time `json:"diagnosed_at"`
+
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type JointsEvaluation struct {
 	Id         uint      `json:"id"`
 	RightAnkle int       `json:"right_ankle"`
@@ -70,6 +79,7 @@ type Patient struct {
 	Viruses             []Virus            `json:"viruses"`
 	BloodTests          []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
+	Diagnoses           []DiagnosisResult  `json:"diagnoses"`
 }
 
 func (p Patient) FullName() string {
@@ -444,6 +454,8 @@ func (p *PatientViruses) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Joints
+
 type JointsEvaluationRequest struct {
 	RightAnkle string `json:"right_ankle"`
 	LeftAnkle  string `json:"left_ankle"`
@@ -501,6 +513,48 @@ func (a *Actions) CreatePatientJointsEvaluation(params CreatePatientJointsEvalua
 				LeftKnee:   leftKnee,
 				RightElbow: rightElbow,
 				LeftElbow:  leftElbow,
+			},
+		},
+	})
+}
+
+// Diagnoses
+
+type PatientDiagnosisRequest struct {
+	DiagnosisId string `json:"diagnosis_id"`
+	DiagnosedAt string `json:"diagnosed_at"`
+}
+
+type CreatePatientDiagnosisResultParams struct {
+	RequestContext
+	PatientId string
+	Diagnosis PatientDiagnosisRequest
+}
+
+type CreatePatientDiagnosisResultPayload struct {
+}
+
+func (a *Actions) CreatePatientDiagnosisResult(params CreatePatientDiagnosisResultParams) (CreatePatientDiagnosisResultPayload, error) {
+	diagnosisId, err := strconv.Atoi(params.Diagnosis.DiagnosisId)
+	if err != nil {
+		return CreatePatientDiagnosisResultPayload{}, err
+	}
+	diagnosedAt, err := time.Parse("2006-01-02", params.Diagnosis.DiagnosedAt)
+	if err != nil {
+		return CreatePatientDiagnosisResultPayload{}, err
+	}
+
+	return makeRequest[map[string]any, CreatePatientDiagnosisResultPayload](makeRequestConfig[map[string]any]{
+		method:   http.MethodPost,
+		endpoint: "/v1/patient/bloodtest",
+		headers: map[string]string{
+			"Authorization": params.SessionToken,
+		},
+		body: map[string]any{
+			"patient_id": params.PatientId,
+			"patient_diagnosis": DiagnosisResult{
+				DiagnosisId: uint(diagnosisId),
+				DiagnosedAt: diagnosedAt,
 			},
 		},
 	})

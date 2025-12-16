@@ -80,7 +80,7 @@ func (v *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) 
 	components.PatientsBrief(payload).Render(r.Context(), w)
 }
 
-func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Request) {
+func (v *patientApi) HandleCreatePatientBloodTestResult(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -102,6 +102,38 @@ func (v *patientApi) HandleAddPatientBloodTest(w http.ResponseWriter, r *http.Re
 		RequestContext:   ctx,
 		PatientId:        patientId,
 		PatientBloodTest: reqBody.BloodTests[0],
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func (v *patientApi) HandleCreatePatientDiagnosisResult(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	var reqBody actions.PatientDiagnosisRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.CreatePatientDiagnosisResult(actions.CreatePatientDiagnosisResultParams{
+		RequestContext: ctx,
+		PatientId:      patientId,
+		Diagnosis:      reqBody,
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)

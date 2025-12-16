@@ -1169,6 +1169,102 @@ func (r *Repository) ListJointEvaluationsForPatient(patientId uint) ([]models.Jo
 	return jes, nil
 }
 
+func (r *Repository) CreateDiagnosis(diagnosis models.Diagnosis) (models.Diagnosis, error) {
+	diagnosis.CreatedAt = time.Now().UTC()
+	diagnosis.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Diagnosis)).
+			Create(&diagnosis).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.Diagnosis{}, &app.ErrExists{
+			ResourceName: "diagnosis",
+		}
+	}
+	if err != nil {
+		return models.Diagnosis{}, err
+	}
+
+	return diagnosis, nil
+}
+
+func (r *Repository) DeleteDiagnisis(id uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Diagnosis)).
+			Delete(&models.Diagnosis{Id: id}, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "diagnosis",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) ListAllDiagnoses() ([]models.Diagnosis, error) {
+	var diagnoses []models.Diagnosis
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Diagnosis)).
+			Find(&diagnoses).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return diagnoses, nil
+}
+
+func (r *Repository) CreateDiagnosisResult(diagnosis models.DiagnosisResult) (models.DiagnosisResult, error) {
+	diagnosis.CreatedAt = time.Now().UTC()
+	diagnosis.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.DiagnosisResult)).
+			Create(&diagnosis).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.DiagnosisResult{}, &app.ErrExists{
+			ResourceName: "diagnosis_result",
+		}
+	}
+	if err != nil {
+		return models.DiagnosisResult{}, err
+	}
+
+	return diagnosis, nil
+}
+
+func (r *Repository) ListPatientDiagnosisResults(patientId uint) ([]models.DiagnosisResult, error) {
+	var diagnoses []models.DiagnosisResult
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.DiagnosisResult)).
+			Where("patient_id = ?", patientId).
+			Find(&diagnoses).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return diagnoses, nil
+}
+
 func likeArg(arg string) string {
 	return fmt.Sprintf("%%%s%%", arg)
 }

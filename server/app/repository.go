@@ -64,4 +64,11 @@ type Repository interface {
 
 	CreateJointEvaluation(je models.JointsEvaluation) (models.JointsEvaluation, error)
 	ListJointEvaluationsForPatient(patientId uint) ([]models.JointsEvaluation, error)
+
+	CreateDiagnosis(d models.Diagnosis) (models.Diagnosis, error)
+	DeleteDiagnisis(id uint) error
+	ListAllDiagnoses() ([]models.Diagnosis, error)
+
+	CreateDiagnosisResult(dr models.DiagnosisResult) (models.DiagnosisResult, error)
+	ListPatientDiagnosisResults(patientId uint) ([]models.DiagnosisResult, error)
 }

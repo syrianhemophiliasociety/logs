@@ -9,13 +9,15 @@ const (
 		models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
 		models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits |
 		models.AccountPermissionReadBloodTest |
-		models.AccountPermissionReadVirus
+		models.AccountPermissionReadVirus |
+		models.AccountPermissionReadDiagnoses
 
 	adminPermissions = secritaryPermissions |
 		models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
 		models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
 		models.AccountPermissionReadMedicine | models.AccountPermissionWriteBloodTest |
-		models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus
+		models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
+		models.AccountPermissionReadDiagnoses | models.AccountPermissionWriteDiagnoses
 )
 
 type Account struct {

@@ -92,6 +92,7 @@ func main() {
 	bloodTestApi := apis.NewBloodTestApi(usecases)
 	accountApi := apis.NewAccountApi(usecases)
 	patientApi := apis.NewPatientApi(usecases)
+	diagnosisApi := apis.NewDiagnosisApi(usecases)
 
 	apisHandler := http.NewServeMux()
 	apisHandler.HandleFunc("POST /login/username", usernameLoginApi.HandleUsernameLogin)
@@ -107,13 +108,17 @@ func main() {
 	apisHandler.HandleFunc("POST /blood-test", authMiddleware.AuthApi(bloodTestApi.HandleCreateBloodTest))
 	apisHandler.HandleFunc("DELETE /blood-test/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
 
+	apisHandler.HandleFunc("POST /diagnosis", authMiddleware.AuthApi(diagnosisApi.HandleCreateDiagnosis))
+	apisHandler.HandleFunc("DELETE /diagnosis/{id}", authMiddleware.AuthApi(diagnosisApi.HandleDeleteDiagnosis))
+
 	apisHandler.HandleFunc("POST /account", authMiddleware.AuthApi(accountApi.HandleCreateAccount))
 	apisHandler.HandleFunc("PUT /account/{id}", authMiddleware.AuthApi(accountApi.HandleUpdateAccount))
 	apisHandler.HandleFunc("DELETE /account/{id}", authMiddleware.AuthApi(accountApi.HandleDeleteAccount))
 
 	apisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
 	apisHandler.HandleFunc("POST /patient/find", authMiddleware.AuthApi(patientApi.HandleFindPatients))
-	apisHandler.HandleFunc("POST /patient/{id}/blood-test", authMiddleware.AuthApi(patientApi.HandleAddPatientBloodTest))
+	apisHandler.HandleFunc("POST /patient/{id}/blood-test", authMiddleware.AuthApi(patientApi.HandleCreatePatientBloodTestResult))
+	apisHandler.HandleFunc("POST /patient/{id}/diagnosis", authMiddleware.AuthApi(patientApi.HandleCreatePatientDiagnosisResult))
 	apisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCreatePatientCheckUp))
 	apisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
 	apisHandler.HandleFunc("PUT /patient/{id}/blood-test-result/{btr_id}/pending", authMiddleware.AuthApi(patientApi.HandleUpdatePatientPendingBloodTestResult))

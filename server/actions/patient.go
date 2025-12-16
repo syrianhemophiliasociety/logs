@@ -12,8 +12,9 @@ import (
 
 type DiagnosisResult struct {
 	Diagnosis
-	Id          uint `json:"id"`
-	DiagnosisId uint `json:"diagnosis_id"`
+	Id          uint      `json:"id"`
+	DiagnosisId uint      `json:"diagnosis_id"`
+	DiagnosedAt time.Time `json:"diagnosed_at"`
 
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -71,6 +72,7 @@ type Patient struct {
 	Viruses             []Virus            `json:"viruses"`
 	BloodTestResults    []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
+	Diagnoses           []DiagnosisResult  `json:"diagnoses"`
 }
 
 func (p Patient) IntoModel() models.Patient {
@@ -218,6 +220,27 @@ func (p *Patient) WithViruses(patientViruses []models.Virus, viruses []models.Vi
 	}
 }
 
+func (p *Patient) WithDiagnoses(diagnosesResults []models.DiagnosisResult, diagnoses []models.Diagnosis) {
+	diagnosisMapped := make(map[uint]Diagnosis)
+
+	for _, d := range diagnoses {
+		outD := new(Diagnosis)
+		outD.FromModel(d)
+		diagnosisMapped[d.Id] = *outD
+	}
+
+	(*p).Diagnoses = make([]DiagnosisResult, 0, len(diagnosesResults))
+	for _, dr := range diagnosesResults {
+		(*p).Diagnoses = append((*p).Diagnoses, DiagnosisResult{
+			Diagnosis:   diagnosisMapped[dr.DiagnosisId],
+			DiagnosisId: dr.DiagnosisId,
+			Id:          dr.Id,
+			DiagnosedAt: dr.DiagnosedAt,
+			CreatedAt:   dr.CreatedAt,
+		})
+	}
+}
+
 type CreatePatientParams struct {
 	ActionContext
 	NewPatient Patient `json:"new_patient"`
@@ -225,45 +248,6 @@ type CreatePatientParams struct {
 
 type CreatePatientPayload struct {
 	PatientPublicId string `json:"id"`
-}
-
-func cleanPhoneNumberCountryCode(num string) string {
-	countryCodes := []string{
-		"93", "355", "213", "376", "244", "54", "374", "297", "61", "43",
-		"994", "973", "880", "375", "32", "501", "229", "975", "591", "387",
-		"267", "55", "673", "359", "226", "257", "855", "237", "1", "238",
-		"236", "235", "56", "86", "57", "269", "242", "243", "506", "225",
-		"385", "53", "357", "420", "45", "253", "593", "20", "503", "240",
-		"291", "372", "251", "500", "298", "679", "358", "33", "241", "220",
-		"995", "49", "233", "350", "30", "299", "502", "224", "245", "592",
-		"509", "504", "852", "36", "354", "91", "62", "98", "964", "353",
-		"972", "39", "81", "962", "7", "254", "686", "383", "965", "996",
-		"856", "371", "961", "266", "231", "218", "423", "370", "352", "853",
-		"389", "261", "265", "60", "960", "223", "356", "222", "230", "52",
-		"373", "377", "976", "382", "212", "258", "95", "264", "674", "977",
-		"31", "687", "64", "505", "227", "234", "47", "968", "92", "970",
-		"507", "675", "595", "51", "63", "48", "351", "974", "40", "7",
-		"250", "685", "378", "239", "966", "221", "381", "248", "232", "65",
-		"421", "386", "677", "252", "27", "82", "211", "34", "94", "249",
-		"597", "46", "41", "963", "886", "992", "255", "66", "670", "228",
-		"676", "216", "90", "993", "688", "256", "380", "971", "44", "598",
-		"998", "678", "58", "84", "681", "260", "263", "247", "246", "599",
-		"682", "691", "508", "680", "690",
-	}
-
-	for _, code := range countryCodes {
-		if cut, ok := strings.CutPrefix(num, "+"+code); ok {
-			return cut
-		}
-		if cut, ok := strings.CutPrefix(num, "00"+code); ok {
-			return cut
-		}
-		if cut, ok := strings.CutPrefix(num, code); ok {
-			return cut
-		}
-	}
-
-	return num
 }
 
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
@@ -349,23 +333,23 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}, nil
 }
 
-type CreatePatientBloodTestParams struct {
+type CreatePatientBloodTestResultParams struct {
 	ActionContext
 	PatientPublicId string          `json:"patient_id"`
 	BloodTest       BloodTestResult `json:"patient_blood_test"`
 }
 
-type CreatePatientBloodTestPayload struct {
+type CreatePatientBloodTestResultPayload struct {
 }
 
-func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (CreatePatientBloodTestPayload, error) {
+func (a *Actions) CreatePatientBloodTestResult(params CreatePatientBloodTestResultParams) (CreatePatientBloodTestResultPayload, error) {
 	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
-		return CreatePatientBloodTestPayload{}, ErrPermissionDenied{}
+		return CreatePatientBloodTestResultPayload{}, ErrPermissionDenied{}
 	}
 
 	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
-		return CreatePatientBloodTestPayload{}, err
+		return CreatePatientBloodTestResultPayload{}, err
 	}
 
 	bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(params.BloodTest.FilledFields))
@@ -384,10 +368,41 @@ func (a *Actions) CreatePatientBloodTest(params CreatePatientBloodTestParams) (C
 		Pending:      params.BloodTest.Pending,
 	})
 	if err != nil {
-		return CreatePatientBloodTestPayload{}, err
+		return CreatePatientBloodTestResultPayload{}, err
 	}
 
-	return CreatePatientBloodTestPayload{}, nil
+	return CreatePatientBloodTestResultPayload{}, nil
+}
+
+type CreatePatientDiagnosisResultParams struct {
+	ActionContext
+	PatientPublicId string          `json:"patient_id"`
+	Diagnosis       DiagnosisResult `json:"patient_diagnosis"`
+}
+
+type CreatePatientDiagnosisResultPayload struct {
+}
+
+func (a *Actions) CreatePatientDiagnosisResult(params CreatePatientDiagnosisResultParams) (CreatePatientDiagnosisResultPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return CreatePatientDiagnosisResultPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	if err != nil {
+		return CreatePatientDiagnosisResultPayload{}, err
+	}
+
+	_, err = a.app.CreateDiagnosisResult(models.DiagnosisResult{
+		DiagnosisId: params.Diagnosis.DiagnosisId,
+		PatientId:   patient.Id,
+		DiagnosedAt: params.Diagnosis.DiagnosedAt,
+	})
+	if err != nil {
+		return CreatePatientDiagnosisResultPayload{}, err
+	}
+
+	return CreatePatientDiagnosisResultPayload{}, nil
 }
 
 type UpdatePatientPendingBloodTestResultParams struct {
@@ -563,11 +578,22 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		return GetPatientPayload{}, err
 	}
 
+	diagnoses, err := a.app.ListAllDiagnoses()
+	if err != nil {
+		return GetPatientPayload{}, err
+	}
+
+	diagnosesResults, err := a.app.ListPatientDiagnosisResults(patient.Id)
+	if err != nil {
+		return GetPatientPayload{}, err
+	}
+
 	outPatient := &Patient{}
 	outPatient.FromModel(patient)
 	outPatient.WithViruses(patient.Viruses, nil)
 	outPatient.WithBloodTestResults(patient.BloodTestResults, bloodTests)
 	outPatient.WithJointsEvaluations(patient.JointsEvaluations)
+	outPatient.WithDiagnoses(diagnosesResults, diagnoses)
 
 	return GetPatientPayload{
 		Data: *outPatient,

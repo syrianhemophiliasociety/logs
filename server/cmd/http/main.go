@@ -57,6 +57,7 @@ func main() {
 	virusApi := apis.NewVirusApi(usecases)
 	addressApi := apis.NewAddressApi(usecases)
 	patientApi := apis.NewPatientApi(usecases)
+	diagnosisApi := apis.NewDiagnosisApi(usecases)
 
 	v1ApisHandler := http.NewServeMux()
 	v1ApisHandler.HandleFunc("POST /login/username", emailLoginApi.HandleUsernameLogin)
@@ -76,6 +77,10 @@ func main() {
 	v1ApisHandler.HandleFunc("GET /bloodtest/all", authMiddleware.AuthApi(bloodTestApi.HandleListBloodTests))
 	v1ApisHandler.HandleFunc("DELETE /bloodtest/{id}", authMiddleware.AuthApi(bloodTestApi.HandleDeleteBloodTest))
 
+	v1ApisHandler.HandleFunc("POST /diagnosis", authMiddleware.AuthApi(diagnosisApi.HandleCreateDiagnosis))
+	v1ApisHandler.HandleFunc("GET /diagnosis/all", authMiddleware.AuthApi(diagnosisApi.HandleListDiagnosiss))
+	v1ApisHandler.HandleFunc("DELETE /diagnosis/{id}", authMiddleware.AuthApi(diagnosisApi.HandleDeleteDiagnosis))
+
 	v1ApisHandler.HandleFunc("POST /virus", authMiddleware.AuthApi(virusApi.HandleCreateVirus))
 	v1ApisHandler.HandleFunc("GET /virus/all", authMiddleware.AuthApi(virusApi.HandleListViruses))
 	v1ApisHandler.HandleFunc("DELETE /virus/{id}", authMiddleware.AuthApi(virusApi.HandleDeleteVirus))
@@ -91,21 +96,23 @@ func main() {
 		authMiddleware.AuthApi(addressApi.HandleFindAddress))
 
 	v1ApisHandler.HandleFunc("POST /patient", authMiddleware.AuthApi(patientApi.HandleCreatePatient))
-	v1ApisHandler.HandleFunc("POST /patient/bloodtest", authMiddleware.AuthApi(patientApi.HandleCreatePatientBloodTest))
-	v1ApisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCheckUp))
 	v1ApisHandler.HandleFunc("GET /patient/{id}/card", authMiddleware.AuthApi(patientApi.HandleGenerateCard))
 	v1ApisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
 	v1ApisHandler.HandleFunc("GET /patient/{id}", authMiddleware.AuthApi(patientApi.HandleGetPatient))
-	v1ApisHandler.HandleFunc("GET /patient/last-visit", authMiddleware.AuthApi(patientApi.HandleGetPatientLastVisit))
-	v1ApisHandler.HandleFunc("GET /patient/{id}/visits", authMiddleware.AuthApi(patientApi.HandleListPatientVisits))
-	v1ApisHandler.HandleFunc("PUT /patient/{id}/bloodtest/{btr_id}/pending", authMiddleware.AuthApi(patientApi.HandleUpdatePendingBloodTestResult))
 	v1ApisHandler.HandleFunc("GET /patients/last", authMiddleware.AuthApi(patientApi.HandleListLastPatients))
-	v1ApisHandler.HandleFunc("POST /patient/{id}/joints-evaluation", authMiddleware.AuthApi(patientApi.HandleCreatePatientJointsEvaluation))
-	v1ApisHandler.HandleFunc("GET /patient/{id}/joints-evaluations", authMiddleware.AuthApi(patientApi.HandleListPatientJointsEvaluations))
-	v1ApisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}", authMiddleware.AuthApi(patientApi.HandleUsePrescribedMedicineForVisit))
 	v1ApisHandler.HandleFunc(
 		"GET /patients/public-id/{public_id}/first-name/{first_name}/last-name/{last_name}/father-name/{father_name}/mother-name/{mother_name}/national-id/{national_id}/phone-number/{phone_number}",
 		authMiddleware.AuthApi(patientApi.HandleFindPatients))
+
+	v1ApisHandler.HandleFunc("POST /patient/bloodtest", authMiddleware.AuthApi(patientApi.HandleCreatePatientBloodTestResult))
+	v1ApisHandler.HandleFunc("PUT /patient/{id}/bloodtest/{btr_id}/pending", authMiddleware.AuthApi(patientApi.HandleUpdatePendingBloodTestResult))
+	v1ApisHandler.HandleFunc("POST /patient/{id}/checkup", authMiddleware.AuthApi(patientApi.HandleCheckUp))
+	v1ApisHandler.HandleFunc("POST /patient/diagnosis", authMiddleware.AuthApi(patientApi.HandleCreatePatientDiagnosisResult))
+	v1ApisHandler.HandleFunc("POST /patient/{id}/joints-evaluation", authMiddleware.AuthApi(patientApi.HandleCreatePatientJointsEvaluation))
+	v1ApisHandler.HandleFunc("GET /patient/{id}/joints-evaluations", authMiddleware.AuthApi(patientApi.HandleListPatientJointsEvaluations))
+	v1ApisHandler.HandleFunc("GET /patient/last-visit", authMiddleware.AuthApi(patientApi.HandleGetPatientLastVisit))
+	v1ApisHandler.HandleFunc("GET /patient/{id}/visits", authMiddleware.AuthApi(patientApi.HandleListPatientVisits))
+	v1ApisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}", authMiddleware.AuthApi(patientApi.HandleUsePrescribedMedicineForVisit))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/v1/", http.StripPrefix("/v1", contenttype.Json(v1ApisHandler)))

@@ -214,6 +214,11 @@ type Keys struct {
 	UsedAmount                      string
 	PrescribedMedicineUsedAt        string
 
+	DiagnosisTitle          string
+	EnterDiagnosisTitle     string
+	DiagnosisGroupName      string
+	EnterDiagnosisGroupName string
+
 	NationalitySyrian      string
 	NationalityPalestinian string
 	NationalityIraqi       string
