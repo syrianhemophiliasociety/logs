@@ -241,6 +241,8 @@ var arabic = Keys{
 	EnterDiagnosisTitle:             "Enter diagnosis' title",
 	DiagnosisGroupName:              "Diagnosis group name",
 	EnterDiagnosisGroupName:         "Enter diagnosis' group name",
+	EnterDiagnosis:                  "Choose diagnosis",
+	DiagnosedAt:                     "Diagnosed at",
 	NationalitySyrian:               "سوري",
 	NationalityPalestinian:          "فلسطيني",
 	NationalityIraqi:                "عراقي",

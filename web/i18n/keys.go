@@ -218,6 +218,8 @@ type Keys struct {
 	EnterDiagnosisTitle     string
 	DiagnosisGroupName      string
 	EnterDiagnosisGroupName string
+	EnterDiagnosis          string
+	DiagnosedAt             string
 
 	NationalitySyrian      string
 	NationalityPalestinian string

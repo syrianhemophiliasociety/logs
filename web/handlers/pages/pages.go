@@ -450,10 +450,20 @@ func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request)
 			Render(r.Context(), w)
 		return
 	}
+
+	diagnoses, err := p.usecases.ListAllDiagnoses(actions.ListAllDiagnosesParams{
+		RequestContext: ctx,
+	})
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
 		w.Header().Set("HX-Push-Url", "/patient/"+id)
-		pages.Patient(patient, bloodTests, viruses, allMedicine, visits).Render(r.Context(), w)
+		pages.Patient(patient, bloodTests, viruses, allMedicine, visits, diagnoses).Render(r.Context(), w)
 		return
 	}
 
@@ -461,7 +471,7 @@ func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request)
 		Title:    i18n.StringsCtx(r.Context()).NavPatient,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Patient(patient, bloodTests, viruses, allMedicine, visits)).Render(r.Context(), w)
+	}, pages.Patient(patient, bloodTests, viruses, allMedicine, visits, diagnoses)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandlePatientBloodTestResultPage(w http.ResponseWriter, r *http.Request) {
@@ -636,7 +646,7 @@ func (p *pagesHandler) HandleDiagnosesPage(w http.ResponseWriter, r *http.Reques
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
 		w.Header().Set("HX-Push-Url", "/diagnoses")
-		pages.Diagnoses(diagnoses.Data).Render(r.Context(), w)
+		pages.Diagnoses(diagnoses).Render(r.Context(), w)
 		return
 	}
 
@@ -644,7 +654,7 @@ func (p *pagesHandler) HandleDiagnosesPage(w http.ResponseWriter, r *http.Reques
 		Title:    i18n.StringsCtx(r.Context()).NavPatient,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Diagnoses(diagnoses.Data)).Render(r.Context(), w)
+	}, pages.Diagnoses(diagnoses)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandleStatisticsPage(w http.ResponseWriter, r *http.Request) {

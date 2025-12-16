@@ -43,14 +43,19 @@ type ListAllDiagnosesPayload struct {
 	Data []Diagnosis `json:"data"`
 }
 
-func (a *Actions) ListAllDiagnoses(params ListAllDiagnosesParams) (ListAllDiagnosesPayload, error) {
-	return makeRequest[any, ListAllDiagnosesPayload](makeRequestConfig[any]{
+func (a *Actions) ListAllDiagnoses(params ListAllDiagnosesParams) ([]Diagnosis, error) {
+	payload, err := makeRequest[any, ListAllDiagnosesPayload](makeRequestConfig[any]{
 		method:   http.MethodGet,
 		endpoint: "/v1/diagnosis/all",
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return payload.Data, nil
 }
 
 type DeleteDiagnosisParams struct {

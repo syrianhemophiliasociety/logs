@@ -546,7 +546,7 @@ func (a *Actions) CreatePatientDiagnosisResult(params CreatePatientDiagnosisResu
 
 	return makeRequest[map[string]any, CreatePatientDiagnosisResultPayload](makeRequestConfig[map[string]any]{
 		method:   http.MethodPost,
-		endpoint: "/v1/patient/bloodtest",
+		endpoint: "/v1/patient/diagnosis",
 		headers: map[string]string{
 			"Authorization": params.SessionToken,
 		},

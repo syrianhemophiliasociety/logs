@@ -239,6 +239,8 @@ var english = Keys{
 	EnterDiagnosisTitle:             "Enter diagnosis' title",
 	DiagnosisGroupName:              "Diagnosis group name",
 	EnterDiagnosisGroupName:         "Enter diagnosis' group name",
+	EnterDiagnosis:                  "Choose diagnosis",
+	DiagnosedAt:                     "Diagnosed at",
 	NationalitySyrian:               "Syrian",
 	NationalityPalestinian:          "Palestinian",
 	NationalityIraqi:                "Iraqi",

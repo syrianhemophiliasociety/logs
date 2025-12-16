@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine, visits []actions.Visit) {
+templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine, visits []actions.Visit, diagnoses []actions.Diagnosis) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatient } { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
 		@components.Tabs(
@@ -19,6 +19,12 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 				TitleId:   "profile",
 				GroupName: "Patient",
 				Content:   patientProfile(patient),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).NavDiagnoses,
+				TitleId:   "diagnoses",
+				GroupName: "Patient",
+				Content:   patientDiagnosesTab(patient, diagnoses),
 			},
 			components.TabContent{
 				Title:     i18n.StringsCtx(ctx).NavBloodTests,
@@ -245,6 +251,24 @@ templ patientJointsTab(patient actions.Patient) {
 			SubTab:    true,
 		},
 	)
+}
+
+templ patientDiagnosesTab(patient actions.Patient, diagnoses []actions.Diagnosis) {
+	@components.Tabs(
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsList,
+			TitleId:   "list",
+			GroupName: "patient-diagnosis-results",
+			Content:   patientListDiagnosesResults(patient),
+			SubTab:    true,
+		},
+		components.TabContent{
+			Title:     i18n.StringsCtx(ctx).TabsCreate,
+			TitleId:   "create",
+			GroupName: "patient-diagnosis-results",
+			Content:   patientCreateDiagnosisResult(patient, diagnoses),
+			SubTab:    true,
+		})
 }
 
 templ patientBloodTestsBrief(bt actions.BloodTestResult) {
@@ -592,4 +616,90 @@ templ patientCreateJointsEvaluation(patient actions.Patient) {
 			{ i18n.StringsCtx(ctx).FormsSubmit }
 		</button>
 	</form>
+}
+
+templ patientListDiagnosesResults(patient actions.Patient) {
+	if len(patient.Diagnoses) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavDiagnoses) }</span>
+	} else {
+		@components.ScrollableList(components.ScrollableListParams{}) {
+			for _, diagnosis := range patient.Diagnoses {
+				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between" }>
+					<div>
+						<span class={ "font-bold", "text-lg" }>
+							{ diagnosis.Title }
+						</span>
+						<span class={ "font-bold", "text-lg" }>
+							{ diagnosis.GroupName }
+						</span>
+					</div>
+					<div>
+						{ diagnosis.CreatedAt.Format("2006 Jan/02") }
+					</div>
+				</div>
+			}
+		}
+	}
+}
+
+templ newPatientDiagnosisResult(patient actions.Patient, diagnosis actions.Diagnosis) {
+	<form
+		class={ "flex", "flex-col", "gap-5" }
+		hx-encoding="application/json"
+		hx-post={ fmt.Sprintf("/api/patient/%s/diagnosis", patient.PublicId) }
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me then call location.reload()"
+	>
+		@components.Input(components.InputOptions{
+			Id:        "diagnosis_id",
+			Name:      "diagnosis_id",
+			Type:      components.InputTypeNumber,
+			Required:  true,
+			Autofocus: false,
+			Title:     "Diagnosis id",
+			Value:     strconv.Itoa(int(diagnosis.Id)),
+			Class:     []string{"!hidden"},
+		})
+		@components.Input(components.InputOptions{
+			Id:          "diagnosed_at",
+			Name:        "diagnosed_at",
+			Type:        components.InputTypeDate,
+			Required:    true,
+			Autofocus:   false,
+			Title:       i18n.StringsCtx(ctx).DiagnosedAt,
+			Placeholder: i18n.StringsCtx(ctx).DiagnosedAt,
+		})
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+	</form>
+}
+
+func mapNewDiagnosisResultToView(patient actions.Patient, diagnoses []actions.Diagnosis) []components.SelectContent {
+	bloodTestsViews := make([]components.SelectContent, 0, len(diagnoses))
+	for _, diagnosis := range diagnoses {
+		bloodTestsViews = append(bloodTestsViews, components.SelectContent{
+			Title:     diagnosis.Title,
+			TitleId:   unidecode.Unidecode(diagnosis.Title),
+			GroupName: "daignoses",
+			Content:   newPatientDiagnosisResult(patient, diagnosis),
+		})
+	}
+
+	return bloodTestsViews
+}
+
+templ patientCreateDiagnosisResult(patient actions.Patient, bloodTests []actions.Diagnosis) {
+	@components.SelectContents(
+		components.SelectContentsParams{
+			Title:    i18n.StringsCtx(ctx).EnterDiagnosis,
+			TitleId:  "patient-blood-tests",
+			Contents: mapNewDiagnosisResultToView(patient, bloodTests),
+		},
+	)
+	<div id="status-msg"></div>
 }
