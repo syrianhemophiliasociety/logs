@@ -1,0 +1,47 @@
+package components
+
+type HyperButtonParams struct {
+	Title       string
+	Class       []string
+	HxMethod    string
+	HxPath      string
+	HxSwap      string
+	HxTarget    string
+	HyperScript string
+}
+
+templ HyperButton(params HyperButtonParams) {
+	<button
+		class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]", "px-4" , "w-full" , "text-accent", params.Class }
+		if params.HxMethod == "GET" {
+			hx-get={ params.HxPath }
+		}
+		else
+		if params.HxMethod == "POST" {
+			hx-post={ params.HxPath }
+		}
+		else
+		if params.HxMethod == "PUT" {
+			hx-put={ params.HxPath }
+		}
+		else
+		if params.HxMethod == "DELETE" {
+			hx-delete={ params.HxPath }
+		}
+		if params.HxTarget != "" {
+			hx-target={ params.HxTarget }
+		} else {
+			hx-target="this"
+		}
+		if params.HxSwap != "" {
+			hx-swap={ params.HxSwap }
+		} else {
+			hx-swap="none"
+		}
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+		if params.HyperScript != "" {
+			_={ params.HyperScript }
+		}
+	>{ params.Title }</button>
+}

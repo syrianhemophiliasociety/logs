@@ -2,14 +2,20 @@ package actions
 
 import (
 	"shs/app/models"
+	"time"
 )
 
 type Medicine struct {
-	Id     uint   `json:"id"`
-	Name   string `json:"name"`
-	Dose   int    `json:"dose"`
-	Unit   string `json:"unit"`
-	Amount int    `json:"amount"`
+	Id           uint      `json:"id"`
+	Name         string    `json:"name"`
+	Dose         int       `json:"dose"`
+	Unit         string    `json:"unit"`
+	Amount       int       `json:"amount"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	ReceivedAt   time.Time `json:"received_at"`
+	Manufacturer string    `json:"manufacturer"`
+	BatchNumber  string    `json:"batch_number"`
+	FactorType   string    `json:"factor_type"`
 }
 
 type CreateMedicineParams struct {
@@ -19,20 +25,30 @@ type CreateMedicineParams struct {
 
 func (m Medicine) IntoModel() models.Medicine {
 	return models.Medicine{
-		Name:   m.Name,
-		Dose:   m.Dose,
-		Unit:   m.Unit,
-		Amount: m.Amount,
+		Name:         m.Name,
+		Dose:         m.Dose,
+		Unit:         m.Unit,
+		Amount:       m.Amount,
+		ExpiresAt:    m.ExpiresAt,
+		ReceivedAt:   m.ReceivedAt,
+		Manufacturer: m.Manufacturer,
+		BatchNumber:  m.BatchNumber,
+		FactorType:   m.FactorType,
 	}
 }
 
 func (m *Medicine) FromModel(medicine models.Medicine) {
 	(*m) = Medicine{
-		Id:     medicine.Id,
-		Name:   medicine.Name,
-		Dose:   medicine.Dose,
-		Unit:   medicine.Unit,
-		Amount: medicine.Amount,
+		Id:           medicine.Id,
+		Name:         medicine.Name,
+		Dose:         medicine.Dose,
+		Unit:         medicine.Unit,
+		Amount:       medicine.Amount,
+		ExpiresAt:    medicine.ExpiresAt,
+		ReceivedAt:   medicine.ReceivedAt,
+		Manufacturer: medicine.Manufacturer,
+		BatchNumber:  medicine.BatchNumber,
+		FactorType:   medicine.FactorType,
 	}
 }
 

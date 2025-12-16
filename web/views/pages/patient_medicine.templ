@@ -13,7 +13,6 @@ templ patientMedForm(visitId uint, medicine actions.PrescribedMedicine) {
 	<button
 		class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]", "px-4" , "w-full" , "text-accent" }
 		hx-post={ fmt.Sprintf("/api/patient/visit/%d/medicine/%d", visitId, medicine.PrescribedMedicineId) }
-		hx-ext="json-enc"
 		hx-target="this"
 		hx-swap="none"
 		data-loading-target="#loading"

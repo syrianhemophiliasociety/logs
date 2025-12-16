@@ -2,7 +2,7 @@ package errors
 
 import "strings"
 
-templ BugsBunnyError(msg string) {
+templ BugsBunnyError(msg string, cta templ.Component) {
 	<div class={ "w-full", "h-full", "flex", "flex-col", "items-center", "justify-center", "gap-y-2", "p-2" }>
 		<img width="250" height="250" class={ "w-[250px]", "h-[250px]" } src="/assets/images/error-img.webp" alt="Error image"/>
 		<p class={ "text-2xl", "text-[#fe3434]" }>
@@ -14,5 +14,6 @@ templ BugsBunnyError(msg string) {
 				}
 			}
 		</p>
+		@cta
 	</div>
 }

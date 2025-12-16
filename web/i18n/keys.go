@@ -37,6 +37,7 @@ type Keys struct {
 	LoginEnterPassword string
 	Login              string
 	Logout             string
+	Reload             string
 
 	NavHome       string
 	NavAbout      string
@@ -70,16 +71,26 @@ type Keys struct {
 	VirusBloodTest      string
 	EnterVirusBloodTest string
 
-	Medicine               string
-	EnterMedicineName      string
-	MedicineDose           string
-	EnterMedicineDose      string
-	MedicineUnit           string
-	EnterMedicineUnit      string
-	MedicineAmount         string
-	EnterMedicineAmount    string
-	EnterPrescribedAmount  string
-	MedicinePackageLeftFmt func(n int) string
+	Medicine                  string
+	EnterMedicineName         string
+	MedicineDose              string
+	EnterMedicineDose         string
+	MedicineUnit              string
+	EnterMedicineUnit         string
+	MedicineAmount            string
+	EnterMedicineAmount       string
+	EnterPrescribedAmount     string
+	MedicinePackageLeftFmt    func(n int) string
+	MedicineManufacturer      string
+	EnterMedicineManufacturer string
+	MedicineFactorType        string
+	EnterMedicineFactorType   string
+	MedicineBatchNumber       string
+	EnterMedicineBatchNumber  string
+	MedicineReceivedAt        string
+	EnterMedicineReceivedAt   string
+	MedicineExpiresAt         string
+	EnterMedicineExpiresAt    string
 
 	BloodTest                         string
 	BloodTestResult                   string

@@ -55,7 +55,7 @@ templ newMedicine() {
 		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavMedicine)
 	} else {
 		<form
-			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+			class={ "flex" , "flex-col" , "gap-5" }
 			hx-encoding="application/json"
 			hx-post="/api/medicine"
 			hx-ext="json-enc"
@@ -65,7 +65,7 @@ templ newMedicine() {
 			data-loading-class-remove="hidden"
 			_="on htmx:afterRequest reset() me then call Router.removeSearchQuery('tab') then call location.reload()"
 		>
-			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
 				@components.Input(components.InputOptions{
 					Id:          "name",
 					Name:        "name",
@@ -84,6 +84,8 @@ templ newMedicine() {
 					Title:       i18n.StringsCtx(ctx).MedicineDose,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
 				})
+			</div>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
 				@components.Select(components.SelectParams{
 					Id:          "unit",
 					Name:        i18n.StringsCtx(ctx).MedicineUnit,
@@ -103,10 +105,61 @@ templ newMedicine() {
 					Title:       i18n.StringsCtx(ctx).MedicineAmount,
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineAmount,
 				})
-				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
-					{ i18n.StringsCtx(ctx).FormsSubmit }
-				</button>
 			</div>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
+				@components.Input(components.InputOptions{
+					Id:          "expires_at",
+					Name:        "expires_at",
+					Type:        components.InputTypeDate,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineExpiresAt,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineExpiresAt,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "received_at",
+					Name:        "received_at",
+					Type:        components.InputTypeDate,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineReceivedAt,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineReceivedAt,
+				})
+			</div>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
+				@components.Input(components.InputOptions{
+					Id:          "manufacturer",
+					Name:        "manufacturer",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineManufacturer,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineManufacturer,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "batch_number",
+					Name:        "batch_number",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineBatchNumber,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineBatchNumber,
+				})
+			</div>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
+				@components.Input(components.InputOptions{
+					Id:          "factor_type",
+					Name:        "factor_type",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineFactorType,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineFactorType,
+				})
+			</div>
+			<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+				{ i18n.StringsCtx(ctx).FormsSubmit }
+			</button>
 			<div id="status-msg"></div>
 		</form>
 	}

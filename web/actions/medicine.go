@@ -4,14 +4,20 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Medicine struct {
-	Id     uint   `json:"id"`
-	Name   string `json:"name"`
-	Dose   int    `json:"dose"`
-	Unit   string `json:"unit"`
-	Amount int    `json:"amount"`
+	Id           uint      `json:"id"`
+	Name         string    `json:"name"`
+	Dose         int       `json:"dose"`
+	Unit         string    `json:"unit"`
+	Amount       int       `json:"amount"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	ReceivedAt   time.Time `json:"received_at"`
+	Manufacturer string    `json:"manufacturer"`
+	BatchNumber  string    `json:"batch_number"`
+	FactorType   string    `json:"factor_type"`
 }
 
 func (m Medicine) DoseUnit() string {
@@ -42,11 +48,16 @@ func (a *Actions) ListAllMedicines(params ListAllMedicinesParams) ([]Medicine, e
 }
 
 type RequestMedicine struct {
-	Id     uint   `json:"id"`
-	Name   string `json:"name"`
-	Dose   string `json:"dose"`
-	Unit   string `json:"unit"`
-	Amount string `json:"amount"`
+	Id           uint   `json:"id"`
+	Name         string `json:"name"`
+	Dose         string `json:"dose"`
+	Unit         string `json:"unit"`
+	Amount       string `json:"amount"`
+	ExpiresAt    string `json:"expires_at"`
+	ReceivedAt   string `json:"received_at"`
+	Manufacturer string `json:"manufacturer"`
+	BatchNumber  string `json:"batch_number"`
+	FactorType   string `json:"factor_type"`
 }
 
 type CreateMedicineParams struct {
@@ -62,17 +73,29 @@ func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePay
 	if err != nil {
 		return CreateMedicinePayload{}, err
 	}
-
 	amount, err := strconv.Atoi(params.NewMedicine.Amount)
+	if err != nil {
+		return CreateMedicinePayload{}, err
+	}
+	expiresAt, err := time.Parse("2006-01-02", params.NewMedicine.ExpiresAt)
+	if err != nil {
+		return CreateMedicinePayload{}, err
+	}
+	receivedAt, err := time.Parse("2006-01-02", params.NewMedicine.ReceivedAt)
 	if err != nil {
 		return CreateMedicinePayload{}, err
 	}
 
 	medicine := Medicine{
-		Name:   params.NewMedicine.Name,
-		Dose:   dose,
-		Unit:   params.NewMedicine.Unit,
-		Amount: amount,
+		Name:         params.NewMedicine.Name,
+		Dose:         dose,
+		Unit:         params.NewMedicine.Unit,
+		Amount:       amount,
+		ExpiresAt:    expiresAt,
+		ReceivedAt:   receivedAt,
+		Manufacturer: params.NewMedicine.Manufacturer,
+		BatchNumber:  params.NewMedicine.BatchNumber,
+		FactorType:   params.NewMedicine.FactorType,
 	}
 
 	payload, err := makeRequest[map[string]any, CreateMedicinePayload](makeRequestConfig[map[string]any]{
