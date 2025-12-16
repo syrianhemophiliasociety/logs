@@ -1,21 +1,19 @@
 <div align="center">
-  <a href="https://syrianhemophiliasociety.com" target="_blank"><img src="https://syrianhemophiliasociety.com/assets/android-chrome-512x512.png" width="150" /></a>
+  <a href="https://logs.syrianhemophiliasociety.com" target="_blank"><img src="https://logs.syrianhemophiliasociety.com/assets/web-app-manifest-192x192.png" width="150" /></a>
 
   <h1>SyrianHemophiliaSocietyLogs</h1>
   <p>
     <strong>A patient care follow up platform for Syrian Hemophilia Society</strong>
   </p>
   <p>
-    <a href="https://goreportcard.com/report/github.com/mbaraa/shs"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/mbaraa/shs"/></a>
-    <a href="https://github.com/mbaraa/shs/actions/workflows/rex-deploy.yml"><img alt="rex-deployment" src="https://github.com/mbaraa/shs/actions/workflows/rex-deploy.yml/badge.svg"/></a>
+    <a href="https://goreportcard.com/report/github.com/syrianhemophiliasociety/log"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/syrianhemophiliasociety/logs"/></a>
+    <a href="https://github.com/syrianhemophiliasociety/logs/actions/workflows/rex-deploy.yml"><img alt="rex-deployment" src="https://github.com/syrianhemophiliasociety/logs/actions/workflows/rex-deploy.yml/badge.svg"/></a>
   </p>
 </div>
 
 ## About
 
 **SyrianHemophiliaSocietyLogs** is something idk.
-
-_Note: this is a fling side-project that could die anytime so don't get your hopes up._
 
 ## Contributing
 
@@ -26,7 +24,7 @@ IDK, it would be really nice of you to contribute, check the poorly written [CON
 1. Clone the repo.
 
 ```bash
-git clone https://github.com/mbaraa/shs
+git clone https://github.com/syrianhemophiliasociety/logs
 ```
 
 2. Create the docker environment file
@@ -46,6 +44,4 @@ docker compose up -f docker-compose-all.yml
 
 ---
 
-A [DankStuff <img height="16" width="16" src="https://dankstuff.net/assets/favicon.ico" />](https://dankstuff.net) product!
-
-Made with 🧉 by [Baraa Al-Masri](https://mbaraa.com)
+Made with 🧉 by [Baraa Al-Masri](https://syrianhemophiliasociety.com)
