@@ -54,16 +54,20 @@ templ Default(props PageProps, content templ.Component) {
 				content="shs-web"
 			/>
 			<link
-				defer
 				rel="stylesheet"
 				type="text/css"
 				href="/assets/css/ubuntu-font.css"
 			/>
 			<link
-				defer
 				rel="stylesheet"
 				type="text/css"
 				href="/assets/css/ibm-plex-font.css"
+			/>
+			<link
+				defer
+				rel="stylesheet"
+				type="text/css"
+				href="/assets/css/typography.css"
 			/>
 			<link href={ fmt.Sprintf("/assets/css/themes/%s.css", helpers.ThemeCtx(ctx)) } rel="stylesheet"/>
 			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
@@ -76,11 +80,6 @@ templ Default(props PageProps, content templ.Component) {
 		<body
 			hx-ext="loading-states"
 			style={ fmt.Sprintf(`min-width: 360px; min-height: 100dvh; padding: 0; margin: 0; background-color: var(--color-primary); background-repeat: no-repeat; background-position: center; background-image: url("%s");`, helpers.BackgroundImageCtx(ctx)) }
-			if lang(ctx) == "ar" {
-				class="font-IBMPlex"
-			} else {
-				class="font-Ubuntu"
-			}
 		>
 			<div class="refresher">
 				<div class="loading-bar"></div>

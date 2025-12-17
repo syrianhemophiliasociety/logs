@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --font-Ubuntu: Ubuntu, sans;
-  --font-IBMPlex: "IBMPlexSans", sans-serif;
-
   --color-primary: var(--primary-color);
 
   --color-primary-trans-20: var(--primary-color-20);
@@ -54,11 +51,6 @@ main,
   100% {
     transform: translateY(0px);
   }
-}
-
-html,
-body {
-  overscroll-behavior-y: none;
 }
 
 html,
@@ -133,10 +125,6 @@ table {
   100% {
     transform: translate(-100%, 0);
   }
-}
-
-* {
-  font-family: "Ubuntu";
 }
 
 div.nav-link a,

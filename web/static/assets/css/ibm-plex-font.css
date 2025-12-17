@@ -1,55 +1,39 @@
 @font-face {
-  font-family: "IBMPlexSans", sans-serif;
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Thin.ttf");
-}
-
-@font-face {
-  font-family: "IBMPlexSans", sans-serif;
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-ExtraLight.ttf");
-}
-
-@font-face {
-  font-family: "IBMPlexSans", sans-serif;
+  font-family: "DaFont";
   font-weight: 300;
-  font-style: normal;
   font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Light.ttf");
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Light.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
-  font-family: "IBMPlexSans", sans-serif;
+  font-family: "DaFont";
   font-weight: 400;
-  font-style: italic;
   font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Regular.ttf");
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Regular.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
-  font-family: "IBMPlexSans", sans-serif;
+  font-family: "DaFont";
   font-weight: 500;
-  font-style: normal;
   font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Medium.ttf");
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Medium.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
-  font-family: "IBMPlexSans", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-  font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-SemiBold.ttf");
-}
-
-@font-face {
-  font-family: "IBMPlexSans", sans-serif;
+  font-family: "DaFont";
   font-weight: 700;
-  font-style: normal;
   font-display: swap;
-  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Bold.ttf");
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Bold.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
