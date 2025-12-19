@@ -34,8 +34,8 @@ templ allDiagnoses(diagnoses []actions.Diagnosis) {
 		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, diagnosis := range diagnoses {
 				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.Title }</span>
 					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.GroupName }</span>
+					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.Title }</span>
 					@components.DeleteButton("diagnosis", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(diagnosis.Id)), diagnosis.Title, false)
 				</div>
 			}
