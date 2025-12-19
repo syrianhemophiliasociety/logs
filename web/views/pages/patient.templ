@@ -683,7 +683,7 @@ func mapNewDiagnosisResultToView(patient actions.Patient, diagnoses []actions.Di
 	bloodTestsViews := make([]components.SelectContent, 0, len(diagnoses))
 	for _, diagnosis := range diagnoses {
 		bloodTestsViews = append(bloodTestsViews, components.SelectContent{
-			Title:     diagnosis.Title,
+			Title:     fmt.Sprintf("%s: %s", diagnosis.GroupName, diagnosis.Title),
 			TitleId:   unidecode.Unidecode(diagnosis.Title),
 			GroupName: "daignoses",
 			Content:   newPatientDiagnosisResult(patient, diagnosis),

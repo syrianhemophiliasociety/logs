@@ -44,7 +44,7 @@ type InputOptions struct {
 }
 
 templ Input(options InputOptions) {
-	<div class={ "flex", templ.KV( "flex-col", options.Type != InputTypeCheckbox) }>
+	<div class={ "flex", templ.KV( "flex-col", options.Type != InputTypeCheckbox), options.Class }>
 		<label class={ "text-secondary", "text-[16px]" } for={ options.Id }>{ options.Title }</label>
 		<input
 			id={ options.Id }
