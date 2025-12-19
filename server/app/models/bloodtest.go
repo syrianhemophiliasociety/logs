@@ -129,8 +129,9 @@ func (BloodTestFilledField) TableName() string {
 }
 
 type BloodTestResult struct {
-	Id           uint                   `gorm:"primaryKey;autoIncrement"`
-	BloodTestId  uint                   `gorm:"not null"`
+	Id           uint `gorm:"primaryKey;autoIncrement"`
+	BloodTestId  uint `gorm:"not null"`
+	BloodTest    BloodTest
 	PatientId    uint                   `gorm:"index;not null"`
 	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestResultId"`
 	Pending      bool                   `gorm:"not null"`
