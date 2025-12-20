@@ -17,8 +17,9 @@ func (Diagnosis) TableName() string {
 }
 
 type DiagnosisResult struct {
-	Id          uint      `gorm:"primaryKey;autoIncrement"`
-	DiagnosisId uint      `gorm:"not null"`
+	Id          uint `gorm:"primaryKey;autoIncrement"`
+	DiagnosisId uint `gorm:"not null"`
+	Diagnosis   Diagnosis
 	PatientId   uint      `gorm:"index;not null"`
 	DiagnosedAt time.Time `gorm:"not null"`
 	// TODO: add filled fields
