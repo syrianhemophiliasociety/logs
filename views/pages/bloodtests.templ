@@ -94,10 +94,10 @@ templ newBloodTest() {
 								Options: []components.SelectOption{
 									{Name: "Second", Value: "second"},
 									{Name: "Minute", Value: "minute"},
-							
+
 									{Name: "mL", Value: "mL"},
 									{Name: "fL", Value: "fL"},
-							
+
 									{Name: "g", Value: "g"},
 									{Name: "g/dL", Value: "g/dL"},
 									{Name: "g/L", Value: "g/L"},
@@ -107,20 +107,21 @@ templ newBloodTest() {
 									{Name: "mcg/dL", Value: "mcg/dL"},
 									{Name: "ng/dL", Value: "ng/dL"},
 									{Name: "pg/dL", Value: "pg/dL"},
-							
+
 									{Name: "Percent", Value: "%"},
 									{Name: "BU", Value: "BU"},
-							
+
 									{Name: "Cell", Value: "cell"},
 									{Name: "cell/mm^3", Value: "cell/mm^3"},
 									{Name: "10^3 cell/mm^3", Value: "10^3 cell/mm^3"},
 									{Name: "10^6 cell/mm^3", Value: "10^6 cell/mm^3"},
-							
+
 									{Name: "U/L", Value: "U/L"},
 									{Name: "mcU/mL", Value: "mcU/mL"},
 									{Name: "IU/dL", Value: "IU/dL"},
-							
+
 									{Name: "-", Value: "-"},
+									{Name: i18n.StringsCtx(ctx).NoUnit, Value: ""},
 								},
 							})
 						</div>

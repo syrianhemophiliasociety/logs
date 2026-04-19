@@ -66,6 +66,8 @@ type Keys struct {
 	FormsFind     string
 	FormsUpdate   string
 
+	NoUnit string
+
 	Virus               string
 	EnterVirusName      string
 	VirusBloodTest      string
@@ -198,6 +200,9 @@ type Keys struct {
 	VisitTitleFmt                 func(date time.Time) string
 	UseOnePrescribedMedicineFmt   func(medicineName string) string
 	UseMedicineParagraph          string
+	ImportPatients                string
+	ImportPatientRecords          string
+	SelectPatientRecordsFile      string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string
@@ -223,6 +228,7 @@ type Keys struct {
 
 	NationalitySyrian      string
 	NationalityPalestinian string
+	NationalityTurkish     string
 	NationalityIraqi       string
 	NationalityEgyptian    string
 	NationalityLebanese    string

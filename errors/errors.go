@@ -37,6 +37,15 @@ func (e ErrInsufficientMedicineAmount) Id() string {
 	return "insufficient-medicine-amount"
 }
 
+type ErrInvalidFileType struct {
+	Want string `json:"want"`
+	Got  string `json:"got"`
+}
+
+func (e ErrInvalidFileType) Error() string {
+	return "invalid-file-type"
+}
+
 func IsShs(err error) bool {
 	var shsError SHSError
 	return errors.As(err, &shsError)

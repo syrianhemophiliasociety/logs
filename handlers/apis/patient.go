@@ -1,13 +1,17 @@
 package apis
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"shs-web/actions"
 	"shs-web/errors"
 	"shs-web/i18n"
 	"shs-web/log"
 	"shs-web/views/components"
+	"strings"
 )
 
 type patientApi struct {
@@ -295,6 +299,64 @@ func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, 
 	}
 
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func validateFileType(r io.ReadSeeker, wantedTypes ...string) error {
+	reader := bufio.NewReader(r)
+
+	bytes, err := reader.Peek(256)
+	if err != nil && err != io.EOF {
+		return err
+	}
+	r.Seek(0, 0)
+
+	fileType := http.DetectContentType(bytes)
+	for _, wantedType := range wantedTypes {
+		if strings.Contains(fileType, wantedType) {
+			return nil
+		}
+	}
+
+	return errors.ErrInvalidFileType{
+		Want: strings.Join(wantedTypes, ","),
+		Got:  fileType,
+	}
+}
+
+func (v *patientApi) HandleUploadImportPatientsFromCsv(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+	r.ParseMultipartForm(32 << 20) // 32 MB
+
+	file, _, err := r.FormFile("patient_records")
+	if err != nil {
+		log.Warningf("upload error: %v", err)
+		w.Write([]byte("upload failed"))
+		return
+	}
+	defer file.Close()
+
+	if err := validateFileType(file, "text/plain", "application/vnd.ms-excel"); err != nil {
+		log.Errorln(err.(errors.ErrInvalidFileType).Got)
+		w.Write([]byte("invalid file type"))
+		return
+	}
+
+	payload, err := v.usecases.ImportPatientsFromCsv(actions.ImportPatientsFromCsvParams{
+		RequestContext: ctx,
+		CsvFile:        file,
+	})
+	if len(payload.IgnoredPatients) > 0 {
+		w.Write([]byte("Ignored Patients:<br/><ul>"))
+		for _, patient := range payload.IgnoredPatients {
+			fmt.Fprintf(w, "<li>%s %s Son of %s and %s</li>", patient.FirstName, patient.LastName, patient.FatherName, patient.MotherName)
+		}
+		w.Write([]byte("</ul>"))
+	}
 }
 
 func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Request) {

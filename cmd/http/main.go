@@ -125,6 +125,7 @@ func main() {
 	apisHandler.HandleFunc("POST /patient/{id}/joints-evaluation", authMiddleware.AuthApi(patientApi.HandleCreatePatientJointsEvaluation))
 	apisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}", authMiddleware.AuthApi(patientApi.HandlePatientUseMedicine))
 	apisHandler.HandleFunc("DELETE /patient/{id}", authMiddleware.AuthApi(patientApi.HandleDeletePatient))
+	apisHandler.HandleFunc("POST /patients/import/csv", authMiddleware.AuthApi(patientApi.HandleUploadImportPatientsFromCsv))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", locale.Handler(ismobile.Handler(theme.Handler(pagesHandler))))

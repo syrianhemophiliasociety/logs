@@ -23,6 +23,7 @@ type CreateDiagnosisPayload struct {
 }
 
 func (a *Actions) CreateDiagnosis(params CreateDiagnosisParams) (CreateDiagnosisPayload, error) {
+
 	return makeRequest[map[string]any, CreateDiagnosisPayload](makeRequestConfig[map[string]any]{
 		method:   http.MethodPost,
 		endpoint: "/v1/diagnoses",
