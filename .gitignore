@@ -14,3 +14,4 @@ views/**/*.txt
 docker-compose-prod.yml
 docker-compose-beta.yml
 tmp/
+Session.vim
