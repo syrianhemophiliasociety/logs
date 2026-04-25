@@ -12,8 +12,13 @@ func parseContext(ctx context.Context) (actions.RequestContext, error) {
 	if !sessionTokenCorrect {
 		return actions.RequestContext{}, errors.ErrInvalidSessionToken
 	}
+	account, accountOk := ctx.Value(auth.CtxAccountKey).(actions.Account)
+	if !accountOk {
+		return actions.RequestContext{}, errors.ErrInvalidSessionToken
+	}
 
 	return actions.RequestContext{
 		SessionToken: sessionToken,
+		Account:      account,
 	}, nil
 }

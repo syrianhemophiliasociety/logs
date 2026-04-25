@@ -1,8 +1,11 @@
 package components
 
-import "strings"
-import "fmt"
-import "shs-web/actions"
+import (
+	"fmt"
+	"shs-web/actions"
+	"shs-web/views/helpers"
+	"strings"
+)
 
 type TabContent struct {
 	Title     string
@@ -88,4 +91,16 @@ templ Tabs(tabs ...TabContent) {
 			}
 		</div>
 	</div>
+}
+
+templ TabsPermissions(tabPermissions ...helpers.Pair[actions.AccountPermissions, TabContent]) {
+	{{
+		tabs := make([]TabContent, 0, len(tabPermissions))
+		for _, p := range tabPermissions {
+			if helpers.AccountCtx(ctx).HasPermission(p.First) {
+				tabs = append(tabs, p.Second)
+			}
+		}
+	}}
+	@Tabs(tabs...)
 }

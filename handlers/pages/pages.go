@@ -414,50 +414,68 @@ func (p *pagesHandler) HandlePatientPage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	bloodTests, err := p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
-		RequestContext: ctx,
-	})
-	if err != nil {
-		components.GenericError("Something went wrong").
-			Render(r.Context(), w)
-		return
+	var (
+		bloodTests  []actions.BloodTest
+		viruses     []actions.Virus
+		allMedicine []actions.Medicine
+		visits      []actions.Visit
+		diagnoses   []actions.Diagnosis
+	)
+
+	if ctx.Account.HasPermission(actions.AccountPermissionReadBloodTest) {
+		bloodTests, err = p.usecases.ListAllBloodTests(actions.ListAllBloodTestsParams{
+			RequestContext: ctx,
+		})
+		if err != nil {
+			components.GenericError("Something went wrong").
+				Render(r.Context(), w)
+			return
+		}
 	}
 
-	viruses, err := p.usecases.ListAllViruses(actions.ListAllVirusesParams{
-		RequestContext: ctx,
-	})
-	if err != nil {
-		components.GenericError("Something went wrong").
-			Render(r.Context(), w)
-		return
+	if ctx.Account.HasPermission(actions.AccountPermissionReadVirus) {
+		viruses, err = p.usecases.ListAllViruses(actions.ListAllVirusesParams{
+			RequestContext: ctx,
+		})
+		if err != nil {
+			components.GenericError("Something went wrong").
+				Render(r.Context(), w)
+			return
+		}
 	}
 
-	allMedicine, err := p.usecases.ListAllMedicines(actions.ListAllMedicinesParams{
-		RequestContext: ctx,
-	})
-	if err != nil {
-		components.GenericError("Something went wrong").
-			Render(r.Context(), w)
-		return
+	if ctx.Account.HasPermission(actions.AccountPermissionReadMedicine) {
+		allMedicine, err = p.usecases.ListAllMedicines(actions.ListAllMedicinesParams{
+			RequestContext: ctx,
+		})
+		if err != nil {
+			components.GenericError("Something went wrong").
+				Render(r.Context(), w)
+			return
+		}
 	}
 
-	visits, err := p.usecases.ListPatientVisits(actions.ListPatientVisitsParams{
-		RequestContext: ctx,
-		PatientId:      patient.PublicId,
-	})
-	if err != nil {
-		components.GenericError("Something went wrong").
-			Render(r.Context(), w)
-		return
+	if ctx.Account.HasPermission(actions.AccountPermissionReadOtherVisits) {
+		visits, err = p.usecases.ListPatientVisits(actions.ListPatientVisitsParams{
+			RequestContext: ctx,
+			PatientId:      patient.PublicId,
+		})
+		if err != nil {
+			components.GenericError("Something went wrong").
+				Render(r.Context(), w)
+			return
+		}
 	}
 
-	diagnoses, err := p.usecases.ListAllDiagnoses(actions.ListAllDiagnosesParams{
-		RequestContext: ctx,
-	})
-	if err != nil {
-		components.GenericError("What do you think you're doing?").
-			Render(r.Context(), w)
-		return
+	if ctx.Account.HasPermission(actions.AccountPermissionReadDiagnoses) {
+		diagnoses, err = p.usecases.ListAllDiagnoses(actions.ListAllDiagnosesParams{
+			RequestContext: ctx,
+		})
+		if err != nil {
+			components.GenericError("What do you think you're doing?").
+				Render(r.Context(), w)
+			return
+		}
 	}
 
 	if contenttype.IsNoLayoutPage(r) {
