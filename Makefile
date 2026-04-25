@@ -8,7 +8,7 @@ build: init
 build-dev:
 	go build -ldflags="-w -s" -o ${BINARY_NAME} ./cmd/http/main.go
 
-generate: tailwindcss-build
+generate:
 	templ generate -path ./views/
 
 init: htmx-init tailwindcss-init go-init
@@ -31,6 +31,9 @@ tailwindcss-init:
 
 tailwindcss-build:
 	npx @tailwindcss/cli -i static/assets/css/style.css -o static/assets/css/tailwind.css
+
+tailwindcss-server:
+	npx @tailwindcss/cli -i static/assets/css/style.css -o static/assets/css/tailwind.css --watch
 
 dev:
 	air -v > /dev/null
