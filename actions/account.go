@@ -29,6 +29,8 @@ const (
 	AccountPermissionWriteOtherVisits
 	AccountPermissionReadDiagnoses
 	AccountPermissionWriteDiagnoses
+	AccountPermissionReadJoints
+	AccountPermissionWriteJoints
 )
 
 type Account struct {

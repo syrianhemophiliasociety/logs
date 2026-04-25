@@ -62,7 +62,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWritePatient),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavPatients),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).NavPatients),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -84,7 +84,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteMedicine),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavMedicine),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).NavMedicine),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -106,7 +106,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteVirus),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavViruses),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).NavViruses),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -128,7 +128,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteBloodTest),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavBloodTests),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).NavBloodTests),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -150,7 +150,7 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteOtherVisits),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).TabsVisits),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).TabsVisits),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	@components.Input(components.InputOptions{
@@ -172,7 +172,29 @@ templ accountPermissionsForm(account actions.Account) {
 		Checked:     account.HasPermission(actions.AccountPermissionWriteDiagnoses),
 		Required:    false,
 		Autofocus:   false,
-		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).NavDiagnoses),
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).NavDiagnoses),
+		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	})
+	@components.Input(components.InputOptions{
+		Id:          "permissions",
+		Name:        "permissions",
+		Type:        components.InputTypeCheckbox,
+		Value:       strconv.Itoa(int(actions.AccountPermissionReadJoints)),
+		Checked:     account.HasPermission(actions.AccountPermissionReadJoints),
+		Required:    false,
+		Autofocus:   false,
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).TabsJoints),
+		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	})
+	@components.Input(components.InputOptions{
+		Id:          "permissions",
+		Name:        "permissions",
+		Type:        components.InputTypeCheckbox,
+		Value:       strconv.Itoa(int(actions.AccountPermissionWriteJoints)),
+		Checked:     account.HasPermission(actions.AccountPermissionWriteJoints),
+		Required:    false,
+		Autofocus:   false,
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).TabsJoints),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
 	//
