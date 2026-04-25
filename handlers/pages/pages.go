@@ -184,14 +184,14 @@ func (p *pagesHandler) HandleMedicinePage(w http.ResponseWriter, r *http.Request
 	}
 
 	if contenttype.IsNoLayoutPage(r) {
-		w.Header().Set("HX-Title", i18n.Strings("en").NavPatient)
+		w.Header().Set("HX-Title", i18n.Strings("en").NavMedicine)
 		w.Header().Set("HX-Push-Url", "/medicine/"+id)
 		pages.Medicine(medicine).Render(r.Context(), w)
 		return
 	}
 
 	layouts.Default(layouts.PageProps{
-		Title:    i18n.StringsCtx(r.Context()).NavPatient,
+		Title:    i18n.StringsCtx(r.Context()).NavMedicine,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
 	}, pages.Medicine(medicine)).Render(r.Context(), w)
