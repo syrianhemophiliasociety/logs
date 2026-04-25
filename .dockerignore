@@ -11,3 +11,4 @@ google-service-account.json
 views/**/*_templ.go
 views/**/*.txt
 .*/
+tmp/
