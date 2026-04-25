@@ -6,6 +6,7 @@ import (
 	"shs-web/actions"
 	"shs-web/i18n"
 	"shs-web/views/components"
+	"shs-web/views/helpers"
 	"strconv"
 	"time"
 )
@@ -13,44 +14,63 @@ import (
 templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses []actions.Virus, allMedicine []actions.Medicine, visits []actions.Visit, diagnoses []actions.Diagnosis) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavPatient } { i18n.StringsCtx(ctx).For } { patient.FullName() }</h1>
-		@components.Tabs(
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).PatientProfile,
-				TitleId:   "profile",
-				GroupName: "Patient",
-				Content:   patientProfile(patient),
-			},
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).NavDiagnoses,
-				TitleId:   "diagnoses",
-				GroupName: "Patient",
-				Content:   patientDiagnosesTab(patient, diagnoses),
-			},
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).NavBloodTests,
-				TitleId:   "blood-tests",
-				GroupName: "Patient",
-				Content:   patientBloodTestsTab(patient, bloodTests),
-			},
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).NavViruses,
-				TitleId:   "viruses",
-				GroupName: "Patient",
-				Content:   patientViruses(patient, patient.Viruses),
-			},
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).TabsVisits,
-				TitleId:   "visits",
-				GroupName: "Patient",
-				Content:   patientVisitsTab(patient, allMedicine, visits),
-			},
-			components.TabContent{
-				Title:     i18n.StringsCtx(ctx).TabsJoints,
-				TitleId:   "joints",
-				GroupName: "Patient",
-				Content:   patientJointsTab(patient),
-			},
-		)
+		{{
+			tabs := make([]components.TabContent, 0, 6)
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadPatient) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).PatientProfile,
+					TitleId:   "profile",
+					GroupName: "Patient",
+					Content:   patientProfile(patient),
+				})
+			}
+
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadDiagnoses) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).NavDiagnoses,
+					TitleId:   "diagnoses",
+					GroupName: "Patient",
+					Content:   patientDiagnosesTab(patient, diagnoses),
+				})
+			}
+
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadBloodTest) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).NavBloodTests,
+					TitleId:   "blood-tests",
+					GroupName: "Patient",
+					Content:   patientBloodTestsTab(patient, bloodTests),
+				})
+			}
+
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadVirus) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).NavViruses,
+					TitleId:   "viruses",
+					GroupName: "Patient",
+					Content:   patientViruses(patient, patient.Viruses),
+				})
+			}
+
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadOtherVisits) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).TabsVisits,
+					TitleId:   "visits",
+					GroupName: "Patient",
+					Content:   patientVisitsTab(patient, allMedicine, visits),
+				})
+			}
+
+			if helpers.AccountCtx(ctx).HasPermission(actions.AccountPermissionReadJoints) {
+				tabs = append(tabs, components.TabContent{
+					Title:     i18n.StringsCtx(ctx).TabsJoints,
+					TitleId:   "joints",
+					GroupName: "Patient",
+					Content:   patientJointsTab(patient),
+				})
+			}
+		}}
+		@components.Tabs(tabs...)
 	</div>
 }
 
