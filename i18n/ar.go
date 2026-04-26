@@ -160,6 +160,7 @@ var arabic = Keys{
 	EnterAccountType:         "اختر نوع الحساب",
 	AccountTypeSecritary:     "محاسبة",
 	AccountTypeAdmin:         "مدير",
+	AccountTypeJointologist:  "jointologist",
 	AccountDelete:            "حذف الحساب",
 	Patient:                  "المريض",
 	PatientFirstName:         "الاسم",

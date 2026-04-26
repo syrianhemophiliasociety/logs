@@ -142,6 +142,7 @@ type Keys struct {
 	EnterAccountType         string
 	AccountTypeSecritary     string
 	AccountTypeAdmin         string
+	AccountTypeJointologist  string
 	AccountDelete            string
 
 	Patient                       string

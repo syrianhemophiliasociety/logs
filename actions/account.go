@@ -62,6 +62,8 @@ func (a *Actions) CreateAccount(params CreateAccountParams) (CreateAccountPayloa
 		endpoint = "/v1/accounts/secritary"
 	case "admin":
 		endpoint = "/v1/accounts/admin"
+	case "jointlogist":
+		endpoint = "/v1/accounts/jointlogist"
 	default:
 		return CreateAccountPayload{}, errors.ErrSomethingWentWrong
 	}
