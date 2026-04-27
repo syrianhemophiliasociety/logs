@@ -197,6 +197,7 @@ var arabic = Keys{
 	FindPatients:             "ابحث عن المرضى",
 	CheckupOnPatients:        "مراجعة المرضى",
 	PatientProfile:           "الملف الشخصي",
+	PatientBriefProfile:      "Brief Profile",
 	PatientAddBloodTest:      "تسجيل نتيجة تحليل الدم",
 	PatientAddVirus:          "تسجيل فيروس",
 	PatientId:                "الرقم التعريفي",

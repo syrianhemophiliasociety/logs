@@ -196,6 +196,7 @@ var english = Keys{
 	FindPatients:                  "Find patients",
 	CheckupOnPatients:             "Check-up on patients",
 	PatientProfile:                "Profile",
+	PatientBriefProfile:           "Brief Profile",
 	PatientAddBloodTest:           "Add blood test result",
 	PatientAddVirus:               "Add virus",
 	PatientId:                     "ID",

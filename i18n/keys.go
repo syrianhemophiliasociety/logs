@@ -180,6 +180,7 @@ type Keys struct {
 	FindPatients                  string
 	CheckupOnPatients             string
 	PatientProfile                string
+	PatientBriefProfile           string
 	PatientAddBloodTest           string
 	PatientAddVirus               string
 	PatientId                     string
