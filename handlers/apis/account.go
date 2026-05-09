@@ -3,10 +3,8 @@ package apis
 import (
 	"encoding/json"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/i18n"
-	"shs-web/log"
-	"shs-web/views/components"
+	"shs/actions"
+	"shs/log"
 	"strconv"
 )
 
@@ -20,94 +18,185 @@ func NewAccountApi(usecases *actions.Actions) *accountApi {
 	}
 }
 
-func (v *accountApi) HandleCreateAccount(w http.ResponseWriter, r *http.Request) {
+func (e *accountApi) HandleCreateAdminAccount(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	var reqBody actions.Account
+	var reqBody actions.CreateAdminAccountParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
 
-	payload, err := v.usecases.CreateAccount(actions.CreateAccountParams{
-		RequestContext: ctx,
-		NewAccount:     reqBody,
-	})
+	payload, err := e.usecases.CreateAdminAccount(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[ACCOUNT API]: Failed to create admin account: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/management/account/"+strconv.Itoa(int(payload.Id)))
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request) {
+func (e *accountApi) HandleCreateSecritaryAccount(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	intId, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		return
-	}
-
-	var reqBody actions.UpdateAccountRequest
+	var reqBody actions.CreateSecritaryAccountParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
 
-	_, err = v.usecases.UpdateAccount(actions.UpdateAccountParams{
-		RequestContext: ctx,
-		AccountId:      uint(intId),
-		NewAccount:     reqBody.Account,
-	})
+	payload, err := e.usecases.CreateSecritaryAccount(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[ACCOUNT API]: Failed to create secritary account: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.StringsCtx(r.Context()).MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request) {
+func (e *accountApi) HandleCreateJointlogistAccount(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	intId, err := strconv.Atoi(r.PathValue("id"))
+	var reqBody actions.CreateJointologistAccountParams
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
+		return
+	}
+	reqBody.ActionContext = ctx
+
+	payload, err := e.usecases.CreateJointologistAccount(reqBody)
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to create jointologist account: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	_, err = v.usecases.DeleteAccount(actions.DeleteAccountParams{
-		RequestContext: ctx,
-		AccountId:      uint(intId),
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleListAllAccounts(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListAllAccounts(actions.ListAllAccountsParams{
+		ActionContext: ctx,
 	})
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[ACCOUNT API]: Failed to get accounts, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/management")
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleGetAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.GetAccount(actions.GetAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to get account, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleDeleteAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.DeleteAccount(actions.DeleteAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to delete account, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var params actions.UpdateAccountParams
+	err = json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.UpdateAccount(actions.UpdateAccountParams{
+		ActionContext: ctx,
+		AccountId:     uint(id),
+		NewAccount:    params.NewAccount,
+	})
+	if err != nil {
+		log.Errorf("[ACCOUNT API]: Failed to update account, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
 }

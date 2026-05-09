@@ -2,8 +2,7 @@ package actions
 
 import (
 	"fmt"
-	"net/http"
-	"strconv"
+	"shs/app/models"
 	"time"
 )
 
@@ -24,173 +23,141 @@ func (m Medicine) DoseUnit() string {
 	return fmt.Sprintf("%d %s", m.Dose, m.Unit)
 }
 
-type ListAllMedicinesParams struct {
-	RequestContext
-}
-
-type ListAllMedicinesPayload struct {
-	Data []Medicine `json:"data"`
-}
-
-func (a *Actions) ListAllMedicines(params ListAllMedicinesParams) ([]Medicine, error) {
-	payload, err := makeRequest[any, ListAllMedicinesPayload](makeRequestConfig[any]{
-		method:   http.MethodGet,
-		endpoint: "/v1/medicines",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return payload.Data, nil
-}
-
-type RequestMedicine struct {
-	Id           uint   `json:"id"`
-	Name         string `json:"name"`
-	Dose         string `json:"dose"`
-	Unit         string `json:"unit"`
-	Amount       string `json:"amount"`
-	ExpiresAt    string `json:"expires_at"`
-	ReceivedAt   string `json:"received_at"`
-	Manufacturer string `json:"manufacturer"`
-	BatchNumber  string `json:"batch_number"`
-	FactorType   string `json:"factor_type"`
-}
-
 type CreateMedicineParams struct {
-	RequestContext
-	NewMedicine RequestMedicine `json:"new_medicine"`
+	ActionContext
+	NewMedicine Medicine `json:"new_medicine"`
+}
+
+func (m Medicine) IntoModel() models.Medicine {
+	return models.Medicine{
+		Name:         m.Name,
+		Dose:         m.Dose,
+		Unit:         m.Unit,
+		Amount:       m.Amount,
+		ExpiresAt:    m.ExpiresAt,
+		ReceivedAt:   m.ReceivedAt,
+		Manufacturer: m.Manufacturer,
+		BatchNumber:  m.BatchNumber,
+		FactorType:   m.FactorType,
+	}
+}
+
+func (m *Medicine) FromModel(medicine models.Medicine) {
+	(*m) = Medicine{
+		Id:           medicine.Id,
+		Name:         medicine.Name,
+		Dose:         medicine.Dose,
+		Unit:         medicine.Unit,
+		Amount:       medicine.Amount,
+		ExpiresAt:    medicine.ExpiresAt,
+		ReceivedAt:   medicine.ReceivedAt,
+		Manufacturer: medicine.Manufacturer,
+		BatchNumber:  medicine.BatchNumber,
+		FactorType:   medicine.FactorType,
+	}
 }
 
 type CreateMedicinePayload struct {
 }
 
 func (a *Actions) CreateMedicine(params CreateMedicineParams) (CreateMedicinePayload, error) {
-	dose, err := strconv.Atoi(params.NewMedicine.Dose)
-	if err != nil {
-		return CreateMedicinePayload{}, err
-	}
-	amount, err := strconv.Atoi(params.NewMedicine.Amount)
-	if err != nil {
-		return CreateMedicinePayload{}, err
-	}
-	expiresAt, err := time.Parse("2006-01-02", params.NewMedicine.ExpiresAt)
-	if err != nil {
-		return CreateMedicinePayload{}, err
-	}
-	receivedAt, err := time.Parse("2006-01-02", params.NewMedicine.ReceivedAt)
-	if err != nil {
-		return CreateMedicinePayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return CreateMedicinePayload{}, ErrPermissionDenied{}
 	}
 
-	medicine := Medicine{
-		Name:         params.NewMedicine.Name,
-		Dose:         dose,
-		Unit:         params.NewMedicine.Unit,
-		Amount:       amount,
-		ExpiresAt:    expiresAt,
-		ReceivedAt:   receivedAt,
-		Manufacturer: params.NewMedicine.Manufacturer,
-		BatchNumber:  params.NewMedicine.BatchNumber,
-		FactorType:   params.NewMedicine.FactorType,
-	}
+	_, err := a.app.CreateMedicine(params.NewMedicine.IntoModel())
 
-	payload, err := makeRequest[map[string]any, CreateMedicinePayload](makeRequestConfig[map[string]any]{
-		method:   http.MethodPost,
-		endpoint: "/v1/medicines",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: map[string]any{
-			"new_medicine": medicine,
-		},
-	})
-	if err != nil {
-		return CreateMedicinePayload{}, err
-	}
-
-	return payload, nil
-}
-
-type DeleteMedicineParams struct {
-	RequestContext
-	MedicineId uint
-}
-
-type DeleteMedicinePayload struct {
-}
-
-func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePayload, error) {
-	payload, err := makeRequest[DeleteMedicineParams, DeleteMedicinePayload](makeRequestConfig[DeleteMedicineParams]{
-		method:   http.MethodDelete,
-		endpoint: fmt.Sprintf("/v1/medicines/%d", params.MedicineId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: params,
-	})
-	if err != nil {
-		return DeleteMedicinePayload{}, err
-	}
-
-	return payload, nil
-}
-
-type GetMedicineParams struct {
-	RequestContext
-	MedicineId uint
-}
-
-type GetMedicinePayload struct {
-	Data Medicine `json:"data"`
-}
-
-func (a *Actions) GetMedicine(params GetMedicineParams) (Medicine, error) {
-	payload, err := makeRequest[any, GetMedicinePayload](makeRequestConfig[any]{
-		method:   http.MethodGet,
-		endpoint: "/v1/medicines/" + strconv.Itoa(int(params.MedicineId)),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return Medicine{}, err
-	}
-
-	return payload.Data, nil
+	return CreateMedicinePayload{}, err
 }
 
 type UpdateMedicineParams struct {
-	RequestContext
-	MedicineId  uint
-	NewMedicine RequestMedicine `json:"new_medicine"`
+	ActionContext
+	MedicineId uint `json:"medicine_id"`
+	Amount     int  `json:"amount"`
 }
 
 type UpdateMedicinePayload struct {
 }
 
 func (a *Actions) UpdateMedicine(params UpdateMedicineParams) (UpdateMedicinePayload, error) {
-	amount, err := strconv.Atoi(params.NewMedicine.Amount)
-	if err != nil {
-		return UpdateMedicinePayload{}, err
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return UpdateMedicinePayload{}, ErrPermissionDenied{}
 	}
 
-	payload, err := makeRequest[map[string]any, UpdateMedicinePayload](makeRequestConfig[map[string]any]{
-		method:   http.MethodPut,
-		endpoint: fmt.Sprintf("/v1/medicines/%d/amount", params.MedicineId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: map[string]any{
-			"amount": amount,
-		},
-	})
-	if err != nil {
-		return UpdateMedicinePayload{}, err
+	err := a.app.UpdateMedicineAmount(params.MedicineId, params.Amount)
+
+	return UpdateMedicinePayload{}, err
+}
+
+type DeleteMedicineParams struct {
+	ActionContext
+	MedicineId uint `json:"medicine_id"`
+}
+
+type DeleteMedicinePayload struct {
+}
+
+func (a *Actions) DeleteMedicine(params DeleteMedicineParams) (DeleteMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return DeleteMedicinePayload{}, ErrPermissionDenied{}
 	}
 
-	return payload, nil
+	return DeleteMedicinePayload{}, a.app.DeleteMedicine(params.MedicineId)
+}
+
+type GetMedicineParams struct {
+	ActionContext
+	MedicineId uint `json:"medicine_id"`
+}
+
+type GetMedicinePayload struct {
+	Data Medicine `json:"data"`
+}
+
+func (a *Actions) GetMedicine(params GetMedicineParams) (GetMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteMedicine) {
+		return GetMedicinePayload{}, ErrPermissionDenied{}
+	}
+
+	medicine, err := a.app.GetMedicine(params.MedicineId)
+	if err != nil {
+		return GetMedicinePayload{}, err
+	}
+
+	outMedicine := new(Medicine)
+	outMedicine.FromModel(medicine)
+
+	return GetMedicinePayload{
+		Data: *outMedicine,
+	}, nil
+}
+
+type ListAllMedicineParams struct {
+	ActionContext
+}
+
+type ListAllMedicinePayload struct {
+	Data []Medicine `json:"data"`
+}
+
+func (a *Actions) ListAllMedicine(params ListAllMedicineParams) (ListAllMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadMedicine) {
+		return ListAllMedicinePayload{}, ErrPermissionDenied{}
+	}
+
+	medicines, err := a.app.ListAllMedicines()
+	if err != nil {
+		return ListAllMedicinePayload{}, err
+	}
+
+	outMedicines := make([]Medicine, 0, len(medicines))
+	for _, medicine := range medicines {
+		outMedicine := new(Medicine)
+		outMedicine.FromModel(medicine)
+		outMedicines = append(outMedicines, *outMedicine)
+	}
+
+	return ListAllMedicinePayload{
+		Data: outMedicines,
+	}, nil
 }

@@ -3,14 +3,11 @@ package apis
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/errors"
-	"shs-web/i18n"
-	"shs-web/log"
-	"shs-web/views/components"
+	"shs/actions"
+	"shs/log"
+	"strconv"
 	"strings"
 )
 
@@ -24,281 +21,328 @@ func NewPatientApi(usecases *actions.Actions) *patientApi {
 	}
 }
 
-func (v *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	var reqBody actions.PatientRequest
+	var reqBody actions.CreatePatientParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
 
-	payload, err := v.usecases.CreatePatient(actions.CreatePatientParams{
-		RequestContext: ctx,
-		NewPatient:     reqBody,
-	})
+	payload, err := e.usecases.CreatePatient(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[PATIENT API]: Failed to create patient: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	w.Header().Set("HX-Redirect", "/patient/"+payload.Id)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleCreatePatientBloodTestResult(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	var reqBody actions.FindPatientsParams
+	var reqBody actions.CreatePatientBloodTestResultParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
-	reqBody.RequestContext = ctx
+	reqBody.ActionContext = ctx
 
-	payload, err := v.usecases.FindPatients(reqBody)
-	if errors.Is(err, errors.ErrPatientNotFound) {
-		components.NotFoundError(i18n.StringsCtx(r.Context()).NavPatients).Render(r.Context(), w)
-		return
-	}
+	payload, err := e.usecases.CreatePatientBloodTestResult(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[PATIENT API]: Failed to create patient's blood test: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	components.PatientsBrief(payload).Render(r.Context(), w)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandleCreatePatientBloodTestResult(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleCreatePatientDiagnosisResult(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	patientId := r.PathValue("id")
-
-	var reqBody actions.PatientBloodTests
+	var reqBody actions.CreatePatientDiagnosisResultParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
 
-	_, err = v.usecases.CreatePatientBloodTest(actions.CreatePatientBloodTestParams{
-		RequestContext:   ctx,
-		PatientId:        patientId,
-		PatientBloodTest: reqBody.BloodTests[0],
-	})
+	payload, err := e.usecases.CreatePatientDiagnosisResult(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[PATIENT API]: Failed to create patient's diagnosis result: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandleCreatePatientDiagnosisResult(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleListLastPatients(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	patientId := r.PathValue("id")
+	payload, err := e.usecases.ListLastPatients(actions.ListLastPatientsParams{
+		ActionContext: ctx,
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
 
-	var reqBody actions.PatientDiagnosisRequest
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleFindPatients(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	findParams := actions.FindPatientsParams{
+		ActionContext: ctx,
+		PublicId:      r.PathValue("public_id"),
+		FirstName:     r.PathValue("first_name"),
+		LastName:      r.PathValue("last_name"),
+		FatherName:    r.PathValue("father_name"),
+		MotherName:    r.PathValue("mother_name"),
+		NationalId:    r.PathValue("national_id"),
+		PhoneNumber:   r.PathValue("phone_number"),
+	}
+
+	payload, err := e.usecases.FindPatients(findParams)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to find patientes: %+v, error: %s\n", findParams, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleGetPatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	params := actions.GetPatientParams{
+		ActionContext: ctx,
+		PublicId:      r.PathValue("id"),
+	}
+
+	payload, err := e.usecases.GetPatient(params)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to get patient: %+v, error: %s\n", params, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	params := actions.DeletePatientParams{
+		ActionContext: ctx,
+		PublicId:      r.PathValue("id"),
+	}
+
+	payload, err := e.usecases.DeletePatient(params)
+	if err != nil {
+		log.Errorf("[PATIENT API]: Failed to delete patient: %+v, error: %s\n", params, err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleCheckUp(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var reqBody actions.CreatePatientVisitParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
+	reqBody.PatientId = r.PathValue("id")
 
-	_, err = v.usecases.CreatePatientDiagnosisResult(actions.CreatePatientDiagnosisResultParams{
-		RequestContext: ctx,
-		PatientId:      patientId,
-		Diagnosis:      reqBody,
-	})
+	payload, err := e.usecases.CreatePatientVisit(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[PATIENT API]: Failed to create patient visit: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandleCreatePatientCheckUp(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	patientId := r.PathValue("id")
+	payload, err := e.usecases.GeneratePatientCard(actions.GeneratePatientCardParams{
+		ActionContext: ctx,
+		PatientId:     r.PathValue("id"),
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
 
-	var reqBody actions.CreateCheckUpRequest
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleGetPatientLastVisit(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.GetPatientLastVisit(actions.GetPatientLastVisitParams{
+		ActionContext: ctx,
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleListPatientVisits(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.ListPatientVisits(actions.ListPatientVisitsParams{
+		ActionContext: ctx,
+		PatientId:     r.PathValue("id"),
+	})
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleUpdatePendingBloodTestResult(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	btrId, err := strconv.Atoi(r.PathValue("btr_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var params actions.UpdatePatientPendingBloodTestResultParams
+	err = json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+	params.ActionContext = ctx
+	params.PatientPublicId = r.PathValue("id")
+	params.BloodTestResultId = uint(btrId)
+
+	payload, err := e.usecases.UpdatePatientPendingBloodTestResult(params)
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	var reqBody actions.CreatePatientJointsEvaluationParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
+	reqBody.PatientId = r.PathValue("id")
 
-	_, err = v.usecases.CreatePatientCheckUp(actions.CreatePatientCheckUpParams{
-		RequestContext: ctx,
-		PatientId:      patientId,
-		CheckUpRequest: reqBody,
-	})
-	if errors.Is(err, errors.ErrInsufficientMedicineAmount{}) {
-		imErr := err.(errors.ErrInsufficientMedicineAmount)
-		writeRawTextResponse(w, i18n.Strings("en").ErrorInsufficientMedicineAmountFmt(imErr.MedicineName, imErr.ExceedingAmount, imErr.LeftPackages))
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorInsufficientMedicineAmountFmt(imErr.MedicineName, imErr.ExceedingAmount, imErr.LeftPackages)).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
+	payload, err := e.usecases.CreatePatientJointsEvaluation(reqBody)
 	if err != nil {
-		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[PATIENT API]: Failed to create patient's joints evaluation: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandleGenerateCard(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleListPatientJointsEvaluations(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	patientId := r.PathValue("id")
-
-	payload, err := v.usecases.GeneratePatientCard(actions.GeneratePatientCardParams{
-		RequestContext: ctx,
-		PatientId:      patientId,
+	payload, err := e.usecases.ListPatientJointsEvaluations(actions.ListPatientJointsEvaluationsParams{
+		ActionContext: ctx,
+		PatientId:     r.PathValue("id"),
 	})
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	w.Write([]byte(payload.ImageBase64))
-}
-
-func (v *patientApi) HandleDeletePatient(w http.ResponseWriter, r *http.Request) {
-	ctx, err := parseContext(r.Context())
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	patientId := r.PathValue("id")
-
-	_, err = v.usecases.DeletePatient(actions.DeletePatientParams{
-		RequestContext: ctx,
-		PatientId:      patientId,
-	})
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
-}
-
-func (v *patientApi) HandleUpdatePatientPendingBloodTestResult(w http.ResponseWriter, r *http.Request) {
-	ctx, err := parseContext(r.Context())
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	patientId := r.PathValue("id")
-	btrId := r.PathValue("btr_id")
-
-	var reqBody actions.PatientBloodTests
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	_, err = v.usecases.UpdatePatientPendingBloodTest(actions.UpdatePatientPendingBloodTestParams{
-		RequestContext:    ctx,
-		PatientId:         patientId,
-		BloodTestResultId: btrId,
-		FilledFields:      reqBody.BloodTests[0].FilledFields,
-	})
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
-}
-
-func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
-	ctx, err := parseContext(r.Context())
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	patientId := r.PathValue("id")
-
-	var reqBody actions.JointsEvaluationRequest
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	_, err = v.usecases.CreatePatientJointsEvaluation(actions.CreatePatientJointsEvaluationParams{
-		RequestContext:   ctx,
-		PatientId:        patientId,
-		JointsEvaluation: reqBody,
-	})
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
 func validateFileType(r io.ReadSeeker, wantedTypes ...string) error {
@@ -306,6 +350,7 @@ func validateFileType(r io.ReadSeeker, wantedTypes ...string) error {
 
 	bytes, err := reader.Peek(256)
 	if err != nil && err != io.EOF {
+		log.Errorln("1")
 		return err
 	}
 	r.Seek(0, 0)
@@ -317,69 +362,78 @@ func validateFileType(r io.ReadSeeker, wantedTypes ...string) error {
 		}
 	}
 
-	return errors.ErrInvalidFileType{
-		Want: strings.Join(wantedTypes, ","),
+	if len(wantedTypes) == 1 {
+		return ErrInvalidFileType{
+			Want: wantedTypes[0],
+			Got:  fileType,
+		}
+	}
+
+	return ErrInvalidFileType{
+		Want: "One of: " + strings.Join(wantedTypes, ","),
 		Got:  fileType,
 	}
 }
 
-func (v *patientApi) HandleUploadImportPatientsFromCsv(w http.ResponseWriter, r *http.Request) {
+func (e *patientApi) HandleImportPatientsFromCsv(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
+
 	r.ParseMultipartForm(32 << 20) // 32 MB
 
 	file, _, err := r.FormFile("patient_records")
 	if err != nil {
 		log.Warningf("upload error: %v", err)
-		w.Write([]byte("upload failed"))
+		handleErrorResponse(w, err)
 		return
 	}
 	defer file.Close()
 
 	if err := validateFileType(file, "text/plain", "application/vnd.ms-excel"); err != nil {
-		log.Errorln(err.(errors.ErrInvalidFileType).Got)
-		w.Write([]byte("invalid file type"))
+		handleErrorResponse(w, err)
 		return
 	}
 
-	payload, err := v.usecases.ImportPatientsFromCsv(actions.ImportPatientsFromCsvParams{
-		RequestContext: ctx,
-		CsvFile:        file,
+	payload, err := e.usecases.ImportPatientsFromCsv(actions.ImportPatientsFromCsvParams{
+		ActionContext: ctx,
+		CsvFile:       file,
 	})
-	if len(payload.IgnoredPatients) > 0 {
-		w.Write([]byte("Ignored Patients:<br/><ul>"))
-		for _, patient := range payload.IgnoredPatients {
-			fmt.Fprintf(w, "<li>%s %s Son of %s and %s</li>", patient.FirstName, patient.LastName, patient.FatherName, patient.MotherName)
-		}
-		w.Write([]byte("</ul>"))
-	}
+
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Request) {
+// TODO: separate this from admin patient endpoints
+func (e *patientApi) HandleUsePrescribedMedicineForVisit(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	visitId := r.PathValue("visit_id")
-	medId := r.PathValue("med_id")
+	visitId, err := strconv.Atoi(r.PathValue("visit_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
 
-	_, err = v.usecases.UseMedicineForVisit(actions.UseMedicineForVisitParams{
-		RequestContext:       ctx,
-		VisitId:              visitId,
-		PrescribedMedicineId: medId,
+	medId, err := strconv.Atoi(r.PathValue("med_id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.UseMedicineForVisit(actions.UseMedicineForVisitParams{
+		ActionContext:        ctx,
+		VisitId:              uint(visitId),
+		PrescribedMedicineId: uint(medId),
 	})
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }

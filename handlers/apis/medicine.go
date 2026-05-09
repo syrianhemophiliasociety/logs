@@ -3,10 +3,8 @@ package apis
 import (
 	"encoding/json"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/i18n"
-	"shs-web/log"
-	"shs-web/views/components"
+	"shs/actions"
+	"shs/log"
 	"strconv"
 )
 
@@ -20,88 +18,132 @@ func NewMedicineApi(usecases *actions.Actions) *medicineApi {
 	}
 }
 
-func (v *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Request) {
+func (e *medicineApi) HandleCreateMedicine(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	var reqBody actions.RequestMedicine
+	var reqBody actions.CreateMedicineParams
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
 		return
 	}
+	reqBody.ActionContext = ctx
 
-	_, err = v.usecases.CreateMedicine(actions.CreateMedicineParams{
-		RequestContext: ctx,
-		NewMedicine:    reqBody,
-	})
+	payload, err := e.usecases.CreateMedicine(reqBody)
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[MEDICINE API]: Failed to create medicine: %+v, error: %s\n", reqBody, err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *medicineApi) HandleUpdateMedicine(w http.ResponseWriter, r *http.Request) {
+func (e *medicineApi) HandleListMedicines(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	id := r.PathValue("id")
-	intId, _ := strconv.Atoi(id)
-
-	var reqBody actions.RequestMedicine
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
-	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
-		return
-	}
-
-	_, err = v.usecases.UpdateMedicine(actions.UpdateMedicineParams{
-		RequestContext: ctx,
-		MedicineId:     uint(intId),
-		NewMedicine:    reqBody,
+	payload, err := e.usecases.ListAllMedicine(actions.ListAllMedicineParams{
+		ActionContext: ctx,
 	})
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[MEDICINE API]: Failed to get medicines, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
 }
 
-func (v *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Request) {
+func (e *medicineApi) HandleUpdateMedicineAmount(w http.ResponseWriter, r *http.Request) {
 	ctx, err := parseContext(r.Context())
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	id := r.PathValue("id")
-	intId, _ := strconv.Atoi(id)
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
 
-	_, err = v.usecases.DeleteMedicine(actions.DeleteMedicineParams{
-		RequestContext: ctx,
-		MedicineId:     uint(intId),
+	var params actions.UpdateMedicineParams
+	err = json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
+		return
+	}
+	params.ActionContext = ctx
+	params.MedicineId = uint(id)
+
+	payload, err := e.usecases.UpdateMedicine(params)
+	if err != nil {
+		log.Errorf("[MEDICINE API]: Failed to update medicine, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *medicineApi) HandleDeleteMedicine(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.DeleteMedicine(actions.DeleteMedicineParams{
+		ActionContext: ctx,
+		MedicineId:    uint(id),
 	})
 	if err != nil {
-		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
-		log.Errorln(err)
+		log.Errorf("[MEDICINE API]: Failed to delete medicine, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
 		return
 	}
 
-	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func (e *medicineApi) HandleGetMedicine(w http.ResponseWriter, r *http.Request) {
+	ctx, err := parseContext(r.Context())
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		handleErrorResponse(w, err)
+		return
+	}
+
+	payload, err := e.usecases.GetMedicine(actions.GetMedicineParams{
+		ActionContext: ctx,
+		MedicineId:    uint(id),
+	})
+	if err != nil {
+		log.Errorf("[MEDICINE API]: Failed to get medicine, error: %s\n", err.Error())
+		handleErrorResponse(w, err)
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(payload)
 }

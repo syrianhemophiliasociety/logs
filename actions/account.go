@@ -1,114 +1,186 @@
 package actions
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"shs-web/errors"
-	"strconv"
-
-	goerrors "errors"
-)
-
-type AccountPermissions uint64
+import "shs/app/models"
 
 const (
-	AccountPermissionReadAccounts AccountPermissions = 1 << iota
-	AccountPermissionWriteAccounts
-	AccountPermissionReadPatient
-	AccountPermissionWritePatient
-	AccountPermissionReadMedicine
-	AccountPermissionWriteMedicine
-	AccountPermissionReadVirus
-	AccountPermissionWriteVirus
-	AccountPermissionReadBloodTest
-	AccountPermissionWriteBloodTest
-	AccountPermissionReadOwnVisit
-	AccountPermissionWriteOwnVisit
-	AccountPermissionReadOtherVisits
-	AccountPermissionWriteOtherVisits
-	AccountPermissionReadDiagnoses
-	AccountPermissionWriteDiagnoses
-	AccountPermissionReadJoints
-	AccountPermissionWriteJoints
+	patientPermissions = models.AccountPermissionReadOwnVisit | models.AccountPermissionWriteOwnVisit
+
+	secritaryPermissions = models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
+		models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
+		models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits |
+		models.AccountPermissionReadBloodTest |
+		models.AccountPermissionReadVirus |
+		models.AccountPermissionReadDiagnoses
+
+	adminPermissions = secritaryPermissions |
+		models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
+		models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
+		models.AccountPermissionReadMedicine | models.AccountPermissionWriteBloodTest |
+		models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
+		models.AccountPermissionReadDiagnoses | models.AccountPermissionWriteDiagnoses |
+		models.AccountPermissionReadJoints | models.AccountPermissionWriteJoints
+
+	// aka jointologist
+	snoopDoggPermissions = models.AccountPermissionReadPatient |
+		models.AccountPermissionReadJoints | models.AccountPermissionWriteJoints
 )
 
 type Account struct {
-	Id          uint               `json:"id"`
-	DisplayName string             `json:"display_name"`
-	Username    string             `json:"username"`
-	Password    string             `json:"password"`
-	Type        string             `json:"type"`
-	Permissions AccountPermissions `json:"permissions"`
+	Id          uint                      `json:"id"`
+	DisplayName string                    `json:"display_name"`
+	Username    string                    `json:"username"`
+	Type        string                    `json:"type"`
+	Password    string                    `json:"password,omitempty"`
+	Permissions models.AccountPermissions `json:"permissions"`
 }
 
-func (a Account) HasPermission(p AccountPermissions) bool {
+func (a Account) HasPermission(p models.AccountPermissions) bool {
 	return a.Permissions&p != 0
 }
 
-type CreateAccountParams struct {
-	RequestContext
+func (a Account) Validate() error {
+	if a.Username == "" {
+		return ErrInvalidAccountUsername{}
+	}
+	if a.Password == "" {
+		return ErrInvalidAccountPassword{}
+	}
+	if a.DisplayName == "" {
+		return ErrInvalidAccountDisplayName{}
+	}
+
+	return nil
+}
+
+func (a *Account) FromModel(ma models.Account) {
+	(*a) = Account{
+		Id:          ma.Id,
+		DisplayName: ma.DisplayName,
+		Username:    ma.Username,
+		Type:        string(ma.Type),
+		Permissions: ma.Permissions,
+	}
+}
+
+type CreateSecritaryAccountParams struct {
+	ActionContext
 	NewAccount Account `json:"new_account"`
 }
 
-type CreateAccountPayload struct {
+type CreateSecritaryAccountPayload struct {
 	Id uint `json:"id"`
 }
 
-func (a *Actions) CreateAccount(params CreateAccountParams) (CreateAccountPayload, error) {
-	endpoint := ""
-	switch params.NewAccount.Type {
-	case "secritary":
-		endpoint = "/v1/accounts/secritary"
-	case "admin":
-		endpoint = "/v1/accounts/admin"
-	case "jointlogist":
-		endpoint = "/v1/accounts/jointlogist"
-	default:
-		return CreateAccountPayload{}, errors.ErrSomethingWentWrong
+func (a *Actions) CreateSecritaryAccount(params CreateSecritaryAccountParams) (CreateSecritaryAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return CreateSecritaryAccountPayload{}, ErrPermissionDenied{}
+	}
+	if err := params.NewAccount.Validate(); err != nil {
+		return CreateSecritaryAccountPayload{}, err
 	}
 
-	payload, err := makeRequest[CreateAccountParams, CreateAccountPayload](makeRequestConfig[CreateAccountParams]{
-		method:   http.MethodPost,
-		endpoint: endpoint,
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: params,
+	newAccount, err := a.app.CreateAccount(models.Account{
+		DisplayName: params.NewAccount.DisplayName,
+		Username:    params.NewAccount.Username,
+		Password:    params.NewAccount.Password,
+		Type:        models.AccountTypeSecritary,
+		Permissions: secritaryPermissions,
 	})
-	if err != nil {
-		return CreateAccountPayload{}, err
+
+	return CreateSecritaryAccountPayload{
+		Id: newAccount.Id,
+	}, err
+}
+
+type CreateAdminAccountParams struct {
+	ActionContext
+	NewAccount Account `json:"new_account"`
+}
+
+type CreateAdminAccountPayload struct {
+	Id uint `json:"id"`
+}
+
+func (a *Actions) CreateAdminAccount(params CreateAdminAccountParams) (CreateAdminAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return CreateAdminAccountPayload{}, ErrPermissionDenied{}
+	}
+	if err := params.NewAccount.Validate(); err != nil {
+		return CreateAdminAccountPayload{}, err
 	}
 
-	return payload, nil
+	newAccount, err := a.app.CreateAccount(models.Account{
+		DisplayName: params.NewAccount.DisplayName,
+		Username:    params.NewAccount.Username,
+		Password:    params.NewAccount.Password,
+		Type:        models.AccountTypeAdmin,
+		Permissions: adminPermissions,
+	})
+
+	return CreateAdminAccountPayload{
+		Id: newAccount.Id,
+	}, err
+}
+
+type CreateJointologistAccountParams struct {
+	ActionContext
+	NewAccount Account `json:"new_account"`
+}
+
+type CreateJointologistAccountPayload struct {
+	Id uint `json:"id"`
+}
+
+func (a *Actions) CreateJointologistAccount(params CreateJointologistAccountParams) (CreateJointologistAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return CreateJointologistAccountPayload{}, ErrPermissionDenied{}
+	}
+	if err := params.NewAccount.Validate(); err != nil {
+		return CreateJointologistAccountPayload{}, err
+	}
+
+	newAccount, err := a.app.CreateAccount(models.Account{
+		DisplayName: params.NewAccount.DisplayName,
+		Username:    params.NewAccount.Username,
+		Password:    params.NewAccount.Password,
+		Type:        models.AccountTypeJointologist,
+		Permissions: snoopDoggPermissions,
+	})
+
+	return CreateJointologistAccountPayload{
+		Id: newAccount.Id,
+	}, err
 }
 
 type GetAccountParams struct {
-	RequestContext
+	ActionContext
 	AccountId uint
 }
 
 type GetAccountPayload struct {
-	Data Account `json:"data"`
+	Account Account `json:"data"`
 }
 
-func (a *Actions) GetAccount(params GetAccountParams) (Account, error) {
-	payload, err := makeRequest[any, GetAccountPayload](makeRequestConfig[any]{
-		method:   http.MethodGet,
-		endpoint: fmt.Sprintf("/v1/accounts/%d", params.AccountId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return Account{}, err
+func (a *Actions) GetAccount(params GetAccountParams) (GetAccountPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadAccounts) {
+		return GetAccountPayload{}, ErrPermissionDenied{}
 	}
 
-	return payload.Data, nil
+	account, err := a.app.GetAccountById(params.AccountId)
+	if err != nil {
+		return GetAccountPayload{}, err
+	}
+
+	outAccount := new(Account)
+	outAccount.FromModel(account)
+
+	return GetAccountPayload{
+		Account: *outAccount,
+	}, nil
 }
 
 type DeleteAccountParams struct {
-	RequestContext
+	ActionContext
 	AccountId uint
 }
 
@@ -116,23 +188,20 @@ type DeleteAccountPayload struct {
 }
 
 func (a *Actions) DeleteAccount(params DeleteAccountParams) (DeleteAccountPayload, error) {
-	payload, err := makeRequest[DeleteAccountParams, DeleteAccountPayload](makeRequestConfig[DeleteAccountParams]{
-		method:   http.MethodDelete,
-		endpoint: fmt.Sprintf("/v1/accounts/%d", params.AccountId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: params,
-	})
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return DeleteAccountPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.DeleteAccount(params.AccountId)
 	if err != nil {
 		return DeleteAccountPayload{}, err
 	}
 
-	return payload, nil
+	return DeleteAccountPayload{}, nil
 }
 
 type UpdateAccountParams struct {
-	RequestContext
+	ActionContext
 	AccountId  uint
 	NewAccount Account `json:"new_account"`
 }
@@ -140,103 +209,55 @@ type UpdateAccountParams struct {
 type UpdateAccountPayload struct {
 }
 
-type UpdateAccountRequest struct {
-	Account
-}
-
-func (a *UpdateAccountRequest) UnmarshalJSON(payload []byte) error {
-	var data map[string]any
-	err := json.Unmarshal(payload, &data)
-	if err != nil {
-		return err
-	}
-
-	var ok bool
-	(*a).DisplayName, ok = data["display_name"].(string)
-	if !ok {
-		return goerrors.New("invalid display_name value")
-	}
-	(*a).Username, ok = data["username"].(string)
-	if !ok {
-		return goerrors.New("invalid username value")
-	}
-	(*a).Password, ok = data["password"].(string)
-	if !ok {
-		return goerrors.New("invalid password value")
-	}
-
-	const permissionsKey = "permissions"
-	switch data[permissionsKey].(type) {
-	case string:
-		p, err := strconv.Atoi(data[permissionsKey].(string))
-		if err != nil {
-			return err
-		}
-		if (p & (p - 1)) != 0 {
-			return goerrors.New("invalid permissions value")
-		}
-		(*a).Permissions = AccountPermissions(p)
-
-	case []any:
-		for _, p := range data[permissionsKey].([]any) {
-			pStr, ok := p.(string)
-			if !ok {
-				return goerrors.New("invalid permissions type")
-			}
-			pInt, err := strconv.Atoi(pStr)
-			if err != nil {
-				return err
-			}
-			if (pInt & (pInt - 1)) != 0 {
-				return goerrors.New("invalid permissions value")
-			}
-			(*a).Permissions |= AccountPermissions(pInt)
-		}
-
-	default:
-		return goerrors.New("invalid permissions value")
-	}
-
-	return nil
-}
-
 func (a *Actions) UpdateAccount(params UpdateAccountParams) (UpdateAccountPayload, error) {
-	payload, err := makeRequest[map[string]any, UpdateAccountPayload](makeRequestConfig[map[string]any]{
-		method:   http.MethodPut,
-		endpoint: fmt.Sprintf("/v1/accounts/%d", params.AccountId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: map[string]any{
-			"new_account": params.NewAccount,
-		},
+	if !params.Account.HasPermission(models.AccountPermissionWriteAccounts) {
+		return UpdateAccountPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.UpdateAccount(params.AccountId, models.Account{
+		DisplayName: params.NewAccount.DisplayName,
+		Username:    params.NewAccount.Username,
+		Password:    params.NewAccount.Password,
+		Permissions: params.NewAccount.Permissions,
 	})
 	if err != nil {
 		return UpdateAccountPayload{}, err
 	}
 
-	return payload, nil
+	err = a.cache.InvalidateAuthenticatedAccountById(params.AccountId)
+	if err != nil {
+		return UpdateAccountPayload{}, err
+	}
+
+	return UpdateAccountPayload{}, nil
 }
 
 type ListAllAccountsParams struct {
-	RequestContext
+	ActionContext
 }
 
 type ListAllAccountsPayload struct {
 	Data []Account `json:"data"`
 }
 
-func (a *Actions) ListAllAccounts(params ListAllAccountsParams) ([]Account, error) {
-	payload, err := makeRequest[any, ListAllAccountsPayload](makeRequestConfig[any]{
-		method:   http.MethodGet,
-		endpoint: "/v1/accounts",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return nil, err
+func (a *Actions) ListAllAccounts(params ListAllAccountsParams) (ListAllAccountsPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadAccounts) {
+		return ListAllAccountsPayload{}, ErrPermissionDenied{}
 	}
 
-	return payload.Data, nil
+	accounts, err := a.app.ListAllAccounts()
+	if err != nil {
+		return ListAllAccountsPayload{}, err
+	}
+
+	outAccounts := make([]Account, 0, len(accounts))
+	for _, account := range accounts {
+		outAccount := new(Account)
+		outAccount.FromModel(account)
+		outAccounts = append(outAccounts, *outAccount)
+	}
+
+	return ListAllAccountsPayload{
+		Data: outAccounts,
+	}, nil
 }

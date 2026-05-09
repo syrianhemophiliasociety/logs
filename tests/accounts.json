@@ -1,0 +1,50 @@
+{
+  "mike": {
+    "display_name": "Mike",
+    "username": "mike",
+    "password": "1234",
+    "type": "patient"
+  },
+  "tucker": {
+    "display_name": "Tucker",
+    "username": "tucker",
+    "password": "1234",
+    "type": "patient"
+  },
+  "ziemowit": {
+    "display_name": "Ziemowit",
+    "username": "ziemowit",
+    "password": "1234",
+    "type": "secritary"
+  },
+  "cody": {
+    "display_name": "Cody",
+    "username": "cody",
+    "password": "1234",
+    "type": "secritary"
+  },
+  "harvey": {
+    "display_name": "Harvey",
+    "username": "harvey",
+    "password": "1234",
+    "type": "admin"
+  },
+  "charles": {
+    "display_name": "Charles",
+    "username": "charles",
+    "password": "1234",
+    "type": "admin"
+  },
+  "rex": {
+    "display_name": "Rex",
+    "username": "rex",
+    "password": "1234",
+    "type": "admin"
+  },
+  "b": {
+    "display_name": "Super Admin",
+    "username": "b",
+    "password": "kurwamatch",
+    "type": "superadmin"
+  }
+}

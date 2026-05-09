@@ -3,96 +3,37 @@ package auth
 import (
 	"context"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/handlers/middlewares/clienthash"
-	"shs-web/handlers/middlewares/contenttype"
-	"slices"
-	"strings"
-)
-
-// Cookie keys
-const (
-	VerificationTokenKey = "verification-token"
-	SessionTokenKey      = "token"
+	"shs/actions"
 )
 
 // Context keys
 const (
+	AccountKey         = "account"
 	CtxSessionTokenKey = "session-token"
-	CtxAccountKey      = "account"
-	CtxAccountTypeKey  = "account-type"
 )
-
-var noAuthPaths = []string{"/login", "/signup"}
 
 type Middleware struct {
 	usecases *actions.Actions
 }
 
-// New returns a new auth middle ware instance.
+// New returns a new auth middleware instance.
 func New(usecases *actions.Actions) *Middleware {
 	return &Middleware{
 		usecases: usecases,
 	}
 }
 
-// AuthPage authenticates a page's handler.
-func (a *Middleware) AuthPage(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		htmxRedirect := contenttype.IsNoLayoutPage(r)
-		sessionToken, account, err := a.authenticate(r)
-		authed := err == nil
-		isPatient := account.Type == "patient"
-		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
-		ctx = context.WithValue(ctx, CtxAccountKey, account)
-		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
-
-		homePath := "/"
-		patientHome := "/patient/medications"
-		if isPatient {
-			homePath = patientHome
-		}
-
-		switch {
-		case authed && slices.Contains(noAuthPaths, r.URL.Path):
-			http.Redirect(w, r, homePath, http.StatusTemporaryRedirect)
-		case !authed && slices.Contains(noAuthPaths, r.URL.Path):
-			h(w, r.WithContext(ctx))
-		case !authed && htmxRedirect:
-			clientHash, ok := r.Context().Value(clienthash.ClientHashKey).(string)
-			if ok {
-				_ = a.usecases.SetRedirectPath(clientHash, r.URL.Path)
-			}
-			w.Header().Set("HX-Redirect", "/login")
-		case !authed && !htmxRedirect:
-			clientHash, ok := r.Context().Value(clienthash.ClientHashKey).(string)
-			if ok {
-				_ = a.usecases.SetRedirectPath(clientHash, r.URL.Path)
-			}
-			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
-		default:
-			if isPatient && !strings.Contains(r.URL.Path, patientHome) {
-				http.Redirect(w, r, homePath, http.StatusTemporaryRedirect)
-				return
-			}
-			h(w, r.WithContext(ctx))
-		}
-	}
-}
-
-// OptionalAuthPage authenticates a page's handler optionally (without redirection).
-func (a *Middleware) OptionalAuthPage(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func (a *Middleware) AuthHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sessionToken, account, err := a.authenticate(r)
 		if err != nil {
-			h(w, r)
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
-		ctx = context.WithValue(ctx, CtxAccountKey, account)
-		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
-		h(w, r.WithContext(ctx))
-	}
+		ctx := context.WithValue(r.Context(), AccountKey, account)
+		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		h.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 // AuthApi authenticates an API's handler.
@@ -103,14 +44,13 @@ func (a *Middleware) AuthApi(h http.HandlerFunc) http.HandlerFunc {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
-		ctx = context.WithValue(ctx, CtxAccountKey, account)
-		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
+		ctx := context.WithValue(r.Context(), AccountKey, account)
+		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
 		h(w, r.WithContext(ctx))
 	}
 }
 
-// OptionalAuthApi authenticates a page's handler optionally (without 401).
+// OptionalAuthApi authenticates an API's handler optionally (without 401).
 func (a *Middleware) OptionalAuthApi(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sessionToken, account, err := a.authenticate(r)
@@ -118,23 +58,22 @@ func (a *Middleware) OptionalAuthApi(h http.HandlerFunc) http.HandlerFunc {
 			h(w, r)
 			return
 		}
-		ctx := context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
-		ctx = context.WithValue(ctx, CtxAccountKey, account)
-		ctx = context.WithValue(ctx, CtxAccountTypeKey, account.Type)
+		ctx := context.WithValue(r.Context(), AccountKey, account)
+		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
 		h(w, r.WithContext(ctx))
 	}
 }
 
 func (a *Middleware) authenticate(r *http.Request) (string, actions.Account, error) {
-	sessionToken, err := r.Cookie(SessionTokenKey)
+	sessionToken, ok := r.Header["Authorization"]
+	if !ok {
+		return "", actions.Account{}, actions.ErrInvalidSessionToken{}
+	}
+
+	account, err := a.usecases.AuthenticateAccount(sessionToken[0])
 	if err != nil {
 		return "", actions.Account{}, err
 	}
 
-	account, err := a.usecases.CheckAuth(sessionToken.Value)
-	if err != nil {
-		return "", actions.Account{}, err
-	}
-
-	return sessionToken.Value, account, nil
+	return sessionToken[0], account, nil
 }

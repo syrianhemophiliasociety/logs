@@ -1,6 +1,10 @@
 package log
 
-import "log"
+import (
+	"fmt"
+	"log"
+	"os"
+)
 
 type logLevel string
 
@@ -81,6 +85,9 @@ func Errorf(format string, v ...any) {
 
 // Println prints a log with a specific prefix with a new line.
 func Println(prefix logLevel, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprintln(os.Stderr, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Println(v...)
 	log.SetPrefix("")
@@ -88,6 +95,9 @@ func Println(prefix logLevel, v ...any) {
 
 // Print prints a log with a specific prefix.
 func Print(prefix logLevel, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprint(os.Stderr, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Print(v...)
 	log.SetPrefix("")
@@ -95,6 +105,9 @@ func Print(prefix logLevel, v ...any) {
 
 // Printf prints a formatted log with a specific prefix.
 func Printf(prefix logLevel, format string, v ...any) {
+	if prefix == ErrorLevel {
+		fmt.Fprintf(os.Stderr, format, v...)
+	}
 	log.SetPrefix(string(prefix) + " ")
 	log.Printf(format, v...)
 	log.SetPrefix("")

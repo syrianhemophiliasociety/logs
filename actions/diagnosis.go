@@ -1,8 +1,7 @@
 package actions
 
 import (
-	"fmt"
-	"net/http"
+	"shs/app/models"
 	"time"
 )
 
@@ -14,65 +13,88 @@ type Diagnosis struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+func (d Diagnosis) IntoModel() models.Diagnosis {
+	return models.Diagnosis{
+		GroupName: d.GroupName,
+		Title:     d.Title,
+	}
+}
+
+func (d *Diagnosis) FromModel(diagnosis models.Diagnosis) {
+	(*d).Id = diagnosis.Id
+	(*d).GroupName = diagnosis.GroupName
+	(*d).Title = diagnosis.Title
+	(*d).CreatedAt = diagnosis.CreatedAt
+}
+
 type CreateDiagnosisParams struct {
-	RequestContext
-	NewDiagnosis Diagnosis
+	ActionContext
+	Diagnosis Diagnosis `json:"new_diagnosis"`
 }
 
 type CreateDiagnosisPayload struct {
 }
 
 func (a *Actions) CreateDiagnosis(params CreateDiagnosisParams) (CreateDiagnosisPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteDiagnoses) {
+		return CreateDiagnosisPayload{}, ErrPermissionDenied{}
+	}
 
-	return makeRequest[map[string]any, CreateDiagnosisPayload](makeRequestConfig[map[string]any]{
-		method:   http.MethodPost,
-		endpoint: "/v1/diagnoses",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: map[string]any{
-			"new_diagnosis": params.NewDiagnosis,
-		},
-	})
+	_, err := a.app.CreateDiagnosis(params.Diagnosis.IntoModel())
+	if err != nil {
+		return CreateDiagnosisPayload{}, err
+	}
+
+	return CreateDiagnosisPayload{}, nil
 }
 
 type ListAllDiagnosesParams struct {
-	RequestContext
+	ActionContext
 }
 
 type ListAllDiagnosesPayload struct {
 	Data []Diagnosis `json:"data"`
 }
 
-func (a *Actions) ListAllDiagnoses(params ListAllDiagnosesParams) ([]Diagnosis, error) {
-	payload, err := makeRequest[any, ListAllDiagnosesPayload](makeRequestConfig[any]{
-		method:   http.MethodGet,
-		endpoint: "/v1/diagnoses",
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-	})
-	if err != nil {
-		return nil, err
+func (a *Actions) ListAllDiagnoses(params ListAllDiagnosesParams) (ListAllDiagnosesPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadDiagnoses) {
+		return ListAllDiagnosesPayload{}, ErrPermissionDenied{}
 	}
 
-	return payload.Data, nil
+	diagnoses, err := a.app.ListAllDiagnoses()
+	if err != nil {
+		return ListAllDiagnosesPayload{}, err
+	}
+
+	outDiagnoses := make([]Diagnosis, 0, len(diagnoses))
+	for _, d := range diagnoses {
+		outDiagnosis := new(Diagnosis)
+		outDiagnosis.FromModel(d)
+		outDiagnoses = append(outDiagnoses, *outDiagnosis)
+	}
+
+	return ListAllDiagnosesPayload{
+		Data: outDiagnoses,
+	}, nil
 }
 
 type DeleteDiagnosisParams struct {
-	RequestContext
-	DiagnosisId uint
+	ActionContext
+	DiagnosisId uint `json:"blood_test_id"`
 }
 
-type DeleteDiagnosisPayload struct{}
+type DeleteDiagnosisPayload struct {
+}
 
 func (a *Actions) DeleteDiagnosis(params DeleteDiagnosisParams) (DeleteDiagnosisPayload, error) {
-	return makeRequest[any, DeleteDiagnosisPayload](makeRequestConfig[any]{
-		method:   http.MethodDelete,
-		endpoint: fmt.Sprintf("/v1/diagnoses/%d", params.DiagnosisId),
-		headers: map[string]string{
-			"Authorization": params.SessionToken,
-		},
-		body: params,
-	})
+	if !params.Account.HasPermission(models.AccountPermissionWriteDiagnoses) {
+		return DeleteDiagnosisPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.DeleteDiagnosis(params.DiagnosisId)
+	if err != nil {
+		return DeleteDiagnosisPayload{}, err
+	}
+
+	return DeleteDiagnosisPayload{}, nil
 }

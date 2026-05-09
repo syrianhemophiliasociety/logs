@@ -1,0 +1,271 @@
+package components
+
+import (
+	"fmt"
+	"shs/actions"
+	"shs/app/models"
+	"shs/web/i18n"
+	"shs/web/views/helpers"
+	"time"
+)
+
+func patientGender(male bool) string {
+	if male {
+		return "male"
+	}
+	return "female"
+}
+
+templ PatientUpdateProfile(patient actions.Patient) {
+	<div id="patient-profile-sub-container" class={ "w-full" }>
+		<div class={ "w-full", "flex", "flex-row", "justify-between", "gap-5" }>
+			<div class={ "w-1/2", "flex", "flex-col", "gap-5" }>
+				if !helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionWritePatient) {
+					@WritePermissionDenied(i18n.StringsCtx(ctx).NavPatients)
+				} else {
+					<form
+						class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
+						hx-encoding="application/json"
+						hx-put={ "/api/patient/%s" + patient.PublicId }
+						hx-ext="json-enc"
+						hx-target="#status-msg"
+						hx-swap="innerHTML"
+						data-loading-target="#loading"
+						data-loading-class-remove="hidden"
+						_="on htmx:afterRequest reset() me"
+					>
+						<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "public_id",
+									Name:        "public_id",
+									Type:        InputTypeText,
+									Disabled:    true,
+									Required:    true,
+									Autofocus:   true,
+									Title:       i18n.StringsCtx(ctx).PatientId,
+									Placeholder: i18n.StringsCtx(ctx).EnterPatientId,
+									Value:       patient.PublicId,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "first_name",
+									Name:        "first_name",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   true,
+									Title:       i18n.StringsCtx(ctx).PatientFirstName,
+									Placeholder: i18n.StringsCtx(ctx).EnterPatientFirstName,
+									Value:       patient.FirstName,
+								})
+								@Input(InputOptions{
+									Id:          "last_name",
+									Name:        "last_name",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).PatientLastName,
+									Placeholder: i18n.StringsCtx(ctx).EnterPatientLastName,
+									Value:       patient.LastName,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "father_name",
+									Name:        "father_name",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).PatientFatherName,
+									Placeholder: i18n.StringsCtx(ctx).EnterPatientFatherName,
+									Value:       patient.FatherName,
+								})
+								@Input(InputOptions{
+									Id:          "mother_name",
+									Name:        "mother_name",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).PatientMotherName,
+									Placeholder: i18n.StringsCtx(ctx).EnterPatientMotherName,
+									Value:       patient.MotherName,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Select(SelectParams{
+									Id:            "nationality",
+									Name:          i18n.StringsCtx(ctx).Nationality,
+									Placeholder:   i18n.StringsCtx(ctx).EnterNationality,
+									Required:      true,
+									SelectedValue: patient.Nationality,
+									Options: []SelectOption{
+										{Name: i18n.StringsCtx(ctx).NationalitySyrian, Value: "syrian"},
+										{Name: i18n.StringsCtx(ctx).NationalityPalestinian, Value: "palestinian"},
+										{Name: i18n.StringsCtx(ctx).NationalityIraqi, Value: "iraqi"},
+										{Name: i18n.StringsCtx(ctx).NationalityEgyptian, Value: "egyptian"},
+										{Name: i18n.StringsCtx(ctx).NationalityLebanese, Value: "lebanese"},
+									},
+								})
+								@Input(InputOptions{
+									Id:          "national_id",
+									Name:        "national_id",
+									Type:        InputTypeText,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).NationalId,
+									Placeholder: i18n.StringsCtx(ctx).EnterNationalId,
+									Value:       patient.NationalId,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Select(SelectParams{
+									Id:            "gender",
+									Name:          i18n.StringsCtx(ctx).Gender,
+									Placeholder:   i18n.StringsCtx(ctx).EnterGender,
+									Required:      true,
+									SelectedValue: patientGender(patient.Gender),
+									Options: []SelectOption{
+										{Name: i18n.StringsCtx(ctx).GenderMale, Value: "male"},
+										{Name: i18n.StringsCtx(ctx).GenderFemale, Value: "female"},
+									},
+								})
+								@Input(InputOptions{
+									Id:          "date_of_birth",
+									Name:        "date_of_birth",
+									Type:        InputTypeDate,
+									Value:       patient.DateOfBirth.Format(time.DateOnly),
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).DateOfBirth,
+									Placeholder: i18n.StringsCtx(ctx).EnterDateOfBirth,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Select(SelectParams{
+									Id:          "first_visit_reason",
+									Name:        i18n.StringsCtx(ctx).FirstVisitReason,
+									Placeholder: i18n.StringsCtx(ctx).EnterFirstVisitReason,
+									Required:    true,
+									Options: []SelectOption{
+										{Name: i18n.StringsCtx(ctx).FirstVisitReasonFamilyHistory, Value: "family_history"},
+										{Name: i18n.StringsCtx(ctx).FirstVisitReasonBleeding, Value: "bleeding"},
+										{Name: i18n.StringsCtx(ctx).FirstVisitReasonReferral, Value: "referral"},
+									},
+								})
+								@Input(InputOptions{
+									Id:        "family_history_exists",
+									Name:      "family_history_exists",
+									Type:      InputTypeCheckbox,
+									Required:  false,
+									Autofocus: false,
+									Title:     i18n.StringsCtx(ctx).FamilyHistoryExists,
+								})
+							</div>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "phone_number",
+									Name:        "phone_number",
+									Type:        InputTypeTel,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).PhoneNumber,
+									Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
+								})
+							</div>
+							<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "place_of_birth_governorate",
+									Name:        "place_of_birth_governorate",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Governorate,
+									Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+								})
+								@Input(InputOptions{
+									Id:          "place_of_birth_suburb",
+									Name:        "place_of_birth_suburb",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Suburb,
+									Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+								})
+								@Input(InputOptions{
+									Id:          "place_of_birth_street",
+									Name:        "place_of_birth_street",
+									Type:        InputTypeText,
+									Required:    false,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Street,
+									Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+								})
+							</div>
+							<p class={ "text-md" }>{ i18n.StringsCtx(ctx).Residency }</p>
+							<div class={ "flex",  "justify-between", "gap-10" }>
+								@Input(InputOptions{
+									Id:          "residency_governorate",
+									Name:        "residency_governorate",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Governorate,
+									Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+								})
+								@Input(InputOptions{
+									Id:          "residency_suburb",
+									Name:        "residency_suburb",
+									Type:        InputTypeText,
+									Required:    true,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Suburb,
+									Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+								})
+								@Input(InputOptions{
+									Id:          "residency_street",
+									Name:        "residency_street",
+									Type:        InputTypeText,
+									Required:    false,
+									Autofocus:   false,
+									Title:       i18n.StringsCtx(ctx).Street,
+									Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+								})
+							</div>
+						</div>
+						<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]"            , "w-full" , "text-accent" }>
+							{ i18n.StringsCtx(ctx).FormsSubmit }
+						</button>
+						<div id="status-msg"></div>
+					</form>
+				}
+				@HyperButton(HyperButtonParams{
+					Title: i18n.StringsCtx(ctx).GenerateCard,
+					Class: []string{"!w-[200px]"},
+					HyperScript: fmt.Sprintf(`on click
+fetch /api/patient/%s/card
+then call Utils.downloadFileBase64(result, "%s Card.png")
+`, patient.PublicId, patient.FullName()),
+				})
+				@HyperButton(HyperButtonParams{
+					Title:    i18n.StringsCtx(ctx).SaveProfile,
+					Class:    []string{"!w-[200px]"},
+					HxMethod: "GET",
+					HxPath:   fmt.Sprintf("/htmx/patient/%s/update", patient.PublicId),
+					HxSwap:   "innetHTML",
+					HxTarget: "#patient-profile-sub-container",
+				})
+			</div>
+			<div class="w-1/2">
+				@HyperButton(HyperButtonParams{
+					Title:    i18n.StringsCtx(ctx).ProfileDetails,
+					Class:    []string{"!w-[200px]"},
+					HxMethod: "GET",
+					HxPath:   fmt.Sprintf("/htmx/patient/%s/view", patient.PublicId),
+					HxSwap:   "outerHTML",
+					HxTarget: "#patient-profile-sub-container",
+				})
+			</div>
+		</div>
+	</div>
+}

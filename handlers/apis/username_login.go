@@ -2,16 +2,9 @@ package apis
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/config"
-	"shs-web/handlers/middlewares/auth"
-	"shs-web/i18n"
-	"shs-web/log"
-	"shs-web/views/components"
-	verrors "shs-web/views/errors"
-	"time"
+	"shs/actions"
+	"shs/log"
 )
 
 type usernameLoginApi struct {
@@ -29,31 +22,16 @@ func (e *usernameLoginApi) HandleUsernameLogin(w http.ResponseWriter, r *http.Re
 	err := json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		handleErrorResponse(w, err)
 		return
 	}
 
 	payload, err := e.usecases.LoginWithUsername(reqBody)
 	if err != nil {
 		log.Errorf("[USERNAME LOGIN API]: Failed to login user: %+v, error: %s\n", reqBody, err.Error())
-		verrors.
-			BugsBunnyError(
-				fmt.Sprintf("No account associated with the username \"%s\" was found", reqBody.Username),
-				components.HyperButton(components.HyperButtonParams{
-					Title:       i18n.StringsCtx(r.Context()).Reload,
-					HyperScript: "on click call location.reload()",
-				})).
-			Render(r.Context(), w)
+		handleErrorResponse(w, err)
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     auth.SessionTokenKey,
-		Value:    payload.SessionToken,
-		HttpOnly: true,
-		Path:     "/",
-		Domain:   config.Env().Hostname,
-		Expires:  time.Now().UTC().Add(time.Hour * 24 * 60),
-	})
-
-	w.Header().Set("HX-Redirect", "/")
+	_ = json.NewEncoder(w).Encode(payload)
 }
