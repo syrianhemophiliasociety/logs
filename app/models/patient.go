@@ -26,24 +26,25 @@ const (
 )
 
 type Patient struct {
-	Id                  uint                    `gorm:"primaryKey;autoIncrement"`
-	PublicId            string                  `gorm:"index;not null;unique"`
-	NationalId          string                  `gorm:"index;unique"`
-	Nationality         string                  `gorm:"not null"`
-	FirstName           string                  `gorm:"index;not null"`
-	LastName            string                  `gorm:"index;not null"`
-	FatherName          string                  `gorm:"index;not null"`
-	MotherName          string                  `gorm:"index;not null"`
-	PlaceOfBirth        Address                 `gorm:"not null"`
-	PlaceOfBirthId      uint                    `gorm:"index;not null"`
-	DateOfBirth         time.Time               `gorm:"not null"`
-	Residency           Address                 `gorm:"not null"`
-	ResidencyId         uint                    `gorm:"index;not null"`
-	Gender              bool                    `gorm:"not null;index"`
-	PhoneNumber         string                  `gorm:"index;not null"`
-	FamilyHistoryExists bool                    `gorm:"not null"`
-	FirstVisitReason    PatientFirstVisitReason `gorm:"not null"`
-	BATScore            uint                    `gorm:"not null"`
+	Id                     uint                    `gorm:"primaryKey;autoIncrement"`
+	PublicId               string                  `gorm:"index;not null;unique"`
+	NationalId             string                  `gorm:"index;unique"`
+	Nationality            string                  `gorm:"not null"`
+	FirstName              string                  `gorm:"index;not null"`
+	LastName               string                  `gorm:"index;not null"`
+	FatherName             string                  `gorm:"index;not null"`
+	MotherName             string                  `gorm:"index;not null"`
+	PlaceOfBirth           Address                 `gorm:"not null"`
+	PlaceOfBirthId         uint                    `gorm:"index;not null"`
+	DateOfBirth            time.Time               `gorm:"not null"`
+	Residency              Address                 `gorm:"not null"`
+	ResidencyId            uint                    `gorm:"index;not null"`
+	Gender                 bool                    `gorm:"not null;index"`
+	PhoneNumberCountryCode string                  `gorm:"not null"`
+	PhoneNumber            string                  `gorm:"index;not null"`
+	FamilyHistoryExists    bool                    `gorm:"not null"`
+	FirstVisitReason       PatientFirstVisitReason `gorm:"not null"`
+	BATScore               uint                    `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
@@ -66,6 +67,9 @@ func (p *Patient) FillEmptyFieldsUsingPublicId() {
 	}
 	if p.PhoneNumber == "" {
 		p.PhoneNumber = "please_change_" + p.PublicId
+	}
+	if p.PhoneNumberCountryCode == "" {
+		p.PhoneNumber = "+963"
 	}
 	if p.PlaceOfBirth.Governorate == "" {
 		p.PlaceOfBirth.Governorate = "please_change_" + p.PublicId

@@ -174,6 +174,8 @@ type Keys struct {
 	GenderFemale                  string
 	PhoneNumber                   string
 	EnterPhoneNumber              string
+	PhoneNumberCountryCode        string
+	EnterPhoneNumberCountryCode   string
 	Diagnosis                     string
 	PatientSonOf                  string
 	PatientDaughterOf             string

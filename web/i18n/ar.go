@@ -192,6 +192,8 @@ var arabic = Keys{
 	GenderFemale:                  "أنثى",
 	PhoneNumber:                   "رقم الهاتف",
 	EnterPhoneNumber:              "أدخل رقم الهاتف",
+	PhoneNumberCountryCode:        "Country code",
+	EnterPhoneNumberCountryCode:   "Enter country code",
 	Diagnosis:                     "التّشخيص",
 	PatientSonOf:                  "ابن",
 	PatientDaughterOf:             "بنت",

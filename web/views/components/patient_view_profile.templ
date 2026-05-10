@@ -44,7 +44,7 @@ templ PatientViewProfile(patient actions.Patient) {
 						</tr>
 						<tr>
 							<td><b>{ i18n.StringsCtx(ctx).PhoneNumber }</b></td>
-							<td>{ patient.PhoneNumber }</td>
+							<td>{ patient.PhoneNumberCountryCode + " " + patient.PhoneNumber }</td>
 						</tr>
 						<tr>
 							<td><b>{ i18n.StringsCtx(ctx).Nationality }</b></td>

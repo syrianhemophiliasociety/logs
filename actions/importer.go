@@ -177,10 +177,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 				Suburb:      record.Residency_Suburb,
 				Street:      record.Residency_Street,
 			},
-			Gender:              record.Gender == "male",
-			PhoneNumber:         record.PhoneNumber,
-			FamilyHistoryExists: false,
-			FirstVisitReason:    "",
+			Gender:                 record.Gender == "male",
+			PhoneNumber:            record.PhoneNumber,
+			PhoneNumberCountryCode: "+963",
+			FamilyHistoryExists:    false,
+			FirstVisitReason:       "",
 		}
 		patients = append(patients, patient)
 

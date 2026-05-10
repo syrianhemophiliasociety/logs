@@ -26,6 +26,7 @@ type PatientRequest struct {
 	NationalId              string `json:"national_id"`
 	Gender                  string `json:"gender"`
 	PhoneNumber             string `json:"phone_number"`
+	PhoneNumberCountryCode  string `json:"phone_number_country_code"`
 	DateOfBirth             string `json:"date_of_birth"`
 	PlaceOfBirthGovernorate string `json:"place_of_birth_governorate"`
 	PlaceOfBirthSuburb      string `json:"place_of_birth_suburb"`
@@ -57,11 +58,12 @@ func clusterFuckPatientToActionsOne(p PatientRequest) actions.Patient {
 			Suburb:      p.ResidencySuburb,
 			Street:      p.ResidencyStreet,
 		},
-		Gender:              p.Gender == "male",
-		PhoneNumber:         p.PhoneNumber,
-		BATScore:            0,
-		FirstVisitReason:    p.FirstVisitReason,
-		FamilyHistoryExists: p.FamilyHistoryExists == "on",
+		Gender:                 p.Gender == "male",
+		PhoneNumber:            p.PhoneNumber,
+		PhoneNumberCountryCode: p.PhoneNumberCountryCode,
+		BATScore:               0,
+		FirstVisitReason:       p.FirstVisitReason,
+		FamilyHistoryExists:    p.FamilyHistoryExists == "on",
 	}
 }
 

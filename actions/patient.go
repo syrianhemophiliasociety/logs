@@ -53,26 +53,27 @@ func (a Address) IntoModel() models.Address {
 }
 
 type Patient struct {
-	Id                  uint               `json:"id"`
-	PublicId            string             `json:"public_id"`
-	NationalId          string             `json:"national_id"`
-	Nationality         string             `json:"nationality"`
-	FirstName           string             `json:"first_name"`
-	LastName            string             `json:"last_name"`
-	FatherName          string             `json:"father_name"`
-	MotherName          string             `json:"mother_name"`
-	PlaceOfBirth        Address            `json:"place_of_birth"`
-	DateOfBirth         time.Time          `json:"date_of_birth"`
-	Residency           Address            `json:"residency"`
-	Gender              bool               `json:"gender"`
-	PhoneNumber         string             `json:"phone_number"`
-	BATScore            uint               `json:"bat_score"`
-	FamilyHistoryExists bool               `json:"family_history_exists"`
-	FirstVisitReason    string             `json:"first_visit_reason"`
-	Viruses             []Virus            `json:"viruses"`
-	BloodTestResults    []BloodTestResult  `json:"blood_test_results"`
-	JointsEvaluations   []JointsEvaluation `json:"joints_evaluations"`
-	Diagnoses           []DiagnosisResult  `json:"diagnoses"`
+	Id                     uint               `json:"id"`
+	PublicId               string             `json:"public_id"`
+	NationalId             string             `json:"national_id"`
+	Nationality            string             `json:"nationality"`
+	FirstName              string             `json:"first_name"`
+	LastName               string             `json:"last_name"`
+	FatherName             string             `json:"father_name"`
+	MotherName             string             `json:"mother_name"`
+	PlaceOfBirth           Address            `json:"place_of_birth"`
+	DateOfBirth            time.Time          `json:"date_of_birth"`
+	Residency              Address            `json:"residency"`
+	Gender                 bool               `json:"gender"`
+	PhoneNumber            string             `json:"phone_number"`
+	PhoneNumberCountryCode string             `json:"phone_number_country_code"`
+	BATScore               uint               `json:"bat_score"`
+	FamilyHistoryExists    bool               `json:"family_history_exists"`
+	FirstVisitReason       string             `json:"first_visit_reason"`
+	Viruses                []Virus            `json:"viruses"`
+	BloodTestResults       []BloodTestResult  `json:"blood_test_results"`
+	JointsEvaluations      []JointsEvaluation `json:"joints_evaluations"`
+	Diagnoses              []DiagnosisResult  `json:"diagnoses"`
 }
 
 func (p Patient) FullName() string {
@@ -128,11 +129,12 @@ func (p Patient) IntoModel() models.Patient {
 			Suburb:      p.Residency.Suburb,
 			Street:      p.Residency.Street,
 		},
-		Gender:              p.Gender,
-		PhoneNumber:         p.PhoneNumber,
-		FamilyHistoryExists: p.FamilyHistoryExists,
-		FirstVisitReason:    models.PatientFirstVisitReason(p.FirstVisitReason),
-		BATScore:            p.BATScore,
+		Gender:                 p.Gender,
+		PhoneNumber:            p.PhoneNumber,
+		PhoneNumberCountryCode: p.PhoneNumberCountryCode,
+		FamilyHistoryExists:    p.FamilyHistoryExists,
+		FirstVisitReason:       models.PatientFirstVisitReason(p.FirstVisitReason),
+		BATScore:               p.BATScore,
 	}
 }
 
@@ -159,11 +161,12 @@ func (p *Patient) FromModel(patient models.Patient) {
 			Suburb:      patient.Residency.Suburb,
 			Street:      patient.Residency.Street,
 		},
-		Gender:              patient.Gender,
-		PhoneNumber:         patient.PhoneNumber,
-		BATScore:            patient.BATScore,
-		FamilyHistoryExists: patient.FamilyHistoryExists,
-		FirstVisitReason:    string(patient.FirstVisitReason),
+		Gender:                 patient.Gender,
+		PhoneNumber:            patient.PhoneNumber,
+		PhoneNumberCountryCode: patient.PhoneNumberCountryCode,
+		BATScore:               patient.BATScore,
+		FamilyHistoryExists:    patient.FamilyHistoryExists,
+		FirstVisitReason:       string(patient.FirstVisitReason),
 	}
 }
 
@@ -258,18 +261,19 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}
 
 	newPatient := models.Patient{
-		NationalId:          params.NewPatient.NationalId,
-		Nationality:         params.NewPatient.Nationality,
-		FirstName:           params.NewPatient.FirstName,
-		LastName:            params.NewPatient.LastName,
-		FatherName:          params.NewPatient.FatherName,
-		MotherName:          params.NewPatient.MotherName,
-		DateOfBirth:         params.NewPatient.DateOfBirth,
-		Gender:              params.NewPatient.Gender,
-		PhoneNumber:         params.NewPatient.PhoneNumber,
-		BATScore:            params.NewPatient.BATScore,
-		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
+		NationalId:             params.NewPatient.NationalId,
+		Nationality:            params.NewPatient.Nationality,
+		FirstName:              params.NewPatient.FirstName,
+		LastName:               params.NewPatient.LastName,
+		FatherName:             params.NewPatient.FatherName,
+		MotherName:             params.NewPatient.MotherName,
+		DateOfBirth:            params.NewPatient.DateOfBirth,
+		Gender:                 params.NewPatient.Gender,
+		PhoneNumber:            params.NewPatient.PhoneNumber,
+		PhoneNumberCountryCode: params.NewPatient.PhoneNumberCountryCode,
+		BATScore:               params.NewPatient.BATScore,
+		FirstVisitReason:       models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
+		FamilyHistoryExists:    params.NewPatient.FamilyHistoryExists,
 	}
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
@@ -354,18 +358,19 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 	}
 
 	newPatient := models.Patient{
-		NationalId:          params.NewPatient.NationalId,
-		Nationality:         params.NewPatient.Nationality,
-		FirstName:           params.NewPatient.FirstName,
-		LastName:            params.NewPatient.LastName,
-		FatherName:          params.NewPatient.FatherName,
-		MotherName:          params.NewPatient.MotherName,
-		DateOfBirth:         params.NewPatient.DateOfBirth,
-		Gender:              params.NewPatient.Gender,
-		PhoneNumber:         params.NewPatient.PhoneNumber,
-		BATScore:            params.NewPatient.BATScore,
-		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
+		NationalId:             params.NewPatient.NationalId,
+		Nationality:            params.NewPatient.Nationality,
+		FirstName:              params.NewPatient.FirstName,
+		LastName:               params.NewPatient.LastName,
+		FatherName:             params.NewPatient.FatherName,
+		MotherName:             params.NewPatient.MotherName,
+		DateOfBirth:            params.NewPatient.DateOfBirth,
+		Gender:                 params.NewPatient.Gender,
+		PhoneNumber:            params.NewPatient.PhoneNumber,
+		PhoneNumberCountryCode: params.NewPatient.PhoneNumberCountryCode,
+		BATScore:               params.NewPatient.BATScore,
+		FirstVisitReason:       models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
+		FamilyHistoryExists:    params.NewPatient.FamilyHistoryExists,
 	}
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{

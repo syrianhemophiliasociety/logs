@@ -190,6 +190,8 @@ var english = Keys{
 	GenderFemale:                  "Female",
 	PhoneNumber:                   "Phone number",
 	EnterPhoneNumber:              "Enter phone number",
+	PhoneNumberCountryCode:        "Country code",
+	EnterPhoneNumberCountryCode:   "Enter country code",
 	Diagnosis:                     "Diagnosis",
 	PatientSonOf:                  "Son of",
 	PatientDaughterOf:             "Daughter of",
