@@ -3,15 +3,28 @@ node_modules
 .env
 .env.*
 !.env.example
-shs-web
-static/assets/js/htmx/*
-static/assets/css/tailwind.css
+shs
+shs-*
 google-service-account.json
-*_templ.go
-views/**/*_templ.go
-views/**/*.txt
 .*/
+*_templ.go
 docker-compose-prod.yml
 docker-compose-beta.yml
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
 tmp/
+
+# Web
+node_modules
+web/static/assets/js/htmx/*
+web/static/assets/css/tailwind.css
+*_templ.go
+web/views/**/*_templ.go
+web/views/**/*.txt
+
 Session.vim
