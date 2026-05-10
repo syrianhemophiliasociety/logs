@@ -337,6 +337,95 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 	}, nil
 }
 
+type UpdatePatientParams struct {
+	ActionContext
+	NewPatient      Patient `json:"new_patient"`
+	PatientPublicId string  `json:"id"`
+}
+
+type UpdatePatientPayload struct {
+	PatientPublicId string `json:"id"`
+}
+
+func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return UpdatePatientPayload{}, ErrPermissionDenied{}
+	}
+
+	oldPatient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	if err != nil {
+		return UpdatePatientPayload{}, err
+	}
+
+	newPatient := models.Patient{
+		NationalId:          params.NewPatient.NationalId,
+		Nationality:         params.NewPatient.Nationality,
+		FirstName:           params.NewPatient.FirstName,
+		LastName:            params.NewPatient.LastName,
+		FatherName:          params.NewPatient.FatherName,
+		MotherName:          params.NewPatient.MotherName,
+		DateOfBirth:         params.NewPatient.DateOfBirth,
+		Gender:              params.NewPatient.Gender,
+		PhoneNumber:         params.NewPatient.PhoneNumber,
+		BATScore:            params.NewPatient.BATScore,
+		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
+		Viruses:             []models.Virus{},
+		BloodTestResults:    []models.BloodTestResult{},
+		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
+	}
+
+	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
+		Governorate: params.NewPatient.Residency.Governorate,
+		Suburb:      params.NewPatient.Residency.Suburb,
+		Street:      params.NewPatient.Residency.Street,
+	})
+
+	if len(residencyAddresses) == 1 {
+		newPatient.Residency.Id = residencyAddresses[0].Id
+		newPatient.ResidencyId = residencyAddresses[0].Id
+	} else {
+		residency, err := a.app.CreateAddress(params.NewPatient.Residency.IntoModel())
+		if err != nil {
+			return UpdatePatientPayload{}, err
+		}
+		newPatient.Residency = residency
+		newPatient.ResidencyId = residency.Id
+	}
+
+	placesOfBirth, _ := a.app.GetAllAddressesALike(models.Address{
+		Governorate: params.NewPatient.PlaceOfBirth.Governorate,
+		Suburb:      params.NewPatient.PlaceOfBirth.Suburb,
+		Street:      params.NewPatient.PlaceOfBirth.Street,
+	})
+
+	if len(placesOfBirth) == 1 {
+		newPatient.PlaceOfBirth.Id = placesOfBirth[0].Id
+		newPatient.PlaceOfBirthId = placesOfBirth[0].Id
+	} else {
+		placeOfBirth, err := a.app.CreateAddress(params.NewPatient.PlaceOfBirth.IntoModel())
+		if err != nil {
+			return UpdatePatientPayload{}, err
+		}
+		newPatient.PlaceOfBirth = placeOfBirth
+		newPatient.PlaceOfBirthId = placeOfBirth.Id
+	}
+
+	newPatient, err = a.app.UpdatePatient(oldPatient.Id, newPatient)
+	if err != nil {
+		return UpdatePatientPayload{}, err
+	}
+
+	// INFO: in case of minors without a national id, the password will be the patient's phone number without the country code
+	password := params.NewPatient.NationalId
+	if password == "" {
+		password = cleanPhoneNumberCountryCode(params.NewPatient.PhoneNumber)
+	}
+
+	return UpdatePatientPayload{
+		PatientPublicId: newPatient.PublicId,
+	}, nil
+}
+
 type CreatePatientBloodTestResultParams struct {
 	ActionContext
 	PatientPublicId string          `json:"patient_id"`

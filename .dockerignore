@@ -15,3 +15,4 @@ web/static/assets/css/tailwind.css
 web/views/**/*_templ.go
 web/views/**/*.txt
 
+shsdb.sql

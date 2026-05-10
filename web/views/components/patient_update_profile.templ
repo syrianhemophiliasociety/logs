@@ -24,15 +24,15 @@ templ PatientUpdateProfile(patient actions.Patient) {
 					@WritePermissionDenied(i18n.StringsCtx(ctx).NavPatients)
 				} else {
 					<form
-						class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
+						class={ "flex" , "flex-col" , "gap-y-6.25" , "lg:gap-y-8.75" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
 						hx-encoding="application/json"
-						hx-put={ "/api/web/patient/%s" + patient.PublicId }
+						hx-put={ "/api/web/patient/" + patient.PublicId }
 						hx-ext="json-enc"
 						hx-target="#status-msg"
 						hx-swap="innerHTML"
 						data-loading-target="#loading"
 						data-loading-class-remove="hidden"
-						_="on htmx:afterRequest reset() me"
+						_="on htmx:afterRequest reset() me then alert('success!') then call location.reload()"
 					>
 						<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
 							<div class={ "flex",  "justify-between", "gap-10" }>
@@ -142,10 +142,11 @@ templ PatientUpdateProfile(patient actions.Patient) {
 							</div>
 							<div class={ "flex",  "justify-between", "gap-10" }>
 								@Select(SelectParams{
-									Id:          "first_visit_reason",
-									Name:        i18n.StringsCtx(ctx).FirstVisitReason,
-									Placeholder: i18n.StringsCtx(ctx).EnterFirstVisitReason,
-									Required:    true,
+									Id:            "first_visit_reason",
+									Name:          i18n.StringsCtx(ctx).FirstVisitReason,
+									Placeholder:   i18n.StringsCtx(ctx).EnterFirstVisitReason,
+									Required:      true,
+									SelectedValue: patient.FirstVisitReason,
 									Options: []SelectOption{
 										{Name: i18n.StringsCtx(ctx).FirstVisitReasonFamilyHistory, Value: "family_history"},
 										{Name: i18n.StringsCtx(ctx).FirstVisitReasonBleeding, Value: "bleeding"},
@@ -159,6 +160,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Required:  false,
 									Autofocus: false,
 									Title:     i18n.StringsCtx(ctx).FamilyHistoryExists,
+									Checked:   patient.FamilyHistoryExists,
 								})
 							</div>
 							<div class={ "flex",  "justify-between", "gap-10" }>
@@ -170,6 +172,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).PhoneNumber,
 									Placeholder: i18n.StringsCtx(ctx).EnterPhoneNumber,
+									Value:       patient.PhoneNumber,
 								})
 							</div>
 							<p class={ "text-md" }>{ i18n.StringsCtx(ctx).PlaceOfBirth }</p>
@@ -182,6 +185,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Governorate,
 									Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+									Value:       patient.PlaceOfBirth.Governorate,
 								})
 								@Input(InputOptions{
 									Id:          "place_of_birth_suburb",
@@ -191,6 +195,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Suburb,
 									Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+									Value:       patient.PlaceOfBirth.Suburb,
 								})
 								@Input(InputOptions{
 									Id:          "place_of_birth_street",
@@ -200,6 +205,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Street,
 									Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+									Value:       patient.PlaceOfBirth.Street,
 								})
 							</div>
 							<p class={ "text-md" }>{ i18n.StringsCtx(ctx).Residency }</p>
@@ -212,6 +218,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Governorate,
 									Placeholder: i18n.StringsCtx(ctx).EnterGovernorate,
+									Value:       patient.Residency.Governorate,
 								})
 								@Input(InputOptions{
 									Id:          "residency_suburb",
@@ -221,6 +228,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Suburb,
 									Placeholder: i18n.StringsCtx(ctx).EnterSuburb,
+									Value:       patient.Residency.Suburb,
 								})
 								@Input(InputOptions{
 									Id:          "residency_street",
@@ -230,6 +238,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Autofocus:   false,
 									Title:       i18n.StringsCtx(ctx).Street,
 									Placeholder: i18n.StringsCtx(ctx).EnterStreet,
+									Value:       patient.Residency.Street,
 								})
 							</div>
 						</div>
@@ -239,22 +248,6 @@ templ PatientUpdateProfile(patient actions.Patient) {
 						<div id="status-msg"></div>
 					</form>
 				}
-				@HyperButton(HyperButtonParams{
-					Title: i18n.StringsCtx(ctx).GenerateCard,
-					Class: []string{"!w-[200px]"},
-					HyperScript: fmt.Sprintf(`on click
-fetch /api/web/patient/%s/card
-then call Utils.downloadFileBase64(result, "%s Card.png")
-`, patient.PublicId, patient.FullName()),
-				})
-				@HyperButton(HyperButtonParams{
-					Title:    i18n.StringsCtx(ctx).SaveProfile,
-					Class:    []string{"!w-[200px]"},
-					HxMethod: "GET",
-					HxPath:   fmt.Sprintf("/htmx/patient/%s/update", patient.PublicId),
-					HxSwap:   "innetHTML",
-					HxTarget: "#patient-profile-sub-container",
-				})
 			</div>
 			<div class="w-1/2">
 				@HyperButton(HyperButtonParams{

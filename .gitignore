@@ -28,3 +28,4 @@ web/views/**/*_templ.go
 web/views/**/*.txt
 
 Session.vim
+shsdb.sql

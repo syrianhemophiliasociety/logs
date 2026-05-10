@@ -9,6 +9,10 @@ func (a *App) CreatePatient(patient models.Patient) (models.Patient, error) {
 	return a.repo.CreatePatient(patient)
 }
 
+func (a *App) UpdatePatient(id uint, patient models.Patient) (models.Patient, error) {
+	return a.repo.UpdatePatient(id, patient)
+}
+
 func (a *App) GetPatientById(id uint) (models.Patient, error) {
 	patient, err := a.repo.GetPatientById(id)
 	if err != nil {

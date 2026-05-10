@@ -725,6 +725,49 @@ func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, erro
 	return patient, nil
 }
 
+func (r *Repository) UpdatePatient(id uint, patient models.Patient) (models.Patient, error) {
+	patient.UpdatedAt = time.Now().UTC()
+	patient.FillEmptyFieldsUsingPublicId()
+
+	if patient.NationalId == "" {
+		patient.NationalId = "please_change_" + patient.PublicId
+	}
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Patient)).
+			Where("id = ?", id).
+			Updates(map[string]any{
+				"national_id":           patient.NationalId,
+				"nationality":           patient.Nationality,
+				"first_name":            patient.FirstName,
+				"last_name":             patient.LastName,
+				"father_name":           patient.FatherName,
+				"mother_name":           patient.MotherName,
+				"place_of_birth_id":     patient.PlaceOfBirthId,
+				"date_of_birth":         patient.DateOfBirth,
+				"residency_id":          patient.ResidencyId,
+				"gender":                patient.Gender,
+				"phone_number":          patient.PhoneNumber,
+				"family_history_exists": patient.FamilyHistoryExists,
+				"first_visit_reason":    patient.FirstVisitReason,
+				"bat_score":             patient.BATScore,
+				"updated_at":            patient.UpdatedAt,
+			}).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Patient{}, &app.ErrNotFound{
+			ResourceName: "patient",
+		}
+	}
+	if err != nil {
+		return models.Patient{}, err
+	}
+
+	return patient, nil
+}
+
 func (r *Repository) GetPatientById(id uint) (models.Patient, error) {
 	var patient models.Patient
 

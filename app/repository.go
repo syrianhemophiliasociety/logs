@@ -42,6 +42,7 @@ type Repository interface {
 	GetMedicine(id uint) (models.Medicine, error)
 
 	CreatePatient(patient models.Patient) (models.Patient, error)
+	UpdatePatient(id uint, patient models.Patient) (models.Patient, error)
 	GetPatientById(id uint) (models.Patient, error)
 	GetPatientByPublicId(publicId string) (models.Patient, error)
 	FindPatientsByVisitDateRange(from, to time.Time) ([]models.Patient, error)

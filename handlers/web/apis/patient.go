@@ -279,6 +279,36 @@ func (v *patientApi) HandleCreatePatient(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("HX-Redirect", "/patient/"+payload.PatientPublicId)
 }
 
+func (v *patientApi) HandleUpdatePatient(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	id := r.PathValue("id")
+
+	var reqBody PatientRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.UpdatePatient(actions.UpdatePatientParams{
+		ActionContext:   ctx,
+		NewPatient:      clusterFuckPatientToActionsOne(reqBody),
+		PatientPublicId: id,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+}
+
 func (v *patientApi) HandleCreatePatientBloodTestResult(w http.ResponseWriter, r *http.Request) {
 	ctx, err := context.Parse(r.Context())
 	if err != nil {
