@@ -252,8 +252,8 @@ func main() {
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", webi18n.Handler(ismobile.Handler(webtheme.Handler(pagesHandler))))
 	applicationHandler.Handle("/assets/", http.StripPrefix("/assets", static.AssetsHandler(minifyer)))
-	applicationHandler.Handle("/json/api/", http.StripPrefix("/json/api", contenttype.Json(v1ApisHandler)))
-	applicationHandler.Handle("/api/", webi18n.Handler(ismobile.Handler(webtheme.Handler(http.StripPrefix("/api", webApisHandler)))))
+	applicationHandler.Handle("/api/json/", http.StripPrefix("/api/json", contenttype.Json(v1ApisHandler)))
+	applicationHandler.Handle("/api/web/", webi18n.Handler(ismobile.Handler(webtheme.Handler(http.StripPrefix("/api/web", webApisHandler)))))
 	applicationHandler.Handle("/htmx/", webi18n.Handler(ismobile.Handler(webtheme.Handler(http.StripPrefix("/htmx", htmxHandler)))))
 
 	log.Info("Starting http server at port " + config.Env().Port)

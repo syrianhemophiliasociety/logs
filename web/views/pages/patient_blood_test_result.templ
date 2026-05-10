@@ -33,7 +33,7 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 			<form
 				class={ "flex", "flex-col", "gap-5", "max-w-1/3" }
 				hx-encoding="application/json"
-				hx-put={ fmt.Sprintf("/api/patient/%s/blood-test-result/%d/pending", patient.PublicId, btr.Id) }
+				hx-put={ fmt.Sprintf("/api/web/patient/%s/blood-test-result/%d/pending", patient.PublicId, btr.Id) }
 				hx-ext="json-enc"
 				hx-target="#status-msg"
 				hx-swap="innerHTML"

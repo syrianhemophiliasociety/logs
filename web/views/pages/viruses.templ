@@ -68,7 +68,7 @@ templ newVirus(bloodTests []actions.BloodTest) {
 		<form
 			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
 			hx-encoding="application/json"
-			hx-post="/api/virus"
+			hx-post="/api/web/virus"
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"

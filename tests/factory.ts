@@ -18,7 +18,7 @@ export async function loginAccount(
     password: string;
   },
 ): Promise<string> {
-  const resp = await request.post("/v1/login/username", {
+  const resp = await request.post("/api/json/login/username", {
     data: JSON.stringify({
       username: params.username,
       password: params.password,
@@ -43,7 +43,7 @@ export async function createAccountAsSuperAdmin(
 
   const adminToken = await loginAccount(request, accounts.b);
 
-  const resp = await request.post(`/v1/accounts/${account.type}`, {
+  const resp = await request.post(`/api/json/accounts/${account.type}`, {
     data: JSON.stringify({
       new_account: account,
     }),
@@ -57,12 +57,12 @@ export async function createAccountAsSuperAdmin(
 }
 
 export async function resetDB(request: APIRequestContext) {
-  const resp = await request.post("/v1/tests/reset/db");
+  const resp = await request.post("/api/json/tests/reset/db");
   expect(resp).toBeOK();
 }
 
 export async function resetCache(request: APIRequestContext) {
-  const resp = await request.post("/v1/tests/reset/cache");
+  const resp = await request.post("/api/json/tests/reset/cache");
   expect(resp).toBeOK();
 }
 

@@ -10,7 +10,7 @@ templ DeleteButton(resourceType, resourceTypeName, resourceId, resourceName stri
 	<button
 		class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500",
                 "font-bold", "flex", "flex-row", "resources-center", "justify-center", "gap-2" }
-		hx-delete={ fmt.Sprintf("/api/%s/%s", resourceType, resourceId) }
+		hx-delete={ fmt.Sprintf("/api/web/%s/%s", resourceType, resourceId) }
 		hx-confirm={ i18n.StringsCtx(ctx).MessageDeleteConfirmFmt(resourceTypeName, resourceName) }
 		hx-trigger="click consume"
 		if deleteInPlace {

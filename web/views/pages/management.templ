@@ -60,7 +60,7 @@ templ newAccount() {
 		<form
 			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
 			hx-encoding="application/json"
-			hx-post="/api/account"
+			hx-post="/api/web/account"
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"
@@ -118,7 +118,7 @@ templ newAccount() {
 
 templ importPatientsTab() {
 	<form
-		hx-post="/api/patients/import/csv"
+		hx-post="/api/web/patients/import/csv"
 		hx-encoding="multipart/form-data"
 		hx-target="#upload-status"
 		hx-on::after-request="this.reset()"

@@ -22,7 +22,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.ziemowit);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -46,7 +46,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.ziemowit);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -70,7 +70,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -94,7 +94,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -118,7 +118,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -142,7 +142,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -166,7 +166,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -190,7 +190,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -214,7 +214,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -234,7 +234,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -254,7 +254,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/admin", {
+    const resp = await request.post("/api/json/accounts/admin", {
       headers: {
         Authorization: token,
       },
@@ -275,7 +275,7 @@ test.describe("Create Account", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.post("/v1/accounts/secritary", {
+    const resp = await request.post("/api/json/accounts/secritary", {
       headers: {
         Authorization: token,
       },
@@ -302,7 +302,7 @@ test.describe("Get Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.get(`/v1/accounts/${accountId}`, {
+    const resp = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -320,7 +320,7 @@ test.describe("Get Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.get(`/v1/accounts/${accountId}`, {
+    const resp = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -340,7 +340,7 @@ test.describe("Get Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.get(`/v1/accounts/${accountId}`, {
+    const resp = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -360,7 +360,7 @@ test.describe("Get Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.get(`/v1/accounts/${accountId}`, {
+    const resp = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -373,7 +373,7 @@ test.describe("Get Account", () => {
 test.describe("List Accounts", () => {
   test("listing accounts with invalid token fails", async ({ request }) => {
     const token = "abc123";
-    const resp = await request.get("/v1/accounts", {
+    const resp = await request.get("/api/json/accounts", {
       headers: {
         Authorization: token,
       },
@@ -384,7 +384,7 @@ test.describe("List Accounts", () => {
 
   test("listing accounts with empty token fails", async ({ request }) => {
     const token = "";
-    const resp = await request.get("/v1/accounts", {
+    const resp = await request.get("/api/json/accounts", {
       headers: {
         Authorization: token,
       },
@@ -398,7 +398,7 @@ test.describe("List Accounts", () => {
   }) => {
     const token = await loginAccount(request, accounts.ziemowit);
 
-    const resp = await request.get("/v1/accounts", {
+    const resp = await request.get("/api/json/accounts", {
       headers: {
         Authorization: token,
       },
@@ -413,7 +413,7 @@ test.describe("List Accounts", () => {
     const token = await loginAccount(request, accounts.rex);
     const allowedTypes = ["admin", "secritary"];
     // using the existing list from ./accounts.json
-    const resp = await request.get("/v1/accounts", {
+    const resp = await request.get("/api/json/accounts", {
       headers: {
         Authorization: token,
       },
@@ -437,7 +437,7 @@ test.describe("Update Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -460,7 +460,7 @@ test.describe("Update Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -485,7 +485,7 @@ test.describe("Update Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -511,7 +511,7 @@ test.describe("Update Account", () => {
     } as Account);
 
     const newAccountUsername = "foofi" + randomUUID();
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -523,7 +523,7 @@ test.describe("Update Account", () => {
     });
     expect(resp.status()).toBe(200);
 
-    const resp2 = await request.get(`/v1/accounts/${accountId}`, {
+    const resp2 = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -547,7 +547,7 @@ test.describe("Update Account", () => {
     } as Account);
 
     const newAccountPassword = "bibi";
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -577,7 +577,7 @@ test.describe("Update Account", () => {
     } as Account);
 
     const newAccountDisplayName = "Foo";
-    const resp = await request.put(`/v1/accounts/${accountId}`, {
+    const resp = await request.put(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -589,7 +589,7 @@ test.describe("Update Account", () => {
     });
     expect(resp.status()).toBe(200);
 
-    const resp2 = await request.get(`/v1/accounts/${accountId}`, {
+    const resp2 = await request.get(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -611,7 +611,7 @@ test.describe("Delete Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.delete(`/v1/accounts/${accountId}`, {
+    const resp = await request.delete(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -629,7 +629,7 @@ test.describe("Delete Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.delete(`/v1/accounts/${accountId}`, {
+    const resp = await request.delete(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -649,7 +649,7 @@ test.describe("Delete Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.delete(`/v1/accounts/${accountId}`, {
+    const resp = await request.delete(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },
@@ -669,7 +669,7 @@ test.describe("Delete Account", () => {
       type: "secritary",
     } as Account);
 
-    const resp = await request.delete(`/v1/accounts/${accountId}`, {
+    const resp = await request.delete(`/api/json/accounts/${accountId}`, {
       headers: {
         Authorization: token,
       },

@@ -12,7 +12,7 @@ test.describe("Login", () => {
   test("when user provides incorrect login credentials login fails", async ({
     request,
   }) => {
-    const resp = await request.post("/v1/login/username", {
+    const resp = await request.post("/api/json/login/username", {
       data: JSON.stringify({
         username: "foo",
         password: "bar",
@@ -25,7 +25,7 @@ test.describe("Login", () => {
   test("when user provides correct login credentials login fails", async ({
     request,
   }) => {
-    const resp = await request.post("/v1/login/username", {
+    const resp = await request.post("/api/json/login/username", {
       data: JSON.stringify({
         username: "ziemowit",
         password: "1234",
@@ -45,7 +45,7 @@ test.describe("Me", () => {
   }) => {
     const token = "abc123";
 
-    const resp = await request.get("/v1/me/auth", {
+    const resp = await request.get("/api/json/me/auth", {
       headers: {
         Authorization: token,
       },
@@ -59,7 +59,7 @@ test.describe("Me", () => {
   }) => {
     const token = "";
 
-    const resp = await request.get("/v1/me/auth", {
+    const resp = await request.get("/api/json/me/auth", {
       headers: {
         Authorization: token,
       },
@@ -73,7 +73,7 @@ test.describe("Me", () => {
   }) => {
     const token = await loginAccount(request, accounts.rex);
 
-    const resp = await request.get("/v1/me/auth", {
+    const resp = await request.get("/api/json/me/auth", {
       headers: {
         Authorization: token,
       },
@@ -91,7 +91,7 @@ test.describe("Me", () => {
   }) => {
     const token = "abc123";
 
-    const resp = await request.get("/v1/me/logout", {
+    const resp = await request.get("/api/json/me/logout", {
       headers: {
         Authorization: token,
       },
@@ -105,7 +105,7 @@ test.describe("Me", () => {
   }) => {
     const token = "";
 
-    const resp = await request.get("/v1/me/logout", {
+    const resp = await request.get("/api/json/me/logout", {
       headers: {
         Authorization: token,
       },

@@ -137,7 +137,7 @@ templ patientBriefProfile(patient actions.Patient) {
 		</table>
 		<button
 			_={ fmt.Sprintf(`on click
-fetch /api/patient/%s/card
+fetch /api/web/patient/%s/card
 then call Utils.downloadFileBase64(result, "%s Card.png")
 `, patient.PublicId, patient.FullName()) }
 			data-loading-target="#loading"
@@ -288,7 +288,7 @@ templ newPatientBloodTest(patient actions.Patient, bt actions.BloodTest) {
 	<form
 		class={ "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post={ fmt.Sprintf("/api/patient/%s/blood-test", patient.PublicId) }
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/blood-test", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"
@@ -407,7 +407,7 @@ templ patientCreateVisit(patient actions.Patient, allMedicine []actions.Medicine
 	<form
 		class={ "", "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post={ fmt.Sprintf("/api/patient/%s/checkup", patient.PublicId) }
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/checkup", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"
@@ -523,7 +523,7 @@ templ patientCreateJointsEvaluation(patient actions.Patient) {
 	<form
 		class={ "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post={ fmt.Sprintf("/api/patient/%s/joints-evaluation", patient.PublicId) }
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/joints-evaluation", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"
@@ -626,7 +626,7 @@ templ newPatientDiagnosisResult(patient actions.Patient, diagnosis actions.Diagn
 	<form
 		class={ "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post={ fmt.Sprintf("/api/patient/%s/diagnosis", patient.PublicId) }
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/diagnosis", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"

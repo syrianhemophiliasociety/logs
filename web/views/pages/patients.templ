@@ -79,7 +79,7 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 		<form
 			class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
 			hx-encoding="application/json"
-			hx-post="/api/patient"
+			hx-post="/api/web/patient"
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"

@@ -142,7 +142,7 @@ templ PatientViewProfile(patient actions.Patient) {
 					Title: i18n.StringsCtx(ctx).GenerateCard,
 					Class: []string{"!w-[200px]"},
 					HyperScript: fmt.Sprintf(`on click
-fetch /api/patient/%s/card
+fetch /api/web/patient/%s/card
 then call Utils.downloadFileBase64(result, "%s Card.png")
 `, patient.PublicId, patient.FullName()),
 				})

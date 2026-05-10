@@ -26,7 +26,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 					<form
 						class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" , "h-[calc(19/20 * 100)]", "overflow-y-scroll", }
 						hx-encoding="application/json"
-						hx-put={ "/api/patient/%s" + patient.PublicId }
+						hx-put={ "/api/web/patient/%s" + patient.PublicId }
 						hx-ext="json-enc"
 						hx-target="#status-msg"
 						hx-swap="innerHTML"
@@ -243,7 +243,7 @@ templ PatientUpdateProfile(patient actions.Patient) {
 					Title: i18n.StringsCtx(ctx).GenerateCard,
 					Class: []string{"!w-[200px]"},
 					HyperScript: fmt.Sprintf(`on click
-fetch /api/patient/%s/card
+fetch /api/web/patient/%s/card
 then call Utils.downloadFileBase64(result, "%s Card.png")
 `, patient.PublicId, patient.FullName()),
 				})

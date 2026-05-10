@@ -14,7 +14,7 @@ templ Medicine(medicine actions.Medicine) {
 		<form
 			class={ "flex" , "flex-col" , "gap-5" , "w-fit" }
 			hx-encoding="application/json"
-			hx-put={ "/api/medicine/" + strconv.Itoa(int(medicine.Id)) }
+			hx-put={ "/api/web/medicine/" + strconv.Itoa(int(medicine.Id)) }
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"

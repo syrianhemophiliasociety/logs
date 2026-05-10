@@ -231,7 +231,7 @@ templ Account(account actions.Account) {
 			<form
 				class={ "flex" , "flex-col" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
 				hx-encoding="application/json"
-				hx-put={ "/api/account/" + strconv.Itoa(int(account.Id)) }
+				hx-put={ "/api/web/account/" + strconv.Itoa(int(account.Id)) }
 				hx-ext="json-enc"
 				hx-swap="none"
 				data-loading-target="#loading"

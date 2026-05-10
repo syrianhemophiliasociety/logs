@@ -51,7 +51,7 @@ templ newDiagnosis() {
 		<form
 			class={ "flex" , "flex-row", "w-full", "justify-between" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
 			hx-encoding="application/json"
-			hx-post="/api/diagnosis"
+			hx-post="/api/web/diagnosis"
 			hx-ext="json-enc"
 			hx-target="#status-msg"
 			hx-swap="innerHTML"
