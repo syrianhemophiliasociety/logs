@@ -26,7 +26,7 @@ go-init:
 	go install github.com/a-h/templ/cmd/templ@v0.3.906
 
 htmx-init:
-	mkdir -p static/assets/js/htmx && \
+	mkdir -p web/static/assets/js/htmx && \
 	wget https://unpkg.com/hyperscript.org@0.9.14/dist/_hyperscript.min.js -O web/static/assets/js/htmx/hyperscript.min.js &&\
 	wget https://unpkg.com/htmx-ext-json-enc@2.0.2/dist/json-enc.min.js -O web/static/assets/js/htmx/json-enc.js &&\
 	wget https://unpkg.com/htmx-ext-loading-states@2.0.1/dist/loading-states.min.js -O web/static/assets/js/htmx/loading-states.js &&\
