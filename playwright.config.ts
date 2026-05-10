@@ -33,6 +33,7 @@ export default defineConfig({
       CACHE_PASSWORD: "previetcomrade",
       SUPERADMIN_USERNAME: "b",
       SUPERADMIN_PASSWORD: "kurwamatch",
+      HOST_NAME: "somehostyhost.ugh",
     },
     command: "make shs-server",
     reuseExistingServer: true, //!process.env.CI,
