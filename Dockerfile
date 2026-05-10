@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 
 RUN go install github.com/a-h/templ/cmd/templ@v0.2.731 &&\
-    apk add --no-cache make
+    apk add --no-cache make npm nodejs
 
 RUN make init &&\
     make build-server &&\
