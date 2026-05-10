@@ -3,6 +3,11 @@
 SERVER_BINARY_NAME=shs-server
 MIGRATOR_BINARY_NAME=shs-migrator
 
+TEMPL_CMD=templ
+ifdef CI
+	TEMPL_CMD := go run github.com/a-h/templ/cmd/templ@v0.3.906
+endif
+
 all: build-server build-migrator
 
 build: init build-server build-migrator
@@ -19,7 +24,7 @@ migrate: build-migrator
 	./${MIGRATOR_BINARY_NAME}
 
 generate:
-	templ generate -path ./web/views/
+	${TEMPL_CMD} generate -path ./web/views/
 
 go-init:
 	go mod tidy && \
