@@ -23,6 +23,7 @@ env:
   CACHE_PASSWORD: "previetcomrade"
   SUPERADMIN_USERNAME: "b"
   SUPERADMIN_PASSWORD: "kurwamatch"
+  HOST_NAME: "somehostyhost.ugh"
   CI: true
 
 jobs:
