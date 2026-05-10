@@ -1,6 +1,8 @@
 package actions
 
-import "shs/app/models"
+import (
+	"shs/app/models"
+)
 
 const (
 	patientPermissions = models.AccountPermissionReadOwnVisit | models.AccountPermissionWriteOwnVisit

@@ -31,7 +31,7 @@ func (a *Middleware) AuthHandler(h http.Handler) http.Handler {
 			return
 		}
 		ctx := context.WithValue(r.Context(), AccountKey, account)
-		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxSessionTokenKey, sessionToken)
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -45,7 +45,7 @@ func (a *Middleware) AuthApi(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		ctx := context.WithValue(r.Context(), AccountKey, account)
-		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxSessionTokenKey, sessionToken)
 		h(w, r.WithContext(ctx))
 	}
 }
@@ -59,21 +59,21 @@ func (a *Middleware) OptionalAuthApi(h http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		ctx := context.WithValue(r.Context(), AccountKey, account)
-		ctx = context.WithValue(r.Context(), CtxSessionTokenKey, sessionToken)
+		ctx = context.WithValue(ctx, CtxSessionTokenKey, sessionToken)
 		h(w, r.WithContext(ctx))
 	}
 }
 
 func (a *Middleware) authenticate(r *http.Request) (string, actions.Account, error) {
-	sessionToken, ok := r.Header["Authorization"]
-	if !ok {
+	sessionToken := r.Header.Get("Authorization")
+	if sessionToken == "" {
 		return "", actions.Account{}, actions.ErrInvalidSessionToken{}
 	}
 
-	account, err := a.usecases.AuthenticateAccount(sessionToken[0])
+	account, err := a.usecases.AuthenticateAccount(sessionToken)
 	if err != nil {
 		return "", actions.Account{}, err
 	}
 
-	return sessionToken[0], account, nil
+	return sessionToken, account, nil
 }

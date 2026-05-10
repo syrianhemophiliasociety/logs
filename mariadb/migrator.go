@@ -60,12 +60,24 @@ func (r *Repository) CreateSuperAdmin() error {
 		Username:    config.Env().SuperAdmin.Username,
 		Password:    string(hashedPassword),
 		Type:        models.AccountTypeSuperAdmin,
-		Permissions: models.AccountPermissionReadAccounts | models.AccountPermissionWriteAccounts |
-			models.AccountPermissionReadPatient | models.AccountPermissionWritePatient |
-			models.AccountPermissionReadMedicine | models.AccountPermissionWriteMedicine |
-			models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
-			models.AccountPermissionReadBloodTest | models.AccountPermissionWriteBloodTest |
-			models.AccountPermissionReadOtherVisits | models.AccountPermissionWriteOtherVisits,
+		Permissions: models.AccountPermissionReadAccounts |
+			models.AccountPermissionWriteAccounts |
+			models.AccountPermissionReadPatient |
+			models.AccountPermissionWritePatient |
+			models.AccountPermissionReadMedicine |
+			models.AccountPermissionWriteMedicine |
+			models.AccountPermissionReadVirus |
+			models.AccountPermissionWriteVirus |
+			models.AccountPermissionReadBloodTest |
+			models.AccountPermissionWriteBloodTest |
+			models.AccountPermissionReadOwnVisit |
+			models.AccountPermissionWriteOwnVisit |
+			models.AccountPermissionReadOtherVisits |
+			models.AccountPermissionWriteOtherVisits |
+			models.AccountPermissionReadDiagnoses |
+			models.AccountPermissionWriteDiagnoses |
+			models.AccountPermissionReadJoints |
+			models.AccountPermissionWriteJoints,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

@@ -28,9 +28,15 @@ func (a *Actions) AuthenticateAccount(sessionToken string) (Account, error) {
 			return Account{}, err
 		}
 
-		account.FromModel(dbaccount)
+		account = Account{
+			Id:          dbaccount.Id,
+			DisplayName: dbaccount.DisplayName,
+			Username:    dbaccount.Username,
+			Type:        string(dbaccount.Type),
+			Password:    "",
+			Permissions: dbaccount.Permissions,
+		}
 
-		account.Password = ""
 		err = a.cache.SetAuthenticatedAccount(sessionToken, account)
 		if err != nil {
 			return Account{}, err
