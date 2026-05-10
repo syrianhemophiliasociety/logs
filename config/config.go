@@ -2,7 +2,7 @@ package config
 
 import (
 	"os"
-	"shs-web/log"
+	"syrianhemophiliasociety/logs-web/log"
 )
 
 var (

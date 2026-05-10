@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"shs-web/config"
+	"syrianhemophiliasociety/logs-web/config"
 	"errors"
 	"fmt"
 	"time"
@@ -10,7 +10,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const keyPrefix = "shs-web:"
+const keyPrefix = "syrianhemophiliasociety/logs-web:"
 
 const (
 	redirectPathTtlMinutes = 30

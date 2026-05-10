@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"shs-web/log"
+	"syrianhemophiliasociety/logs-web/log"
 	"fmt"
 	"net/http"
 )

@@ -2,9 +2,9 @@ package static
 
 import (
 	"net/http"
-	"shs-web/config"
-	"shs-web/static/assets"
-	"shs-web/static/meta"
+	"syrianhemophiliasociety/logs-web/config"
+	"syrianhemophiliasociety/logs-web/static/assets"
+	"syrianhemophiliasociety/logs-web/static/meta"
 	"strings"
 
 	"github.com/tdewolff/minify/v2"

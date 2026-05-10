@@ -7,9 +7,9 @@ import (
 	"io"
 	"net/http"
 	"reflect"
-	"shs-web/config"
-	"shs-web/errors"
-	"shs-web/log"
+	"syrianhemophiliasociety/logs-web/config"
+	"syrianhemophiliasociety/logs-web/errors"
+	"syrianhemophiliasociety/logs-web/log"
 	"sync"
 	"time"
 )

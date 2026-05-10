@@ -3,9 +3,9 @@ package auth
 import (
 	"context"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/handlers/middlewares/clienthash"
-	"shs-web/handlers/middlewares/contenttype"
+	"syrianhemophiliasociety/logs-web/actions"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/clienthash"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/contenttype"
 	"slices"
 	"strings"
 )

@@ -3,9 +3,9 @@ package apis
 import (
 	"context"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/errors"
-	"shs-web/handlers/middlewares/auth"
+	"syrianhemophiliasociety/logs-web/actions"
+	"syrianhemophiliasociety/logs-web/errors"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/auth"
 )
 
 func parseContext(ctx context.Context) (actions.RequestContext, error) {

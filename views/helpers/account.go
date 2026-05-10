@@ -2,8 +2,8 @@ package helpers
 
 import (
 	"context"
-	"shs-web/actions"
-	"shs-web/handlers/middlewares/auth"
+	"syrianhemophiliasociety/logs-web/actions"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/auth"
 )
 
 func AccountCtx(ctx context.Context) actions.Account {

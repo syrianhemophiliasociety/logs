@@ -2,7 +2,7 @@ package i18n
 
 import (
 	"context"
-	"shs-web/handlers/middlewares/locale"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/locale"
 	"time"
 )
 

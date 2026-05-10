@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"shs-web/actions"
-	"shs-web/errors"
-	"shs-web/i18n"
-	"shs-web/log"
-	"shs-web/views/components"
+	"syrianhemophiliasociety/logs-web/actions"
+	"syrianhemophiliasociety/logs-web/errors"
+	"syrianhemophiliasociety/logs-web/i18n"
+	"syrianhemophiliasociety/logs-web/log"
+	"syrianhemophiliasociety/logs-web/views/components"
 	"strings"
 )
 

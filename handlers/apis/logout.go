@@ -1,9 +1,9 @@
 package apis
 
 import (
-	"shs-web/actions"
-	"shs-web/config"
-	"shs-web/handlers/middlewares/auth"
+	"syrianhemophiliasociety/logs-web/actions"
+	"syrianhemophiliasociety/logs-web/config"
+	"syrianhemophiliasociety/logs-web/handlers/middlewares/auth"
 	"net/http"
 )
 
