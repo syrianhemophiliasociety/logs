@@ -2,7 +2,7 @@ root = "."
 
 [build]
 full_bin = "make shs-server"
-cmd = "make build-server"
+cmd = "make build-dev-server"
 delay = 0
 exclude_dir = [
   "web/static",

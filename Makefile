@@ -7,7 +7,10 @@ all: build-server build-migrator
 
 build: init build-server build-migrator
 
-build-server: generate
+build-server:
+	go build -ldflags="-w -s" -o ${SERVER_BINARY_NAME} ./cmd/http/main.go
+
+build-dev-server: generate
 	go build -ldflags="-w -s" -o ${SERVER_BINARY_NAME} ./cmd/http/main.go
 
 build-migrator: init
