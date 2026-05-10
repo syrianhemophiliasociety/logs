@@ -10,7 +10,7 @@ build: init build-server build-migrator
 build-server: generate
 	go build -ldflags="-w -s" -o ${SERVER_BINARY_NAME} ./cmd/http/main.go
 
-build-migrator: init
+build-migrator: build-server
 	go build -ldflags="-w -s" -o ${MIGRATOR_BINARY_NAME} ./cmd/migrator/main.go
 
 init: htmx-init tailwindcss-init go-init
