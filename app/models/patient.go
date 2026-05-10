@@ -44,10 +44,6 @@ type Patient struct {
 	FamilyHistoryExists bool                    `gorm:"not null"`
 	FirstVisitReason    PatientFirstVisitReason `gorm:"not null"`
 	BATScore            uint                    `gorm:"not null"`
-	// TODO: keep only in the action's model
-	Viruses           []Virus            `gorm:"many2many:has_viruses;"`
-	BloodTestResults  []BloodTestResult  `gorm:"many2many:did_blood_tests;"`
-	JointsEvaluations []JointsEvaluation `gorm:"many2many:patient_joint_evaluation;"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

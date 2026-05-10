@@ -57,7 +57,7 @@ func (a *Actions) CreatePatientJointsEvaluation(params CreatePatientJointsEvalua
 		return CreatePatientJointsEvaluationPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
 		return CreatePatientJointsEvaluationPayload{}, err
 	}
@@ -87,12 +87,12 @@ func (a *Actions) ListPatientJointsEvaluations(params ListPatientJointsEvaluatio
 		return ListPatientJointsEvaluationsPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
 		return ListPatientJointsEvaluationsPayload{}, err
 	}
 
-	joints, err := a.app.ListPatientJointsEvaluations(patient.Id)
+	joints, err := a.app.ListJointEvaluationsForPatient(patient.Id)
 	if err != nil {
 		return ListPatientJointsEvaluationsPayload{}, err
 	}

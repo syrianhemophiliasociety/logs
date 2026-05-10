@@ -19,58 +19,14 @@ func (a *App) GetPatientById(id uint) (models.Patient, error) {
 		return models.Patient{}, err
 	}
 
-	viruses, err := a.repo.ListVirusesForPatient(patient.Id)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	patient.Viruses = viruses
-
-	bloodTests, err := a.repo.ListPatientBloodTestResults(patient.Id)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	patient.BloodTestResults = bloodTests
-
 	return patient, nil
 }
 
-func (a *App) GetMinimalPatientByPublicId(publicId string) (models.Patient, error) {
+func (a *App) GetPatientByPublicId(publicId string) (models.Patient, error) {
 	patient, err := a.repo.GetPatientByPublicId(publicId)
 	if err != nil {
 		return models.Patient{}, err
 	}
-
-	return patient, nil
-}
-
-func (a *App) GetFullPatientByPublicId(publicId string) (models.Patient, error) {
-	patient, err := a.repo.GetPatientByPublicId(publicId)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	viruses, err := a.repo.ListVirusesForPatient(patient.Id)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	patient.Viruses = viruses
-
-	bloodTests, err := a.repo.ListPatientBloodTestResults(patient.Id)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	patient.BloodTestResults = bloodTests
-
-	jointsEvaluations, err := a.repo.ListJointEvaluationsForPatient(patient.Id)
-	if err != nil {
-		return models.Patient{}, err
-	}
-
-	patient.JointsEvaluations = jointsEvaluations
 
 	return patient, nil
 }

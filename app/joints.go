@@ -6,6 +6,6 @@ func (a *App) CreateJointsEvaluation(je models.JointsEvaluation) (models.JointsE
 	return a.repo.CreateJointEvaluation(je)
 }
 
-func (a *App) ListPatientJointsEvaluations(patientId uint) ([]models.JointsEvaluation, error) {
+func (a *App) ListJointEvaluationsForPatient(patientId uint) ([]models.JointsEvaluation, error) {
 	return a.repo.ListJointEvaluationsForPatient(patientId)
 }

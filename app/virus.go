@@ -13,3 +13,7 @@ func (a *App) DeleteVirus(id uint) error {
 func (a *App) ListAllViruses() ([]models.Virus, error) {
 	return a.repo.ListAllViruses()
 }
+
+func (a *App) ListVirusesForPatient(patientId uint) ([]models.Virus, error) {
+	return a.repo.ListVirusesForPatient(patientId)
+}

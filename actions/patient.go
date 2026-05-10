@@ -133,8 +133,6 @@ func (p Patient) IntoModel() models.Patient {
 		FamilyHistoryExists: p.FamilyHistoryExists,
 		FirstVisitReason:    models.PatientFirstVisitReason(p.FirstVisitReason),
 		BATScore:            p.BATScore,
-		Viruses:             viruses,
-		BloodTestResults:    bloodTestResults,
 	}
 }
 
@@ -214,7 +212,7 @@ func (p *Patient) WithJointsEvaluations(jointsEvaluations []models.JointsEvaluat
 	}
 }
 
-func (p *Patient) WithViruses(patientViruses []models.Virus, viruses []models.Virus) {
+func (p *Patient) WithViruses(patientViruses []models.Virus) {
 	(*p).Viruses = make([]Virus, 0, len(patientViruses))
 	for _, v := range patientViruses {
 		(*p).Viruses = append((*p).Viruses, Virus{
@@ -271,8 +269,6 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		PhoneNumber:         params.NewPatient.PhoneNumber,
 		BATScore:            params.NewPatient.BATScore,
 		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		Viruses:             []models.Virus{},
-		BloodTestResults:    []models.BloodTestResult{},
 		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
 	}
 
@@ -352,7 +348,7 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 		return UpdatePatientPayload{}, ErrPermissionDenied{}
 	}
 
-	oldPatient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	oldPatient, err := a.getFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
 		return UpdatePatientPayload{}, err
 	}
@@ -369,8 +365,6 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 		PhoneNumber:         params.NewPatient.PhoneNumber,
 		BATScore:            params.NewPatient.BATScore,
 		FirstVisitReason:    models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		Viruses:             []models.Virus{},
-		BloodTestResults:    []models.BloodTestResult{},
 		FamilyHistoryExists: params.NewPatient.FamilyHistoryExists,
 	}
 
@@ -443,7 +437,7 @@ func (a *Actions) CreatePatientBloodTestResult(params CreatePatientBloodTestResu
 		return CreatePatientBloodTestResultPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	patient, err := a.getFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
 		return CreatePatientBloodTestResultPayload{}, err
 	}
@@ -487,7 +481,7 @@ func (a *Actions) CreatePatientDiagnosisResult(params CreatePatientDiagnosisResu
 		return CreatePatientDiagnosisResultPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	patient, err := a.getFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
 		return CreatePatientDiagnosisResultPayload{}, err
 	}
@@ -522,12 +516,12 @@ func (a *Actions) UpdatePatientPendingBloodTestResult(params UpdatePatientPendin
 		return UpdatePatientPendingBloodTestResultPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetFullPatientByPublicId(params.PatientPublicId)
+	patient, err := a.getFullPatientByPublicId(params.PatientPublicId)
 	if err != nil {
 		return UpdatePatientPendingBloodTestResultPayload{}, err
 	}
 
-	if !slices.ContainsFunc(patient.BloodTestResults, func(btr models.BloodTestResult) bool {
+	if !slices.ContainsFunc(patient.BloodTestResults, func(btr BloodTestResult) bool {
 		return btr.Id == params.BloodTestResultId
 	}) {
 		return UpdatePatientPendingBloodTestResultPayload{}, app.ErrNotFound{
@@ -670,35 +664,13 @@ func (a *Actions) GetPatient(params GetPatientParams) (GetPatientPayload, error)
 		return GetPatientPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetFullPatientByPublicId(params.PublicId)
+	patient, err := a.getFullPatientByPublicId(params.PublicId)
 	if err != nil {
 		return GetPatientPayload{}, err
 	}
-
-	bloodTests, err := a.app.ListAllBloodTests()
-	if err != nil {
-		return GetPatientPayload{}, err
-	}
-
-	diagnoses, err := a.app.ListAllDiagnoses()
-	if err != nil {
-		return GetPatientPayload{}, err
-	}
-
-	diagnosesResults, err := a.app.ListPatientDiagnosisResults(patient.Id)
-	if err != nil {
-		return GetPatientPayload{}, err
-	}
-
-	outPatient := &Patient{}
-	outPatient.FromModel(patient)
-	outPatient.WithViruses(patient.Viruses, nil)
-	outPatient.WithBloodTestResults(patient.BloodTestResults, bloodTests)
-	outPatient.WithJointsEvaluations(patient.JointsEvaluations)
-	outPatient.WithDiagnoses(diagnosesResults, diagnoses)
 
 	return GetPatientPayload{
-		Data: *outPatient,
+		Data: patient,
 	}, nil
 }
 
@@ -715,7 +687,7 @@ func (a *Actions) DeletePatient(params DeletePatientParams) (DeletePatientPayloa
 		return DeletePatientPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PublicId)
+	patient, err := a.app.GetPatientByPublicId(params.PublicId)
 	if err != nil {
 		return DeletePatientPayload{}, err
 	}
@@ -742,7 +714,7 @@ func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (Generat
 		return GeneratePatientCardPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
 		return GeneratePatientCardPayload{}, err
 	}
@@ -767,4 +739,50 @@ func (a *Actions) GeneratePatientCard(params GeneratePatientCardParams) (Generat
 	return GeneratePatientCardPayload{
 		ImageBase64: b64Img,
 	}, nil
+}
+
+func (a *Actions) getFullPatientByPublicId(patientId string) (Patient, error) {
+	patient, err := a.app.GetPatientByPublicId(patientId)
+	if err != nil {
+		return Patient{}, err
+	}
+
+	diagnoses, err := a.app.ListAllDiagnoses()
+	if err != nil {
+		return Patient{}, err
+	}
+
+	diagnosesResults, err := a.app.ListPatientDiagnosisResults(patient.Id)
+	if err != nil {
+		return Patient{}, err
+	}
+
+	viruses, err := a.app.ListVirusesForPatient(patient.Id)
+	if err != nil {
+		return Patient{}, err
+	}
+
+	bloodTests, err := a.app.ListAllBloodTests()
+	if err != nil {
+		return Patient{}, err
+	}
+
+	bloodTestResults, err := a.app.ListPatientBloodTestResults(patient.Id)
+	if err != nil {
+		return Patient{}, err
+	}
+
+	jointsEvaluations, err := a.app.ListJointEvaluationsForPatient(patient.Id)
+	if err != nil {
+		return Patient{}, err
+	}
+
+	outPatient := new(Patient)
+	outPatient.FromModel(patient)
+	outPatient.WithViruses(viruses)
+	outPatient.WithBloodTestResults(bloodTestResults, bloodTests)
+	outPatient.WithJointsEvaluations(jointsEvaluations)
+	outPatient.WithDiagnoses(diagnosesResults, diagnoses)
+
+	return *outPatient, nil
 }

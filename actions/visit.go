@@ -33,7 +33,7 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 		return CreatePatientVisitPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
 		return CreatePatientVisitPayload{}, err
 	}
@@ -134,7 +134,7 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 		return GetPatientLastVisitPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.Account.Username)
+	patient, err := a.app.GetPatientByPublicId(params.Account.Username)
 	if err != nil {
 		return GetPatientLastVisitPayload{}, err
 	}
@@ -220,7 +220,7 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		return ListPatientVisitsPayload{}, ErrPermissionDenied{}
 	}
 
-	patient, err := a.app.GetMinimalPatientByPublicId(params.PatientId)
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
 		return ListPatientVisitsPayload{}, err
 	}
