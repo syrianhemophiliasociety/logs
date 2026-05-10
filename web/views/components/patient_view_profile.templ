@@ -1,0 +1,162 @@
+package components
+
+import (
+	"fmt"
+	"shs/actions"
+	"shs/web/i18n"
+)
+
+templ PatientViewProfile(patient actions.Patient) {
+	<div id="patient-profile-sub-container" class={ "w-full" }>
+		<div class={ "w-full", "flex", "flex-row", "justify-between", "gap-5" }>
+			<div class={ "w-1/3", "flex", "flex-col", "gap-5" }>
+				<table class={ "w-full" }>
+					<tbody>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PatientId }</b></td>
+							<td>{ patient.PublicId }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PatientFirstName }</b></td>
+							<td>{ patient.FirstName }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PatientLastName }</b></td>
+							<td>{ patient.LastName }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PatientFatherName }</b></td>
+							<td>{ patient.FatherName }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PatientMotherName }</b></td>
+							<td>{ patient.MotherName }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).NationalId }</b></td>
+							<td>
+								if patient.NationalId == "" {
+									{ "N/A" }
+								} else {
+									{ patient.NationalId }
+								}
+							</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PhoneNumber }</b></td>
+							<td>{ patient.PhoneNumber }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).Nationality }</b></td>
+							<td>
+								switch patient.Nationality {
+									case "syrian":
+										{ i18n.StringsCtx(ctx).NationalitySyrian }
+									case "iraqi":
+										{ i18n.StringsCtx(ctx).NationalityIraqi }
+									case "egyptian":
+										{ i18n.StringsCtx(ctx).NationalityEgyptian }
+									case "palestinian":
+										{ i18n.StringsCtx(ctx).NationalityPalestinian }
+									case "turkish":
+										{ i18n.StringsCtx(ctx).NationalityTurkish }
+									default:
+										{ "N/A" }
+								}
+							</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).FamilyHistoryExists }</b></td>
+							<td class={ "capitalize" }>
+								if patient.FamilyHistoryExists {
+									{ i18n.StringsCtx(ctx).Yes }
+								} else {
+									{ i18n.StringsCtx(ctx).No }
+								}
+							</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).FirstVisitReason }</b></td>
+							<td>
+								switch patient.FirstVisitReason {
+									case "family_history":
+										{ i18n.StringsCtx(ctx).FirstVisitReasonFamilyHistory }
+									case "bleeding":
+										{ i18n.StringsCtx(ctx).FirstVisitReasonBleeding }
+									case "referral":
+										{ i18n.StringsCtx(ctx).FirstVisitReasonReferral }
+									default:
+										{ "N/A" }
+								}
+							</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).Gender }</b></td>
+							<td>
+								if patient.Gender {
+									{ i18n.StringsCtx(ctx).GenderMale }
+								} else {
+									{ i18n.StringsCtx(ctx).GenderFemale }
+								}
+							</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).DateOfBirth }</b></td>
+							<td>{ patient.DateOfBirth.Format("2006 Jan/02") }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).PlaceOfBirth }</b></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Governorate }</b></td>
+							<td>{ patient.PlaceOfBirth.Governorate }</td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Suburb }</b></td>
+							<td>{ patient.PlaceOfBirth.Suburb }</td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Street }</b></td>
+							<td>{ patient.PlaceOfBirth.Street }</td>
+						</tr>
+						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).Residency }</b></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Governorate }</b></td>
+							<td>{ patient.Residency.Governorate }</td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Suburb }</b></td>
+							<td>{ patient.Residency.Suburb }</td>
+						</tr>
+						<tr>
+							<td class={ "ps-5" }><b>{ i18n.StringsCtx(ctx).Street }</b></td>
+							<td>{ patient.Residency.Street }</td>
+						</tr>
+					</tbody>
+				</table>
+				@HyperButton(HyperButtonParams{
+					Title: i18n.StringsCtx(ctx).GenerateCard,
+					Class: []string{"!w-[200px]"},
+					HyperScript: fmt.Sprintf(`on click
+fetch /api/patient/%s/card
+then call Utils.downloadFileBase64(result, "%s Card.png")
+`, patient.PublicId, patient.FullName()),
+				})
+			</div>
+			<div class="w-1/2">
+				@HyperButton(HyperButtonParams{
+					Title:    i18n.StringsCtx(ctx).UpdateProfile,
+					Class:    []string{"!w-[200px]"},
+					HxMethod: "GET",
+					HxPath:   fmt.Sprintf("/htmx/patient/%s/update", patient.PublicId),
+					HxSwap:   "outerHTML",
+					HxTarget: "#patient-profile-sub-container",
+				})
+			</div>
+		</div>
+	</div>
+}

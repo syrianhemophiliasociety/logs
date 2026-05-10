@@ -1,0 +1,169 @@
+package pages
+
+import (
+	"fmt"
+	"shs/actions"
+	"shs/app/models"
+	"shs/web/i18n"
+	"shs/web/views/components"
+	"shs/web/views/helpers"
+	"strconv"
+)
+
+templ BloodTests(bloodTests []actions.BloodTest) {
+	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
+		<h1 class="font-bold text-2xl text-secondary w-full">{ i18n.StringsCtx(ctx).NavBloodTests }</h1>
+		@components.Tabs(
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
+				GroupName: "BloodTest",
+				Content:   allBloodTests(bloodTests),
+			},
+			components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
+				GroupName: "BloodTest",
+				Content:   newBloodTest(),
+			})
+	</div>
+}
+
+templ bloodTestBrief(bloodTest actions.BloodTest) {
+	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+		<span class="min-w-20 font-bold text-lg text-secondary">{ bloodTest.Name }</span>
+		@components.DeleteButton("blood-test", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(bloodTest.Id)), bloodTest.Name, false)
+	</div>
+}
+
+templ allBloodTests(bloodTests []actions.BloodTest) {
+	if len(bloodTests) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavBloodTests) }</span>
+	} else {
+		@components.ScrollableList(components.ScrollableListParams{}) {
+			for _, bloodTest := range bloodTests {
+				@components.JustLink(fmt.Sprintf("/blood-test/%d", bloodTest.Id), "Blood test page", bloodTestBrief(bloodTest))
+			}
+		}
+	}
+}
+
+templ newBloodTest() {
+	if !helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionWriteBloodTest) {
+		@components.WritePermissionDenied(i18n.StringsCtx(ctx).NavBloodTests)
+	} else {
+		<form
+			class={ "flex" , "flex-row", "w-full", "justify-between" , "gap-y-[25px]" , "lg:gap-y-[35px]" }
+			hx-encoding="application/json"
+			hx-post="/api/blood-test"
+			hx-ext="json-enc"
+			hx-target="#status-msg"
+			hx-swap="innerHTML"
+			data-loading-target="#loading"
+			data-loading-class-remove="hidden"
+			_="on htmx:afterRequest reset() me then call Router.removeSearchQuery('tab') then call location.reload()"
+		>
+			<div class={ "flex" , "flex-col" , "gap-y-[15px]" }>
+				<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestDetails }</p>
+				@components.Input(components.InputOptions{
+					Id:          "name",
+					Name:        "name",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).BloodTestName,
+					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestName,
+				})
+				<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestFields }</p>
+				<div id="blood_tests" class={ "flex", "flex-col", "gap-5" }>
+					<div id="blood_test_field" class={ "flex", "flex-col", "justify-between", "gap-3" }>
+						<div class={ "flex", "gap-x-3" }>
+							@components.Input(components.InputOptions{
+								Id:          "blood_test_field_name",
+								Name:        "blood_test_field_name",
+								Type:        components.InputTypeText,
+								Required:    true,
+								Autofocus:   false,
+								Title:       i18n.StringsCtx(ctx).BloodTestFieldName,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldName,
+							})
+							@components.Select(components.SelectParams{
+								Id:          "blood_test_field_unit",
+								Name:        i18n.StringsCtx(ctx).BloodTestFieldUnit,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldUnit,
+								Required:    true,
+								Options: []components.SelectOption{
+									{Name: "Second", Value: "second"},
+									{Name: "Minute", Value: "minute"},
+
+									{Name: "mL", Value: "mL"},
+									{Name: "fL", Value: "fL"},
+
+									{Name: "g", Value: "g"},
+									{Name: "g/dL", Value: "g/dL"},
+									{Name: "g/L", Value: "g/L"},
+									{Name: "g/cm^3", Value: "g/cm^3"},
+									{Name: "pg", Value: "pg"},
+									{Name: "mg/dL", Value: "mg/dL"},
+									{Name: "mcg/dL", Value: "mcg/dL"},
+									{Name: "ng/dL", Value: "ng/dL"},
+									{Name: "pg/dL", Value: "pg/dL"},
+
+									{Name: "Percent", Value: "%"},
+									{Name: "BU", Value: "BU"},
+
+									{Name: "Cell", Value: "cell"},
+									{Name: "cell/mm^3", Value: "cell/mm^3"},
+									{Name: "10^3 cell/mm^3", Value: "10^3 cell/mm^3"},
+									{Name: "10^6 cell/mm^3", Value: "10^6 cell/mm^3"},
+
+									{Name: "U/L", Value: "U/L"},
+									{Name: "mcU/mL", Value: "mcU/mL"},
+									{Name: "IU/dL", Value: "IU/dL"},
+
+									{Name: "-", Value: "-"},
+									{Name: i18n.StringsCtx(ctx).NoUnit, Value: ""},
+								},
+							})
+						</div>
+						<div class={ "flex", "gap-x-3" }>
+							@components.Input(components.InputOptions{
+								Id:          "blood_test_field_min_value",
+								Name:        "blood_test_field_min_value",
+								Type:        components.InputTypeNumberFloat,
+								Required:    false,
+								Autofocus:   false,
+								Title:       i18n.StringsCtx(ctx).BloodTestFieldMinValue,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldMinValue,
+								Value:       "0",
+							})
+							@components.Input(components.InputOptions{
+								Id:          "blood_test_field_max_value",
+								Name:        "blood_test_field_max_value",
+								Type:        components.InputTypeNumberFloat,
+								Required:    false,
+								Autofocus:   false,
+								Title:       i18n.StringsCtx(ctx).BloodTestFieldMaxValue,
+								Placeholder: i18n.StringsCtx(ctx).EnterBloodTestFieldMaxValue,
+								Value:       "0",
+							})
+						</div>
+					</div>
+				</div>
+				<div>
+					<button
+						type="button"
+						class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }
+						_="on click put #blood_test_field's outerHTML at the end of #blood_tests"
+					>
+						{ i18n.StringsCtx(ctx).FormsNewField }
+					</button>
+				</div>
+				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+					{ i18n.StringsCtx(ctx).FormsSubmit }
+				</button>
+			</div>
+		</form>
+		<div id="status-msg"></div>
+	}
+}

@@ -1,0 +1,15 @@
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*::before,
+*::after {
+  font-family: "DaFont", sans-serif !important;
+}
+
+body {
+  line-height: 1.6;
+}

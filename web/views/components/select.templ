@@ -1,0 +1,52 @@
+package components
+
+type SelectOption struct {
+	Name  string
+	Value string
+}
+
+type SelectParams struct {
+	Id            string
+	Name          string
+	Placeholder   string
+	Required      bool
+	Disabled      bool
+	SelectedValue string
+	Options       []SelectOption
+}
+
+templ Select(params SelectParams) {
+	<div class={ "flex", "flex-col" }>
+		<label class={ "text-secondary", "text-[16px]" } for={ params.Id }>{ params.Name }</label>
+		<select
+			name={ params.Id }
+			id={ params.Id }
+			class={
+				"min-w-20", "p-[10px]", "rounded-[8px]",
+				"bg-secondary", "disabled:bg-secondary-trans-69",
+				"text-primary", "disabled:text-primary-trans-69",
+			}
+			if params.Required {
+				required
+			}
+			if params.Disabled {
+				disabled
+			}
+		>
+			<option
+				if params.SelectedValue == "" {
+					selected="true"
+				}
+				disabled="disabled"
+			>{ params.Placeholder }</option>
+			for _, option := range params.Options {
+				<option
+					value={ option.Value }
+					if option.Value == params.SelectedValue {
+						selected="true"
+					}
+				>{ option.Name }</option>
+			}
+		</select>
+	</div>
+}

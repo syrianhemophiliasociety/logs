@@ -1,0 +1,17 @@
+package components
+
+templ Container(header, content templ.Component) {
+	<div class={ "flex", "justify-center" }>
+		<section
+			class={
+				"w-full", "md:w-3/4", "md:bg-accent-trans-20", "md:backdrop-blur-md", "rounded-xl", "text-secondary",
+				"rounded-[10px]", "md:m-[20px]", "p-[15px]", "md:p-[40px]", "lg:mb-0",
+			}
+		>
+			@header
+			<div class={ "mt-5", "lg:mt-10" }>
+				@content
+			</div>
+		</section>
+	</div>
+}

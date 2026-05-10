@@ -1,0 +1,39 @@
+@font-face {
+  font-family: "DaFont";
+  font-weight: 300;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Light.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Regular.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Medium.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/ibm-plex/IBMPlexSansArabic-Bold.ttf")
+    format("truetype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}

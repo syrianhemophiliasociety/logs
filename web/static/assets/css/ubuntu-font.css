@@ -1,0 +1,31 @@
+@font-face {
+  font-family: "DaFont";
+  font-weight: 300;
+  font-display: swap;
+  src: url("/assets/fonts/ubuntu/Ubuntu-Light.ttf") format("truetype");
+  unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/ubuntu/Ubuntu-Regular.ttf") format("truetype");
+  unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/assets/fonts/ubuntu/Ubuntu-Medium.ttf") format("truetype");
+  unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F;
+}
+
+@font-face {
+  font-family: "DaFont";
+  font-weight: 700;
+  font-display: swap;
+  src: url("/assets/fonts/ubuntu/Ubuntu-Bold.ttf") format("truetype");
+  unicode-range: U+0000-007F, U+00A0-00FF, U+0100-017F;
+}
