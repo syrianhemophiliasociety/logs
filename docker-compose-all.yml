@@ -1,0 +1,46 @@
+services:
+  shs-logs-db:
+    container_name: "shs-logs-db"
+    image: "mariadb:11.7"
+    restart: "always"
+    ports:
+      - "3306:3306"
+    stdin_open: true
+    networks:
+      - shs-logs-network
+    env_file:
+      - .env.docker
+
+  shs-logs-cache:
+    container_name: "shs-logs-cache"
+    image: "redis:7.2.4"
+    restart: "always"
+    ports:
+      - "6379:6379"
+    stdin_open: true
+    command: >
+      --requirepass previetcomrade
+    networks:
+      - shs-logs-network
+    env_file:
+      - .env.docker
+
+  shs-logs:
+    container_name: "shs-logs"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "always"
+    ports:
+      - "11111:3000"
+    stdin_open: true
+    depends_on:
+      - shs-logs-db
+      - shs-logs-cache
+    env_file:
+      - .env.docker
+    networks:
+      - shs-logs-network
+
+networks:
+  shs-logs-network:

@@ -13,7 +13,15 @@
 
 ## About
 
-**SyrianHemophiliaSocietyLogs** is something idk.
+**SyrianHemophiliaSocietyLogs** is a patients care and management system for Hemophilia patients in Syria.
+
+This system handles all of patient-doctor sensitive where a human mistake is fatal or lethal
+
+- Patient details.
+- Interopability with other doctors a Hemophilia patient might visit.
+- Medicine tracking informs the doctors of the patients' medicines and doses and when they're being used.
+- Visits tracking and appropriate actions taken.
+- Statistics for data reasons.
 
 ## Contributing
 
@@ -36,12 +44,15 @@ cp .env.example .env.docker
 3. Run it with docker compose.
 
 ```bash
-docker compose up -f docker-compose-all.yml
+docker compose up -f docker-compose-ci.yml
 ```
 
-3. Visit http://localhost:23103
+3. Visit http://localhost:11111
 4. Don't ask why I chose this weird port.
 
 ---
 
-Made with 🧉 by [Baraa Al-Masri](https://syrianhemophiliasociety.com)
+## Authors
+
+- [Baraa Al-Masri](https://mbaraa.com): Developer, Architect and Designer.
+- [Dr. Abdullah Al-Masri](https://github.com/Brown-Eagle): Overseeing doctor and Project manager.

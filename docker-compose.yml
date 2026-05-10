@@ -1,6 +1,6 @@
 services:
-  shs-db:
-    container_name: "shs-db"
+  shs-logs-db:
+    container_name: "shs-logs-db"
     image: "mariadb:11.7"
     restart: "always"
     ports:
@@ -12,13 +12,13 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - shs-db-config:/etc/mysql
-      - shs-db-data:/var/lib/mysql
+      - shs-logs-db-config:/etc/mysql
+      - shs-logs-db-data:/var/lib/mysql
     networks:
       - shsnetwork
 
-  shs-cache:
-    container_name: "shs-cache"
+  shs-logs-cache:
+    container_name: "shs-logs-cache"
     image: "redis:7.2.4"
     restart: "always"
     ports:
@@ -42,14 +42,14 @@ volumes:
       o: bind
       device: ./.serve
 
-  shs-db-config:
+  shs-logs-db-config:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ./.db/etc
 
-  shs-db-data:
+  shs-logs-db-data:
     driver: local
     driver_opts:
       type: none
