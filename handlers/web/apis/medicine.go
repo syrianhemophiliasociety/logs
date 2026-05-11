@@ -118,8 +118,17 @@ func (v *medicineApi) HandleUpdateMedicine(w http.ResponseWriter, r *http.Reques
 	id := r.PathValue("id")
 	intId, _ := strconv.Atoi(id)
 
-	var reqBody actions.Medicine
+	var reqBody struct {
+		Amount string `json:"amount"`
+	}
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	medicineAmount, err := strconv.Atoi(reqBody.Amount)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
@@ -129,7 +138,7 @@ func (v *medicineApi) HandleUpdateMedicine(w http.ResponseWriter, r *http.Reques
 	_, err = v.usecases.UpdateMedicine(actions.UpdateMedicineParams{
 		ActionContext: ctx,
 		MedicineId:    uint(intId),
-		Amount:        reqBody.Amount,
+		Amount:        medicineAmount,
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
