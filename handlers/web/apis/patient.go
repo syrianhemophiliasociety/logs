@@ -36,6 +36,7 @@ type PatientRequest struct {
 	ResidencyStreet         string `json:"residency_street"`
 	FamilyHistoryExists     string `json:"family_history_exists"`
 	FirstVisitReason        string `json:"first_visit_reason"`
+	WBDR                    string `json:"wbdr"`
 }
 
 func clusterFuckPatientToActionsOne(p PatientRequest) actions.Patient {
@@ -64,6 +65,7 @@ func clusterFuckPatientToActionsOne(p PatientRequest) actions.Patient {
 		BATScore:               0,
 		FirstVisitReason:       p.FirstVisitReason,
 		FamilyHistoryExists:    p.FamilyHistoryExists == "on",
+		WBDR:                   p.WBDR,
 	}
 }
 

@@ -207,6 +207,7 @@ var arabic = Keys{
 	EnterPatientId:                "الرقم التعريفي",
 	EnterBloodTest:                "اختر تحليل الدم",
 	FamilyHistoryExists:           "هل يوجد قصة عاىلية",
+	WBDR:                          "WBDR",
 	FirstVisitReason:              "سبب اول زيارة",
 	EnterFirstVisitReason:         "اختر سبب اول زيارة",
 	FirstVisitReasonFamilyHistory: "قصة عاىلية",

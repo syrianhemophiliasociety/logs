@@ -70,6 +70,7 @@ type Patient struct {
 	BATScore               uint               `json:"bat_score"`
 	FamilyHistoryExists    bool               `json:"family_history_exists"`
 	FirstVisitReason       string             `json:"first_visit_reason"`
+	WBDR                   string             `json:"wbdr"`
 	Viruses                []Virus            `json:"viruses"`
 	BloodTestResults       []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations      []JointsEvaluation `json:"joints_evaluations"`
@@ -135,6 +136,7 @@ func (p Patient) IntoModel() models.Patient {
 		FamilyHistoryExists:    p.FamilyHistoryExists,
 		FirstVisitReason:       models.PatientFirstVisitReason(p.FirstVisitReason),
 		BATScore:               p.BATScore,
+		WBDR:                   p.WBDR,
 	}
 }
 
@@ -167,6 +169,7 @@ func (p *Patient) FromModel(patient models.Patient) {
 		BATScore:               patient.BATScore,
 		FamilyHistoryExists:    patient.FamilyHistoryExists,
 		FirstVisitReason:       string(patient.FirstVisitReason),
+		WBDR:                   patient.WBDR,
 	}
 }
 
@@ -260,21 +263,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		return CreatePatientPayload{}, ErrPermissionDenied{}
 	}
 
-	newPatient := models.Patient{
-		NationalId:             params.NewPatient.NationalId,
-		Nationality:            params.NewPatient.Nationality,
-		FirstName:              params.NewPatient.FirstName,
-		LastName:               params.NewPatient.LastName,
-		FatherName:             params.NewPatient.FatherName,
-		MotherName:             params.NewPatient.MotherName,
-		DateOfBirth:            params.NewPatient.DateOfBirth,
-		Gender:                 params.NewPatient.Gender,
-		PhoneNumber:            params.NewPatient.PhoneNumber,
-		PhoneNumberCountryCode: params.NewPatient.PhoneNumberCountryCode,
-		BATScore:               params.NewPatient.BATScore,
-		FirstVisitReason:       models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		FamilyHistoryExists:    params.NewPatient.FamilyHistoryExists,
-	}
+	newPatient := params.NewPatient.IntoModel()
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
 		Governorate: params.NewPatient.Residency.Governorate,
@@ -357,21 +346,7 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 		return UpdatePatientPayload{}, err
 	}
 
-	newPatient := models.Patient{
-		NationalId:             params.NewPatient.NationalId,
-		Nationality:            params.NewPatient.Nationality,
-		FirstName:              params.NewPatient.FirstName,
-		LastName:               params.NewPatient.LastName,
-		FatherName:             params.NewPatient.FatherName,
-		MotherName:             params.NewPatient.MotherName,
-		DateOfBirth:            params.NewPatient.DateOfBirth,
-		Gender:                 params.NewPatient.Gender,
-		PhoneNumber:            params.NewPatient.PhoneNumber,
-		PhoneNumberCountryCode: params.NewPatient.PhoneNumberCountryCode,
-		BATScore:               params.NewPatient.BATScore,
-		FirstVisitReason:       models.PatientFirstVisitReason(params.NewPatient.FirstVisitReason),
-		FamilyHistoryExists:    params.NewPatient.FamilyHistoryExists,
-	}
+	newPatient := params.NewPatient.IntoModel()
 
 	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
 		Governorate: params.NewPatient.Residency.Governorate,

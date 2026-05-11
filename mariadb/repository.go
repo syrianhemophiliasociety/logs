@@ -752,6 +752,7 @@ func (r *Repository) UpdatePatient(id uint, patient models.Patient) (models.Pati
 				"phone_number_country_code": patient.PhoneNumberCountryCode,
 				"family_history_exists":     patient.FamilyHistoryExists,
 				"first_visit_reason":        patient.FirstVisitReason,
+				"wbdr":                      patient.WBDR,
 				"bat_score":                 patient.BATScore,
 				"updated_at":                patient.UpdatedAt,
 			}).

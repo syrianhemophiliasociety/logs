@@ -190,6 +190,7 @@ type Keys struct {
 	EnterBloodTest                string
 	FamilyHistoryExists           string
 	FirstVisitReason              string
+	WBDR                          string
 	EnterFirstVisitReason         string
 	FirstVisitReasonFamilyHistory string
 	FirstVisitReasonBleeding      string

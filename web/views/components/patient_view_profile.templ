@@ -76,6 +76,16 @@ templ PatientViewProfile(patient actions.Patient) {
 							</td>
 						</tr>
 						<tr>
+							<td><b>{ i18n.StringsCtx(ctx).WBDR }</b></td>
+							<td class={ "capitalize" }>
+								if patient.WBDR != "" {
+									{ patient.WBDR }
+								} else {
+									{ "N/A" }
+								}
+							</td>
+						</tr>
+						<tr>
 							<td><b>{ i18n.StringsCtx(ctx).FirstVisitReason }</b></td>
 							<td>
 								switch patient.FirstVisitReason {

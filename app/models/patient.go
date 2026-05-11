@@ -45,6 +45,7 @@ type Patient struct {
 	FamilyHistoryExists    bool                    `gorm:"not null"`
 	FirstVisitReason       PatientFirstVisitReason `gorm:"not null"`
 	BATScore               uint                    `gorm:"not null"`
+	WBDR                   string
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

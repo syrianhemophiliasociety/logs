@@ -192,6 +192,14 @@ templ newPatient(bloodTests []actions.BloodTest, viruses []actions.Virus) {
 						Autofocus: false,
 						Title:     i18n.StringsCtx(ctx).FamilyHistoryExists,
 					})
+					@components.Input(components.InputOptions{
+						Id:        "wbdr",
+						Name:      "wbdr",
+						Type:      components.InputTypeText,
+						Required:  false,
+						Autofocus: false,
+						Title:     i18n.StringsCtx(ctx).WBDR,
+					})
 				</div>
 				<div class={ "flex",   "gap-10" }>
 					@components.Input(components.InputOptions{

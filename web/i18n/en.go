@@ -205,6 +205,7 @@ var english = Keys{
 	EnterPatientId:                "Enter ID",
 	EnterBloodTest:                "Choose blood test",
 	FamilyHistoryExists:           "Family history exists",
+	WBDR:                          "WBDR",
 	FirstVisitReason:              "First visit reason",
 	EnterFirstVisitReason:         "Choose first visit reason",
 	FirstVisitReasonFamilyHistory: "Family history",

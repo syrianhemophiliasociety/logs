@@ -162,6 +162,15 @@ templ PatientUpdateProfile(patient actions.Patient) {
 									Title:     i18n.StringsCtx(ctx).FamilyHistoryExists,
 									Checked:   patient.FamilyHistoryExists,
 								})
+								@Input(InputOptions{
+									Id:        "wbdr",
+									Name:      "wbdr",
+									Type:      InputTypeText,
+									Required:  false,
+									Autofocus: false,
+									Title:     i18n.StringsCtx(ctx).WBDR,
+									Value:     patient.WBDR,
+								})
 							</div>
 							<div class={ "flex", "gap-10" }>
 								@Input(InputOptions{
