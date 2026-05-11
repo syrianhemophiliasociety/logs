@@ -228,6 +228,7 @@ var english = Keys{
 	ProphylaxesOnceInWeek:         "Once a Week",
 	ProphylaxesTwiceInWeek:        "Twice a Week",
 	ProphylaxesThriceInWeek:       "Three Times a Week",
+		Prophylaxis 				"Prophylaxis",
 
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("Patient visit at %s", date.Format(time.DateOnly))
