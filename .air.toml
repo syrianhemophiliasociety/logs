@@ -1,7 +1,7 @@
 root = "."
 
 [build]
-full_bin = "make shs-server"
+full_bin = "make shs-logs-server"
 cmd = "make build-server"
 delay = 0
 exclude_dir = [

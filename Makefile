@@ -1,4 +1,4 @@
-.PHONY: all build shs-logs-server
+.PHONY: all build shs-logs-server build-server
 
 SERVER_BINARY_NAME=shs-logs-server
 MIGRATOR_BINARY_NAME=shs-logs-migrator
