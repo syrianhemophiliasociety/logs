@@ -212,6 +212,7 @@ type Keys struct {
 	ProphylaxesOnceInWeek         string
 	ProphylaxesTwiceInWeek        string
 	ProphylaxesThriceInWeek       string
+	Prophylaxis 				string
 
 	VisitTitleFmt               func(date time.Time) string
 	UseOnePrescribedMedicineFmt func(medicineName string) string
