@@ -232,6 +232,10 @@ type Keys struct {
 	DiagnosisGroupName      string
 	EnterDiagnosisGroupName string
 	EnterDiagnosis          string
+	DiagnosisICD11          string
+	EnterDiagnosisICD11     string
+	DiagnosisAKA            string
+	EnterDiagnosisAKA       string
 	DiagnosedAt             string
 
 	NationalitySyrian      string

@@ -9,6 +9,8 @@ type Diagnosis struct {
 	Id        uint   `json:"id"`
 	GroupName string `json:"group_name"`
 	Title     string `json:"title"`
+	ICD11     string `json:"icd_11"`
+	AKA       string `json:"aka"`
 
 	CreatedAt time.Time `json:"created_at"`
 }
@@ -17,6 +19,8 @@ func (d Diagnosis) IntoModel() models.Diagnosis {
 	return models.Diagnosis{
 		GroupName: d.GroupName,
 		Title:     d.Title,
+		ICD11:     d.ICD11,
+		AKA:       d.AKA,
 	}
 }
 
@@ -25,6 +29,8 @@ func (d *Diagnosis) FromModel(diagnosis models.Diagnosis) {
 	(*d).GroupName = diagnosis.GroupName
 	(*d).Title = diagnosis.Title
 	(*d).CreatedAt = diagnosis.CreatedAt
+	(*d).ICD11 = diagnosis.ICD11
+	(*d).AKA = diagnosis.AKA
 }
 
 type CreateDiagnosisParams struct {

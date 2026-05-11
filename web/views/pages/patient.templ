@@ -612,6 +612,12 @@ templ patientListDiagnosesResults(patient actions.Patient) {
 						<span class={ "font-bold", "text-lg" }>
 							{ diagnosis.GroupName }
 						</span>
+						<span class={ "font-bold", "text-lg" }>
+							{ diagnosis.ICD11 }
+						</span>
+						<span class={ "font-bold", "text-lg" }>
+							{ diagnosis.AKA }
+						</span>
 					</div>
 					<div>
 						{ diagnosis.CreatedAt.Format("2006 Jan/02") }

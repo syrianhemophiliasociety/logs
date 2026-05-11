@@ -6,6 +6,8 @@ type Diagnosis struct {
 	Id        uint   `gorm:"primaryKey;autoIncrement"`
 	GroupName string `gorm:"not null"`
 	Title     string `gorm:"not null"`
+	ICD11     string `gorm:"not null"`
+	AKA       string
 	// TODO: add filled fields
 
 	CreatedAt time.Time `gorm:"index;not null"`

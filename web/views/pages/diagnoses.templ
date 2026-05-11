@@ -37,6 +37,8 @@ templ allDiagnoses(diagnoses []actions.Diagnosis) {
 				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
 					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.GroupName }</span>
 					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.Title }</span>
+					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.ICD11 }</span>
+					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.AKA }</span>
 					@components.DeleteButton("diagnosis", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(diagnosis.Id)), diagnosis.Title, false)
 				</div>
 			}
@@ -77,6 +79,24 @@ templ newDiagnosis() {
 					Autofocus:   true,
 					Title:       i18n.StringsCtx(ctx).DiagnosisTitle,
 					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisTitle,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "icd_11",
+					Name:        "icd_11",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).DiagnosisICD11,
+					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisICD11,
+				})
+				@components.Input(components.InputOptions{
+					Id:          "aka",
+					Name:        "aka",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   true,
+					Title:       i18n.StringsCtx(ctx).DiagnosisAKA,
+					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisAKA,
 				})
 				<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
 					{ i18n.StringsCtx(ctx).FormsSubmit }
