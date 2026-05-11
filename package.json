@@ -1,21 +1,21 @@
 {
-  "name": "logs-server",
+  "name": "logs",
   "version": "1.0.0",
   "description": "<div align=\"center\">   <a href=\"https://logs.syrianhemophiliasociety.com\" target=\"_blank\"><img src=\"https://logs.syrianhemophiliasociety.com/assets/web-app-manifest-192x192.png\" width=\"150\" /></a>",
   "main": "index.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/syrianhemophiliasociety/logs-server.git"
+    "url": "git+https://github.com/syrianhemophiliasociety/logs.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/syrianhemophiliasociety/logs-server/issues"
+    "url": "https://github.com/syrianhemophiliasociety/logs/issues"
   },
-  "homepage": "https://github.com/syrianhemophiliasociety/logs-server#readme",
+  "homepage": "https://github.com/syrianhemophiliasociety/logs#readme",
   "devDependencies": {
     "tailwindcss": "^4.1.10",
     "@playwright/test": "^1.58.2",
