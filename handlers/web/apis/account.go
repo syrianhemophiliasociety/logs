@@ -5,12 +5,82 @@ import (
 	"errors"
 	"net/http"
 	"shs/actions"
+	"shs/app/models"
 	"shs/handlers/web/context"
 	"shs/log"
 	"shs/web/i18n"
 	"shs/web/views/components"
 	"strconv"
 )
+
+type Account struct {
+	Id          uint                      `json:"id"`
+	DisplayName string                    `json:"display_name"`
+	Username    string                    `json:"username"`
+	Type        string                    `json:"type"`
+	Password    string                    `json:"password,omitempty"`
+	Permissions models.AccountPermissions `json:"permissions"`
+}
+
+type UpdateAccountRequest struct {
+	Account
+}
+
+func (a *UpdateAccountRequest) UnmarshalJSON(payload []byte) error {
+	var data map[string]any
+	err := json.Unmarshal(payload, &data)
+	if err != nil {
+		return err
+	}
+
+	var ok bool
+	(*a).DisplayName, ok = data["display_name"].(string)
+	if !ok {
+		return errors.New("invalid display_name value")
+	}
+	(*a).Username, ok = data["username"].(string)
+	if !ok {
+		return errors.New("invalid username value")
+	}
+	(*a).Password, ok = data["password"].(string)
+	if !ok {
+		return errors.New("invalid password value")
+	}
+
+	const permissionsKey = "permissions"
+	switch data[permissionsKey].(type) {
+	case string:
+		p, err := strconv.Atoi(data[permissionsKey].(string))
+		if err != nil {
+			return err
+		}
+		if (p & (p - 1)) != 0 {
+			return errors.New("invalid permissions value")
+		}
+		(*a).Permissions = models.AccountPermissions(p)
+
+	case []any:
+		for _, p := range data[permissionsKey].([]any) {
+			pStr, ok := p.(string)
+			if !ok {
+				return errors.New("invalid permissions type")
+			}
+			pInt, err := strconv.Atoi(pStr)
+			if err != nil {
+				return err
+			}
+			if (pInt & (pInt - 1)) != 0 {
+				return errors.New("invalid permissions value")
+			}
+			(*a).Permissions |= models.AccountPermissions(pInt)
+		}
+
+	default:
+		return errors.New("invalid permissions value")
+	}
+
+	return nil
+}
 
 type accountApi struct {
 	usecases *actions.Actions
@@ -91,8 +161,8 @@ func (v *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var reqBody actions.Account
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	var params UpdateAccountRequest
+	err = json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
@@ -102,7 +172,14 @@ func (v *accountApi) HandleUpdateAccount(w http.ResponseWriter, r *http.Request)
 	_, err = v.usecases.UpdateAccount(actions.UpdateAccountParams{
 		ActionContext: ctx,
 		AccountId:     uint(intId),
-		NewAccount:    reqBody,
+		NewAccount: actions.Account{
+			Id:          uint(intId),
+			DisplayName: params.DisplayName,
+			Username:    params.Username,
+			Type:        params.Type,
+			Password:    params.Password,
+			Permissions: params.Permissions,
+		},
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)

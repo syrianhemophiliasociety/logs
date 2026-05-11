@@ -523,6 +523,51 @@ func (v *patientApi) HandleUpdatePatientPendingBloodTestResult(w http.ResponseWr
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
+type JointsEvaluationRequest struct {
+	RightAnkle string `json:"right_ankle"`
+	LeftAnkle  string `json:"left_ankle"`
+	RightKnee  string `json:"right_knee"`
+	LeftKnee   string `json:"left_knee"`
+	RightElbow string `json:"right_elbow"`
+	LeftElbow  string `json:"left_elbow"`
+}
+
+func clusterFuckJointsToActionsOne(je JointsEvaluationRequest) (actions.JointsEvaluation, error) {
+	rightAnkle, err := strconv.Atoi(je.RightAnkle)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftAnkle, err := strconv.Atoi(je.LeftAnkle)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	rightKnee, err := strconv.Atoi(je.RightKnee)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftKnee, err := strconv.Atoi(je.LeftKnee)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	rightElbow, err := strconv.Atoi(je.RightElbow)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftElbow, err := strconv.Atoi(je.LeftElbow)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+
+	return actions.JointsEvaluation{
+		RightAnkle: rightAnkle,
+		LeftAnkle:  leftAnkle,
+		RightKnee:  rightKnee,
+		LeftKnee:   leftKnee,
+		RightElbow: rightElbow,
+		LeftElbow:  leftElbow,
+	}, nil
+}
+
 func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
 	ctx, err := context.Parse(r.Context())
 	if err != nil {
@@ -533,8 +578,15 @@ func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, 
 
 	patientId := r.PathValue("id")
 
-	var reqBody actions.JointsEvaluation
+	var reqBody JointsEvaluationRequest
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	jointsEvaluation, err := clusterFuckJointsToActionsOne(reqBody)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
@@ -544,7 +596,7 @@ func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, 
 	_, err = v.usecases.CreatePatientJointsEvaluation(actions.CreatePatientJointsEvaluationParams{
 		ActionContext:    ctx,
 		PatientId:        patientId,
-		JointsEvaluation: reqBody,
+		JointsEvaluation: jointsEvaluation,
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
