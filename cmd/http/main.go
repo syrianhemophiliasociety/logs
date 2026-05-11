@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"regexp"
 	"shs/actions"
 	"shs/app"
@@ -11,6 +12,7 @@ import (
 	"shs/handlers/middlewares/contenttype"
 	"shs/handlers/middlewares/ismobile"
 	"shs/handlers/middlewares/logger"
+	"shs/handlers/middlewares/version"
 	"shs/handlers/middlewares/webauth"
 	"shs/handlers/middlewares/webi18n"
 	"shs/handlers/middlewares/webtheme"
@@ -31,6 +33,8 @@ import (
 	"github.com/tdewolff/minify/v2/svg"
 	"github.com/tdewolff/minify/v2/xml"
 )
+
+var appVersion = os.Getenv("VERSION")
 
 func main() {
 	repo, err := mariadb.New()
@@ -251,7 +255,7 @@ func main() {
 	htmxHandler.HandleFunc("GET /patient/{id}/update", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientUpdateView))
 
 	applicationHandler := http.NewServeMux()
-	applicationHandler.Handle("/", webi18n.Handler(ismobile.Handler(webtheme.Handler(pagesHandler))))
+	applicationHandler.Handle("/", version.Handler(appVersion, webi18n.Handler(ismobile.Handler(webtheme.Handler(pagesHandler)))))
 	applicationHandler.Handle("/assets/", http.StripPrefix("/assets", static.AssetsHandler(minifyer)))
 	applicationHandler.Handle("/api/json/", http.StripPrefix("/api/json", contenttype.Json(v1ApisHandler)))
 	applicationHandler.Handle("/api/web/", webi18n.Handler(ismobile.Handler(webtheme.Handler(http.StripPrefix("/api/web", webApisHandler)))))

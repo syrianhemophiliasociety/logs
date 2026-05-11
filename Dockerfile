@@ -15,10 +15,10 @@ FROM alpine:latest AS run
 RUN apk add --no-cache make
 
 WORKDIR /app
-COPY --from=build /app/shs-server ./shs-server
-COPY --from=build /app/shs-migrator ./shs-migrator
+COPY --from=build /app/shs-logs-server ./shs-logs-server
+COPY --from=build /app/shs-logs-migrator ./shs-logs-migrator
 COPY --from=build /app/Makefile ./Makefile
 
 EXPOSE 3000
 
-CMD ["make", "shs-server"]
+CMD ["make", "shs-logs-server"]
