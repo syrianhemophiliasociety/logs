@@ -701,7 +701,6 @@ func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, erro
 	patient.PublicId = fmt.Sprintf("%06d", lastPatientId.PublicId)
 	patient.CreatedAt = time.Now().UTC()
 	patient.UpdatedAt = time.Now().UTC()
-	patient.FillEmptyFieldsUsingPublicId()
 
 	if patient.NationalId == "" {
 		patient.NationalId = "please_change_" + patient.PublicId
@@ -727,7 +726,6 @@ func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, erro
 
 func (r *Repository) UpdatePatient(id uint, patient models.Patient) (models.Patient, error) {
 	patient.UpdatedAt = time.Now().UTC()
-	patient.FillEmptyFieldsUsingPublicId()
 
 	if patient.NationalId == "" {
 		patient.NationalId = "please_change_" + patient.PublicId

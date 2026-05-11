@@ -223,10 +223,29 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		inPatients = append(inPatients, patients[i])
 	}
 
-	for _, patient := range inPatients {
-		newPatient, err := a.app.CreatePatient(patient)
+	for i := range inPatients {
+		inPatients[i].FillEmptyFieldsUsingPublicId()
+		newPatient, err := a.app.CreatePatient(inPatients[i])
 		if err != nil {
 			log.Errorln("Failed to create patient: ", err)
+			continue
+		}
+
+		// INFO: in case of minors without a national id, the password will be the patient's phone number without the country code
+		password := inPatients[i].NationalId
+		if password == "" {
+			password = cleanPhoneNumberCountryCode(newPatient.PhoneNumber)
+		}
+
+		_, err = a.app.CreateAccount(models.Account{
+			DisplayName: newPatient.FirstName + " " + newPatient.LastName,
+			Username:    newPatient.PublicId,
+			Password:    password,
+			Type:        models.AccountTypePatient,
+			Permissions: patientPermissions,
+		})
+		if err != nil {
+			log.Errorln("Failed to create patient's account: ", err)
 			continue
 		}
 
