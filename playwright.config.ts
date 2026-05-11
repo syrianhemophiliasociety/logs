@@ -35,7 +35,7 @@ export default defineConfig({
       SUPERADMIN_PASSWORD: "kurwamatch",
       HOST_NAME: "somehostyhost.ugh",
     },
-    command: "make shs-server",
+    command: "make shs-logs-server",
     reuseExistingServer: true, //!process.env.CI,
     url: "http://127.0.0.1:3000/v1/status",
   },
