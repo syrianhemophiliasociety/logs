@@ -1,7 +1,7 @@
-.PHONY: all build shs-server
+.PHONY: all build shs-logs-server
 
-SERVER_BINARY_NAME=shs-server
-MIGRATOR_BINARY_NAME=shs-migrator
+SERVER_BINARY_NAME=shs-logs-server
+MIGRATOR_BINARY_NAME=shs-logs-migrator
 
 TEMPL_CMD=templ
 ifdef CI
@@ -64,7 +64,7 @@ dev-test:
 	fi
 	export `cat .env.ci | xargs` && air
 
-shs-server:
+shs-logs-server:
 	./${MIGRATOR_BINARY_NAME} &&\
 	./${SERVER_BINARY_NAME}
 
