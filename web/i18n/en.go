@@ -69,6 +69,7 @@ var english = Keys{
 	TabsCheckup:           "Check-up",
 	TabsVisits:            "Visits",
 	TabsJoints:            "Joints",
+	TabsProphylaxes:       "Prophylaxes",
 	FormsSubmit:           "Sumit",
 	FormsDelete:           "Delete",
 	FormsNewField:         "New field",
@@ -218,6 +219,16 @@ var english = Keys{
 	JointsLeftKnee:                "Left knee",
 	JointsRightElbow:              "Right elbow",
 	JointsLeftElbow:               "Left elbow",
+	ProphylaxesTitle:              "Title",
+	ProphylaxesFrequency:          "Frequency",
+	ProphylaxesEndDate:            "End Date",
+	ProphylaxesMedicineDose:       "Medicine Dose",
+	ProphylaxesEvery4Weeks:        "Every 4 Weeks",
+	ProphylaxesEvery2Weeks:        "Every 2 Weeks",
+	ProphylaxesOnceInWeek:         "Once a Week",
+	ProphylaxesTwiceInWeek:        "Twice a Week",
+	ProphylaxesThriceInWeek:       "Three Times a Week",
+
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("Patient visit at %s", date.Format(time.DateOnly))
 	},

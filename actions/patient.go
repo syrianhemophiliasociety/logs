@@ -75,6 +75,7 @@ type Patient struct {
 	BloodTestResults       []BloodTestResult  `json:"blood_test_results"`
 	JointsEvaluations      []JointsEvaluation `json:"joints_evaluations"`
 	Diagnoses              []DiagnosisResult  `json:"diagnoses"`
+	Prophylaxes            []Prophylaxis      `json:"prophylaxes"`
 }
 
 func (p Patient) FullName() string {
@@ -225,6 +226,17 @@ func (p *Patient) WithViruses(patientViruses []models.Virus) {
 			Id:   v.Id,
 			Name: v.Name,
 		})
+	}
+}
+
+func (p *Patient) WithProphylaxis(pp []models.Prophylaxis) {
+	for _, ppp := range pp {
+		outProphylaxis := new(Prophylaxis)
+		outProphylaxis.FromModel(ppp)
+		med := new(Medicine)
+		med.FromModel(ppp.Medicine)
+		outProphylaxis.PrescribedMedicine = *med
+		(*p).Prophylaxes = append((*p).Prophylaxes, *outProphylaxis)
 	}
 }
 
@@ -757,12 +769,18 @@ func (a *Actions) getFullPatientByPublicId(patientId string) (Patient, error) {
 		return Patient{}, err
 	}
 
+	prophylaxes, err := a.app.ListProphylaxesForPatient(patient.Id)
+	if err != nil {
+		return Patient{}, err
+	}
+
 	outPatient := new(Patient)
 	outPatient.FromModel(patient)
 	outPatient.WithViruses(viruses)
 	outPatient.WithBloodTestResults(bloodTestResults, bloodTests)
 	outPatient.WithJointsEvaluations(jointsEvaluations)
 	outPatient.WithDiagnoses(diagnosesResults, diagnoses)
+	outPatient.WithProphylaxis(prophylaxes)
 
 	return *outPatient, nil
 }

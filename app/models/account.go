@@ -37,6 +37,8 @@ const (
 	AccountPermissionWriteDiagnoses
 	AccountPermissionReadJoints
 	AccountPermissionWriteJoints
+	AccountPermissionReadProphylaxes
+	AccountPermissionWriteProphylaxes
 )
 
 type Account struct {

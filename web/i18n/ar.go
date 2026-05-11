@@ -69,6 +69,7 @@ var arabic = Keys{
 	TabsCheckup:           "المراجعة",
 	TabsVisits:            "الزيارات",
 	TabsJoints:            "المفاصل",
+	TabsProphylaxes:       "Prophylaxes",
 	FormsSubmit:           "أرسل المحتوى",
 	FormsDelete:           "احذف المحتوى",
 	FormsNewField:         "حقل جديد",
@@ -220,6 +221,16 @@ var arabic = Keys{
 	JointsLeftKnee:                "الركبة اليسرى",
 	JointsRightElbow:              "المرفق الأيمن",
 	JointsLeftElbow:               "المرفق الأيسر",
+	ProphylaxesTitle:              "Title",
+	ProphylaxesFrequency:          "Frequency",
+	ProphylaxesEndDate:            "End Date",
+	ProphylaxesMedicineDose:       "Medicine Dose",
+	ProphylaxesEvery4Weeks:        "Every 4 Weeks",
+	ProphylaxesEvery2Weeks:        "Every 2 Weeks",
+	ProphylaxesOnceInWeek:         "Once a Week",
+	ProphylaxesTwiceInWeek:        "Twice a Week",
+	ProphylaxesThriceInWeek:       "Three Times a Week",
+
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))
 	},

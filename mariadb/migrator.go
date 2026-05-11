@@ -24,6 +24,7 @@ var migratableModels = []schema.Tabler{
 	new(models.PatientUseMedicine),
 	new(models.PrescribedMedicine),
 	new(models.JointsEvaluation),
+	new(models.Prophylaxis),
 	new(models.Diagnosis),
 	new(models.DiagnosisResult),
 }
@@ -77,7 +78,9 @@ func (r *Repository) CreateSuperAdmin() error {
 			models.AccountPermissionReadDiagnoses |
 			models.AccountPermissionWriteDiagnoses |
 			models.AccountPermissionReadJoints |
-			models.AccountPermissionWriteJoints,
+			models.AccountPermissionWriteJoints |
+			models.AccountPermissionReadProphylaxes |
+			models.AccountPermissionWriteProphylaxes,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

@@ -242,6 +242,79 @@ func (v *CreateCheckUpRequest) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+type JointsEvaluationRequest struct {
+	RightAnkle string `json:"right_ankle"`
+	LeftAnkle  string `json:"left_ankle"`
+	RightKnee  string `json:"right_knee"`
+	LeftKnee   string `json:"left_knee"`
+	RightElbow string `json:"right_elbow"`
+	LeftElbow  string `json:"left_elbow"`
+}
+
+func clusterFuckJointsToActionsOne(je JointsEvaluationRequest) (actions.JointsEvaluation, error) {
+	rightAnkle, err := strconv.Atoi(je.RightAnkle)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftAnkle, err := strconv.Atoi(je.LeftAnkle)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	rightKnee, err := strconv.Atoi(je.RightKnee)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftKnee, err := strconv.Atoi(je.LeftKnee)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	rightElbow, err := strconv.Atoi(je.RightElbow)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+	leftElbow, err := strconv.Atoi(je.LeftElbow)
+	if err != nil {
+		return actions.JointsEvaluation{}, err
+	}
+
+	return actions.JointsEvaluation{
+		RightAnkle: rightAnkle,
+		LeftAnkle:  leftAnkle,
+		RightKnee:  rightKnee,
+		LeftKnee:   leftKnee,
+		RightElbow: rightElbow,
+		LeftElbow:  leftElbow,
+	}, nil
+}
+
+type ProphylaxisRequest struct {
+	Title            string `json:"title"`
+	FrequencyPerDays string `json:"frequency"`
+	EndDate          string `json:"end_date"`
+	MedicineId       string `json:"medicine_id"`
+	MedicineDose     string `json:"amount"`
+}
+
+func clusterFuckProhylaxisToActionsOne(pp ProphylaxisRequest) (actions.Prophylaxis, error) {
+	medicineId, err := strconv.Atoi(pp.MedicineId)
+	if err != nil {
+		return actions.Prophylaxis{}, err
+	}
+	medicineDose, err := strconv.Atoi(pp.MedicineDose)
+	if err != nil {
+		return actions.Prophylaxis{}, err
+	}
+	endDate, _ := time.Parse("2006-01-02", pp.EndDate)
+
+	return actions.Prophylaxis{
+		Title:            pp.Title,
+		FrequencyPerDays: pp.FrequencyPerDays,
+		MedicineId:       uint(medicineId),
+		MedicineDose:     medicineDose,
+		EndDate:          endDate,
+	}, nil
+}
+
 ////
 
 type patientApi struct {
@@ -523,51 +596,6 @@ func (v *patientApi) HandleUpdatePatientPendingBloodTestResult(w http.ResponseWr
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
-type JointsEvaluationRequest struct {
-	RightAnkle string `json:"right_ankle"`
-	LeftAnkle  string `json:"left_ankle"`
-	RightKnee  string `json:"right_knee"`
-	LeftKnee   string `json:"left_knee"`
-	RightElbow string `json:"right_elbow"`
-	LeftElbow  string `json:"left_elbow"`
-}
-
-func clusterFuckJointsToActionsOne(je JointsEvaluationRequest) (actions.JointsEvaluation, error) {
-	rightAnkle, err := strconv.Atoi(je.RightAnkle)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-	leftAnkle, err := strconv.Atoi(je.LeftAnkle)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-	rightKnee, err := strconv.Atoi(je.RightKnee)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-	leftKnee, err := strconv.Atoi(je.LeftKnee)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-	rightElbow, err := strconv.Atoi(je.RightElbow)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-	leftElbow, err := strconv.Atoi(je.LeftElbow)
-	if err != nil {
-		return actions.JointsEvaluation{}, err
-	}
-
-	return actions.JointsEvaluation{
-		RightAnkle: rightAnkle,
-		LeftAnkle:  leftAnkle,
-		RightKnee:  rightKnee,
-		LeftKnee:   leftKnee,
-		RightElbow: rightElbow,
-		LeftElbow:  leftElbow,
-	}, nil
-}
-
 func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, r *http.Request) {
 	ctx, err := context.Parse(r.Context())
 	if err != nil {
@@ -597,6 +625,45 @@ func (v *patientApi) HandleCreatePatientJointsEvaluation(w http.ResponseWriter, 
 		ActionContext:    ctx,
 		PatientId:        patientId,
 		JointsEvaluation: jointsEvaluation,
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func (v *patientApi) HandleCreatePatientProphylaxis(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+
+	var reqBody ProphylaxisRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	prophylaxis, err := clusterFuckProhylaxisToActionsOne(reqBody)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.CreatePatientProphylaxis(actions.CreatePatientProphylaxisParams{
+		ActionContext: ctx,
+		PatientId:     patientId,
+		Prophylaxis:   prophylaxis,
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)

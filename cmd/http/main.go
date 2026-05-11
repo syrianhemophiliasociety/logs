@@ -239,6 +239,7 @@ func main() {
 	webApisHandler.HandleFunc("PUT /patient/{id}/blood-test-result/{btr_id}/pending", webAuthMiddleware.AuthApi(patientWebApi.HandleUpdatePatientPendingBloodTestResult))
 	webApisHandler.HandleFunc("PUT /patient/{id}", webAuthMiddleware.AuthApi(patientWebApi.HandleUpdatePatient))
 	webApisHandler.HandleFunc("POST /patient/{id}/joints-evaluation", webAuthMiddleware.AuthApi(patientWebApi.HandleCreatePatientJointsEvaluation))
+	webApisHandler.HandleFunc("POST /patient/{id}/prophylaxes", webAuthMiddleware.AuthApi(patientWebApi.HandleCreatePatientProphylaxis))
 	webApisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}", webAuthMiddleware.AuthApi(patientWebApi.HandlePatientUseMedicine))
 	webApisHandler.HandleFunc("DELETE /patient/{id}", webAuthMiddleware.AuthApi(patientWebApi.HandleDeletePatient))
 	webApisHandler.HandleFunc("POST /patients/import/csv", webAuthMiddleware.AuthApi(patientWebApi.HandleUploadImportPatientsFromCsv))

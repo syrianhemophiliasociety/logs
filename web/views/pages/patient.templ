@@ -79,6 +79,15 @@ templ Patient(patient actions.Patient, bloodTests []actions.BloodTest, viruses [
 					Content:   patientJointsTab(patient),
 				},
 			},
+			{
+				First: models.AccountPermissionReadProphylaxes,
+				Second: components.TabContent{
+					Title:     i18n.StringsCtx(ctx).TabsProphylaxes,
+					TitleId:   "prophylaxes",
+					GroupName: "Patient",
+					Content:   patientProphylaxesTab(patient, allMedicine),
+				},
+			},
 		}...)
 	</div>
 }
@@ -121,12 +130,14 @@ templ patientBriefProfile(patient actions.Patient) {
 						}
 					</td>
 				</tr>
-				<tr>
-					<td><b>{ i18n.StringsCtx(ctx).PrimaryProphylaxis }</b></td>
-					<td>
-						TODO: DO SOMETHING HERE
-					</td>
-				</tr>
+				if len(patient.Prophylaxes) > 0 {
+					<tr>
+						<td><b>{ i18n.StringsCtx(ctx).PrimaryProphylaxis }</b></td>
+						<td>
+							{ patient.Prophylaxes[0].Title }
+						</td>
+					</tr>
+				}
 				<tr>
 					<td><b>{ i18n.StringsCtx(ctx).NavBloodTests }</b></td>
 					<td>
@@ -219,6 +230,31 @@ templ patientJointsTab(patient actions.Patient) {
 				TitleId:   "create",
 				GroupName: "patient-joints",
 				Content:   patientCreateJointsEvaluation(patient),
+				SubTab:    true,
+			},
+		},
+	}...)
+}
+
+templ patientProphylaxesTab(patient actions.Patient, meds []actions.Medicine) {
+	@components.TabsPermissions([]helpers.Pair[models.AccountPermissions, components.TabContent]{
+		{
+			First: models.AccountPermissionReadProphylaxes,
+			Second: components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsList,
+				TitleId:   "list",
+				GroupName: "patient-prophylaxes",
+				Content:   patientListProphylaxes(patient),
+				SubTab:    true,
+			},
+		},
+		{
+			First: models.AccountPermissionWriteProphylaxes,
+			Second: components.TabContent{
+				Title:     i18n.StringsCtx(ctx).TabsCreate,
+				TitleId:   "create",
+				GroupName: "patient-prophylaxes",
+				Content:   patientCreateProphylaxes(patient, meds),
 				SubTab:    true,
 			},
 		},
@@ -590,6 +626,109 @@ templ patientCreateJointsEvaluation(patient actions.Patient) {
 				Title:       i18n.StringsCtx(ctx).JointsLeftAnkle,
 				Placeholder: i18n.StringsCtx(ctx).JointsLeftAnkle,
 			})
+		</div>
+		<div id="status-msg"></div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+	</form>
+}
+
+templ patientListProphylaxes(patient actions.Patient) {
+	if len(patient.Prophylaxes) == 0 {
+		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).TabsProphylaxes) }</span>
+	} else {
+		@components.ScrollableList(components.ScrollableListParams{}) {
+			for _, pp := range patient.Prophylaxes {
+				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "gap-x-5" }>
+					<span class={ "font-bold","text-lg" }>
+						{ fmt.Sprintf("%s", pp.Title) }
+					</span>
+					<span class={ "text-lg" }>
+						switch pp.FrequencyPerDays {
+							case "every4weeks":
+								{ i18n.StringsCtx(ctx).ProphylaxesEvery4Weeks }
+							case "every2weeks":
+								{ i18n.StringsCtx(ctx).ProphylaxesEvery2Weeks }
+							case "once_in_week":
+								{ i18n.StringsCtx(ctx).ProphylaxesOnceInWeek }
+							case "twice_in_week":
+								{ i18n.StringsCtx(ctx).ProphylaxesTwiceInWeek }
+							case "thrice_in_week":
+								{ i18n.StringsCtx(ctx).ProphylaxesThriceInWeek }
+							default:
+								{ "N/A" }
+						}
+					</span>
+					<span class={ "text-lg" }>
+						{ pp.PrescribedMedicine.Name }
+					</span>
+					<span class={ "text-lg" }>
+						{ fmt.Sprint(pp.MedicineDose) }
+					</span>
+					<span class={ "text-lg" }>
+						{ pp.EndDate.Format("2006 Jan/02") }
+					</span>
+				</div>
+			}
+		}
+	}
+}
+
+templ patientCreateProphylaxes(patient actions.Patient, allMedicine []actions.Medicine) {
+	<form
+		class={ "flex", "flex-col", "gap-5" }
+		hx-encoding="application/json"
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/prophylaxes", patient.PublicId) }
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me then call location.reload()"
+	>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "title",
+				Name:        "title",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).ProphylaxesTitle,
+				Placeholder: i18n.StringsCtx(ctx).ProphylaxesTitle,
+			})
+			@components.Select(components.SelectParams{
+				Id:          "frequency",
+				Name:        i18n.StringsCtx(ctx).ProphylaxesFrequency,
+				Placeholder: i18n.StringsCtx(ctx).ProphylaxesFrequency,
+				Required:    true,
+				Options: []components.SelectOption{
+
+					{Name: i18n.StringsCtx(ctx).ProphylaxesEvery4Weeks, Value: "every4weeks"},
+					{Name: i18n.StringsCtx(ctx).ProphylaxesEvery2Weeks, Value: "every2weeks"},
+					{Name: i18n.StringsCtx(ctx).ProphylaxesOnceInWeek, Value: "once_in_week"},
+					{Name: i18n.StringsCtx(ctx).ProphylaxesTwiceInWeek, Value: "twice_in_week"},
+					{Name: i18n.StringsCtx(ctx).ProphylaxesThriceInWeek, Value: "thrice_in_week"},
+				},
+			})
+		</div>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "end_date",
+				Name:        "end_date",
+				Type:        components.InputTypeDate,
+				Required:    false,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).ProphylaxesEndDate,
+				Placeholder: i18n.StringsCtx(ctx).ProphylaxesEndDate,
+			})
+		</div>
+		<div class={ "flex", "gap-10", "justify-between" }>
+			<div id="prescribed_medicines" class={ "flex", "flex-col", "gap-3" }>
+				<div id="single_medicine" class={ "flex", "gap-3" }>
+					@medicineInCheckUp(allMedicine)
+				</div>
+			</div>
 		</div>
 		<div id="status-msg"></div>
 		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>

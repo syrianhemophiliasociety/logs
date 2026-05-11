@@ -1215,6 +1215,46 @@ func (r *Repository) ListJointEvaluationsForPatient(patientId uint) ([]models.Jo
 	return jes, nil
 }
 
+func (r *Repository) CreateProphylaxis(pp models.Prophylaxis) (models.Prophylaxis, error) {
+	pp.CreatedAt = time.Now().UTC()
+	pp.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Prophylaxis)).
+			Create(&pp).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.Prophylaxis{}, &app.ErrExists{
+			ResourceName: "prophylaxis",
+		}
+	}
+	if err != nil {
+		return models.Prophylaxis{}, err
+	}
+
+	return pp, nil
+}
+
+func (r *Repository) ListProphylaxesForPatient(patientId uint) ([]models.Prophylaxis, error) {
+	var pp []models.Prophylaxis
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Prophylaxis)).
+			Preload("Medicine").
+			Where("patient_id = ?", patientId).
+			Find(&pp).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return pp, nil
+}
+
 func (r *Repository) CreateDiagnosis(diagnosis models.Diagnosis) (models.Diagnosis, error) {
 	diagnosis.CreatedAt = time.Now().UTC()
 	diagnosis.UpdatedAt = time.Now().UTC()

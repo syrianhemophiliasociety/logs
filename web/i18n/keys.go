@@ -53,12 +53,13 @@ type Keys struct {
 	NavStatistics string
 	NavDiagnoses  string
 
-	TabsList    string
-	TabsSearch  string
-	TabsCreate  string
-	TabsCheckup string
-	TabsVisits  string
-	TabsJoints  string
+	TabsList        string
+	TabsSearch      string
+	TabsCreate      string
+	TabsCheckup     string
+	TabsVisits      string
+	TabsJoints      string
+	TabsProphylaxes string
 
 	FormsSubmit   string
 	FormsDelete   string
@@ -202,16 +203,26 @@ type Keys struct {
 	JointsLeftKnee                string
 	JointsRightElbow              string
 	JointsLeftElbow               string
-	VisitTitleFmt                 func(date time.Time) string
-	UseOnePrescribedMedicineFmt   func(medicineName string) string
-	UseMedicineParagraph          string
-	ImportPatients                string
-	ImportPatientRecords          string
-	SelectPatientRecordsFile      string
-	GenerateCard                  string
-	UpdateProfile                 string
-	SaveProfile                   string
-	ProfileDetails                string
+	ProphylaxesTitle              string
+	ProphylaxesFrequency          string
+	ProphylaxesEndDate            string
+	ProphylaxesMedicineDose       string
+	ProphylaxesEvery4Weeks        string
+	ProphylaxesEvery2Weeks        string
+	ProphylaxesOnceInWeek         string
+	ProphylaxesTwiceInWeek        string
+	ProphylaxesThriceInWeek       string
+
+	VisitTitleFmt               func(date time.Time) string
+	UseOnePrescribedMedicineFmt func(medicineName string) string
+	UseMedicineParagraph        string
+	ImportPatients              string
+	ImportPatientRecords        string
+	SelectPatientRecordsFile    string
+	GenerateCard                string
+	UpdateProfile               string
+	SaveProfile                 string
+	ProfileDetails              string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string

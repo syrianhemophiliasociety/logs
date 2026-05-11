@@ -20,7 +20,8 @@ const (
 		models.AccountPermissionReadMedicine | models.AccountPermissionWriteBloodTest |
 		models.AccountPermissionReadVirus | models.AccountPermissionWriteVirus |
 		models.AccountPermissionReadDiagnoses | models.AccountPermissionWriteDiagnoses |
-		models.AccountPermissionReadJoints | models.AccountPermissionWriteJoints
+		models.AccountPermissionReadJoints | models.AccountPermissionWriteJoints |
+		models.AccountPermissionReadProphylaxes | models.AccountPermissionWriteProphylaxes
 
 	// aka jointologist
 	snoopDoggPermissions = models.AccountPermissionReadPatient |

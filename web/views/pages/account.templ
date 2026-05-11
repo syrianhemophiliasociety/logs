@@ -198,6 +198,28 @@ templ accountPermissionsForm(account actions.Account) {
 		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).TabsJoints),
 		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
 	})
+	@components.Input(components.InputOptions{
+		Id:          "permissions",
+		Name:        "permissions",
+		Type:        components.InputTypeCheckbox,
+		Value:       strconv.Itoa(int(models.AccountPermissionReadProphylaxes)),
+		Checked:     account.HasPermission(models.AccountPermissionReadProphylaxes),
+		Required:    false,
+		Autofocus:   false,
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionRead, i18n.StringsCtx(ctx).TabsProphylaxes),
+		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	})
+	@components.Input(components.InputOptions{
+		Id:          "permissions",
+		Name:        "permissions",
+		Type:        components.InputTypeCheckbox,
+		Value:       strconv.Itoa(int(models.AccountPermissionWriteProphylaxes)),
+		Checked:     account.HasPermission(models.AccountPermissionWriteProphylaxes),
+		Required:    false,
+		Autofocus:   false,
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionWrite, i18n.StringsCtx(ctx).TabsProphylaxes),
+		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	})
 	//
 	// @components.Input(components.InputOptions{
 	// 	Id:          "permissions",
