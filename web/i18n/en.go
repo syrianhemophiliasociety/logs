@@ -159,7 +159,7 @@ var english = Keys{
 	EnterAccountType:              "Choose account type",
 	AccountTypeSecritary:          "Secritary",
 	AccountTypeAdmin:              "Admin",
-	AccountTypeJointologist:       "Jointologist",
+	AccountTypeJointologist:       "Rheumatologist",
 	AccountDelete:                 "Delete account",
 	Patient:                       "Patient",
 	PatientFirstName:              "First name",
