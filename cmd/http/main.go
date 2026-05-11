@@ -71,8 +71,8 @@ func main() {
 
 	pages := pages.New(usecases)
 	pagesHandler.HandleFunc("/", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleHomePage)))
-	pagesHandler.HandleFunc("GET /about", contenttype.Html(pages.HandleAboutPage))
-	pagesHandler.HandleFunc("GET /privacy", contenttype.Html(pages.HandlePrivacyPage))
+	pagesHandler.HandleFunc("GET /about", contenttype.Html(webAuthMiddleware.OptionalAuthPage(pages.HandleAboutPage)))
+	pagesHandler.HandleFunc("GET /privacy", contenttype.Html(webAuthMiddleware.OptionalAuthPage(pages.HandlePrivacyPage)))
 	pagesHandler.HandleFunc("GET /login", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleLoginPage)))
 	pagesHandler.HandleFunc("GET /viruses", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleVirusesPage)))
 	pagesHandler.HandleFunc("GET /medicines", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleMedicinesPage)))
