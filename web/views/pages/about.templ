@@ -12,16 +12,7 @@ var badges = []struct {
 }{
 	{title: "Built with Go!", link: "https://golang.org", img: "https://dankstuff.net/assets/dank-imgs/builtwithgo.png"},
 	{title: "Built with HTMX!", link: "https://htmx.org", img: "https://dankstuff.net/assets/dank-imgs/builtwithhtmx.webp"},
-	{title: "A DankStuff product!", link: "https://dankstuff.net", img: "https://dankstuff.net/assets/dank-imgs/dankstuffproduct.webp"},
-	{title: "Donate, maybe?", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/donate00.gif"},
 	{title: "Made by Baraa", link: "https://mbaraa.com", img: "https://mbaraa.com/resources/images/madebybaraa.webp"},
-	{title: "Buy me a coffee!", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/coffee_set2c.gif"},
-	{title: "NEON", link: "", img: "https://dankstuff.net/assets/dank-imgs/fairlite.gif"},
-	{title: "This site is blazingly fast!", link: "", img: "https://dankstuff.net/assets/dank-imgs/fastweb.gif"},
-	{title: "World Wide Web Vibes Kurwa!", link: "", img: "https://dankstuff.net/assets/dank-imgs/geocitieswww.gif"},
-	{title: "Buy me a Coffee but a different logo :0", link: "https://buymeacoffee.com/mbaraa", img: "https://dankstuff.net/assets/dank-imgs/dollarspindownd.gif"},
-	{title: "Smile or something, maybe your smile can save someone's life!", link: "", img: "https://dankstuff.net/assets/dank-imgs/hasmile.gif"},
-	{title: "JK JK!", link: "", img: "https://dankstuff.net/assets/dank-imgs/thispageviolatestos.gif"},
 }
 
 templ About() {
@@ -58,7 +49,7 @@ templ aboutContent() {
 			<p>
 				This application is licensed under the GNU General Public License version 3 (GPLv3), that is, this application is free to use for any purpose, it’s source-code is available on GitHub here for any purpose needed to look at the code, any redestribution of the application has to be under GPLv3 including license and copyright notices.
 				<br/>
-				Full license is available <a class={ "nav-link" } href="https://github.com/syrianhemophiliasociety/shs/blob/main/LICENSE" target="_blank">here</a>.
+				Full license is available <a class={ "nav-link" } href="https://github.com/syrianhemophiliasociety/logs/blob/main/LICENSE" target="_blank">here</a>.
 			</p>
 		</section>
 		<section id="privacy" class={ "flex", "flex-col", "gap-y-1" }>
@@ -66,7 +57,7 @@ templ aboutContent() {
 			<p>
 				You can find details about privacy <a class={ "nav-link" } href="/privacy">here</a>.
 				<br/>
-				TLDR; I don’t collect any data, not sure install uBlock and check trackers yourself or check the code on <a class={ "nav-link" } href="https://github.com/syrianhemophiliasociety/shs" target="_blank">GitHub</a>.
+				TLDR; I don’t collect any data, not sure install uBlock and check trackers yourself or check the code on <a class={ "nav-link" } href="https://github.com/syrianhemophiliasociety/logs" target="_blank">GitHub</a>.
 			</p>
 		</section>
 		<section id="technologies" class={ "flex", "flex-col", "gap-y-1" }>
@@ -93,7 +84,7 @@ templ aboutContent() {
               transition *background-color to initial"
 				style="background-color: rgb(245, 255, 204); transition: 250ms ease-in;"
 			>
-				This nugget uses hyperscript :)
+				This website uses hyperscript :)
 			</button>
 		</section>
 		<section id="acknoledgements" class={ "flex", "flex-col", "gap-y-1" }>
@@ -120,8 +111,8 @@ templ aboutContent() {
 					/>
 					<p>
 						<a
-							class="text-md underline text-secondary"
-							href="https://github.com/syrianhemophiliasociety/shs"
+							class="text-md underline text-white"
+							href="https://github.com/syrianhemophiliasociety/logs"
 							target="_blank"
 						>&nbsp;Source code</a>
 					</p>
@@ -155,7 +146,7 @@ templ aboutContent() {
 					class="font-mono font-bold bg-[#fcfcde] px-1 border-2 border-black text-black mt-4"
 				>
 					version:
-					<a class="italic" href="https://github.com/syrianhemophiliasociety/shs">
+					<a class="italic" href="https://github.com/syrianhemophiliasociety/logs">
 						{ fmt.Sprint(ctx.Value("version")) }
 					</a>
 				</p>
