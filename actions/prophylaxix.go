@@ -48,6 +48,7 @@ type Prophylaxis struct {
 	MedicineId         uint      `json:"medicine_id,omitempty"`
 	PrescribedMedicine Medicine  `json:"prescribed_medicine"`
 	MedicineDose       int       `json:"medicine_dose"`
+	Chosen             bool      `json:"chosen"`
 }
 
 func (pp *Prophylaxis) FromModel(p models.Prophylaxis) {
@@ -59,6 +60,7 @@ func (pp *Prophylaxis) FromModel(p models.Prophylaxis) {
 	med := new(Medicine)
 	med.FromModel(p.Medicine)
 	(*pp).PrescribedMedicine = *med
+	(*pp).Chosen = p.Chosen
 }
 
 func (pp Prophylaxis) IntoModel() models.Prophylaxis {
@@ -83,6 +85,9 @@ type CreatePatientProphylaxisPayload struct {
 
 func (a *Actions) CreatePatientProphylaxis(params CreatePatientProphylaxisParams) (CreatePatientProphylaxisPayload, error) {
 	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return CreatePatientProphylaxisPayload{}, ErrPermissionDenied{}
+	}
+	if !params.Account.HasPermission(models.AccountPermissionWriteProphylaxes) {
 		return CreatePatientProphylaxisPayload{}, ErrPermissionDenied{}
 	}
 
@@ -115,6 +120,9 @@ func (a *Actions) ListPatientProphylaxes(params ListPatientProphylaxesParams) (L
 	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
 		return ListPatientProphylaxesPayload{}, ErrPermissionDenied{}
 	}
+	if !params.Account.HasPermission(models.AccountPermissionReadProphylaxes) {
+		return ListPatientProphylaxesPayload{}, ErrPermissionDenied{}
+	}
 
 	patient, err := a.app.GetPatientByPublicId(params.PatientId)
 	if err != nil {
@@ -136,4 +144,106 @@ func (a *Actions) ListPatientProphylaxes(params ListPatientProphylaxesParams) (L
 	return ListPatientProphylaxesPayload{
 		Data: outProphylaxes,
 	}, nil
+}
+
+type EndPatientProphylaxisParams struct {
+	ActionContext
+	PatientId     string
+	ProphylaxisId uint
+}
+
+type EndPatientProphylaxisPayload struct {
+	Updated Prophylaxis `json:"updated"`
+}
+
+func (a *Actions) EndPatientProphylaxis(params EndPatientProphylaxisParams) (EndPatientProphylaxisPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return EndPatientProphylaxisPayload{}, ErrPermissionDenied{}
+	}
+	if !params.Account.HasPermission(models.AccountPermissionWriteProphylaxes) {
+		return EndPatientProphylaxisPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
+	if err != nil {
+		return EndPatientProphylaxisPayload{}, err
+	}
+
+	updated, err := a.app.SetProphylaxisEndDateForPatient(params.ProphylaxisId, patient.Id, time.Now().UTC())
+	if err != nil {
+		return EndPatientProphylaxisPayload{}, err
+	}
+
+	outUpdated := new(Prophylaxis)
+	outUpdated.FromModel(updated)
+
+	return EndPatientProphylaxisPayload{
+		Updated: *outUpdated,
+	}, nil
+}
+
+type MarkPatientProphylaxisAsChosenParams struct {
+	ActionContext
+	PatientId     string
+	ProphylaxisId uint
+}
+
+type MarkPatientProphylaxisAsChosenPayload struct {
+	Updated Prophylaxis `json:"updated"`
+}
+
+func (a *Actions) MarkPatientProphylaxisAsChosen(params MarkPatientProphylaxisAsChosenParams) (MarkPatientProphylaxisAsChosenPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return MarkPatientProphylaxisAsChosenPayload{}, ErrPermissionDenied{}
+	}
+	if !params.Account.HasPermission(models.AccountPermissionWriteProphylaxes) {
+		return MarkPatientProphylaxisAsChosenPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
+	if err != nil {
+		return MarkPatientProphylaxisAsChosenPayload{}, err
+	}
+
+	updated, err := a.app.SetProphylaxisChosenForPatient(params.ProphylaxisId, patient.Id, true) //TODO:make it a toggle
+	if err != nil {
+		return MarkPatientProphylaxisAsChosenPayload{}, err
+	}
+
+	outUpdated := new(Prophylaxis)
+	outUpdated.FromModel(updated)
+
+	return MarkPatientProphylaxisAsChosenPayload{
+		Updated: *outUpdated,
+	}, nil
+}
+
+type DeletePatientPropylaxisParams struct {
+	ActionContext
+	PatientId     string
+	ProphylaxisId uint
+}
+
+type DeletePatientPropylaxisPayload struct {
+}
+
+func (a *Actions) DeletePatientPropylaxis(params DeletePatientPropylaxisParams) (DeletePatientPropylaxisPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
+		return DeletePatientPropylaxisPayload{}, ErrPermissionDenied{}
+	}
+	if !params.Account.HasPermission(models.AccountPermissionWriteProphylaxes) {
+		return DeletePatientPropylaxisPayload{}, ErrPermissionDenied{}
+	}
+
+	patient, err := a.app.GetPatientByPublicId(params.PatientId)
+	if err != nil {
+		return DeletePatientPropylaxisPayload{}, err
+	}
+
+	err = a.app.DeleteProphylaxisForPatient(params.ProphylaxisId, patient.Id)
+	if err != nil {
+		return DeletePatientPropylaxisPayload{}, err
+	}
+
+	return DeletePatientPropylaxisPayload{}, nil
 }

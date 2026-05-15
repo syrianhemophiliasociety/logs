@@ -8,6 +8,7 @@ import (
 	"shs/web/i18n"
 	"shs/web/views/components"
 	"shs/web/views/helpers"
+	"shs/web/views/icons"
 	"strconv"
 	"time"
 )
@@ -131,10 +132,18 @@ templ patientBriefProfile(patient actions.Patient) {
 					</td>
 				</tr>
 				if len(patient.Prophylaxes) > 0 {
+					{{
+						chosenProphylaxis := patient.Prophylaxes[0]
+						for _, pp := range patient.Prophylaxes {
+							if pp.Chosen {
+								chosenProphylaxis = pp
+							}
+						}
+					}}
 					<tr>
-						<td><b>{ i18n.StringsCtx(ctx).PrimaryProphylaxis }</b></td>
+						<td><b>{ i18n.StringsCtx(ctx).Prophylaxis }</b></td>
 						<td>
-							{ patient.Prophylaxes[0].Title }
+							{ chosenProphylaxis.Title }
 						</td>
 					</tr>
 				}
@@ -640,35 +649,69 @@ templ patientListProphylaxes(patient actions.Patient) {
 	} else {
 		@components.ScrollableList(components.ScrollableListParams{}) {
 			for _, pp := range patient.Prophylaxes {
-				<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "gap-x-5" }>
-					<span class={ "font-bold","text-lg" }>
-						{ fmt.Sprintf("%s", pp.Title) }
-					</span>
-					<span class={ "text-lg" }>
-						switch pp.FrequencyPerDays {
-							case "every4weeks":
-								{ i18n.StringsCtx(ctx).ProphylaxesEvery4Weeks }
-							case "every2weeks":
-								{ i18n.StringsCtx(ctx).ProphylaxesEvery2Weeks }
-							case "once_in_week":
-								{ i18n.StringsCtx(ctx).ProphylaxesOnceInWeek }
-							case "twice_in_week":
-								{ i18n.StringsCtx(ctx).ProphylaxesTwiceInWeek }
-							case "thrice_in_week":
-								{ i18n.StringsCtx(ctx).ProphylaxesThriceInWeek }
-							default:
-								{ "N/A" }
-						}
-					</span>
-					<span class={ "text-lg" }>
-						{ pp.PrescribedMedicine.Name }
-					</span>
-					<span class={ "text-lg" }>
-						{ fmt.Sprint(pp.MedicineDose) }
-					</span>
-					<span class={ "text-lg" }>
-						{ pp.EndDate.Format("2006 Jan/02") }
-					</span>
+				<div id={ fmt.Sprintf("patient-prophylaxis-%s", actions.Slugify(fmt.Sprint(pp.Id))) } class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between", "gap-x-5" }>
+					<div>
+						<span class={ "font-bold","text-lg" }>
+							{ fmt.Sprintf("%s", pp.Title) }
+						</span>
+						<span class={ "text-lg" }>
+							switch pp.FrequencyPerDays {
+								case "every4weeks":
+									{ i18n.StringsCtx(ctx).ProphylaxesEvery4Weeks }
+								case "every2weeks":
+									{ i18n.StringsCtx(ctx).ProphylaxesEvery2Weeks }
+								case "once_in_week":
+									{ i18n.StringsCtx(ctx).ProphylaxesOnceInWeek }
+								case "twice_in_week":
+									{ i18n.StringsCtx(ctx).ProphylaxesTwiceInWeek }
+								case "thrice_in_week":
+									{ i18n.StringsCtx(ctx).ProphylaxesThriceInWeek }
+								default:
+									{ "N/A" }
+							}
+						</span>
+						<span class={ "text-lg" }>
+							{ pp.PrescribedMedicine.Name }
+						</span>
+						<span class={ "text-lg" }>
+							{ fmt.Sprint(pp.MedicineDose) }
+						</span>
+						<span class={ "text-lg" }>
+							{ pp.EndDate.Format("2006 Jan/02") }
+						</span>
+					</div>
+					<div class={ "flex", "flex-row", "gap-x-2" }>
+						@components.HyperButton(components.HyperButtonParams{
+							Title:       i18n.StringsCtx(ctx).ProphylaxisEnd,
+							HxMethod:    "PUT",
+							HxPath:      fmt.Sprintf("/api/web/patient/%s/prophylaxis/%d/end", patient.PublicId, pp.Id),
+							HxSwap:      "outerHTML",
+							HxTarget:    "#patient-profile-sub-container",
+							HyperScript: "on htmx:afterRequest call location.reload()",
+						})
+						@components.HyperButton(components.HyperButtonParams{
+							Title:       i18n.StringsCtx(ctx).ProphylaxisMarkChosen,
+							HxMethod:    "PUT",
+							HxPath:      fmt.Sprintf("/api/web/patient/%s/prophylaxis/%d/mark-chosen", patient.PublicId, pp.Id),
+							HxSwap:      "outerHTML",
+							HxTarget:    "#patient-profile-sub-container",
+							HyperScript: "on htmx:afterRequest call location.reload()",
+						})
+						<button
+							class={ "cursor-pointer" , "rounded-md" , "p-[10px]" , "text-white" , "bg-red-800", "hover:bg-red-500",
+                "font-bold", "flex", "flex-row", "resources-center", "justify-center", "gap-2" }
+							hx-delete={ fmt.Sprintf("/api/web/patient/%s/prophylaxis/%d", patient.PublicId, pp.Id) }
+							hx-confirm={ i18n.StringsCtx(ctx).MessageDeleteConfirmFmt(i18n.StringsCtx(ctx).Prophylaxis, pp.Title) }
+							hx-trigger="click consume"
+							hx-target={ fmt.Sprintf("#patient-prophylaxis-%s", actions.Slugify(fmt.Sprint(pp.Id))) }
+							hx-swap="delete"
+							_="on click halt the event then call event.stopImmediatePropagation() then call event.stopPropagation() then call location.reload()"
+						>
+							{ 
+        i18n.StringsCtx(ctx).FormsDelete }
+							@icons.Trash()
+						</button>
+					</div>
 				</div>
 			}
 		}
@@ -679,7 +722,7 @@ templ patientCreateProphylaxes(patient actions.Patient, allMedicine []actions.Me
 	<form
 		class={ "flex", "flex-col", "gap-5" }
 		hx-encoding="application/json"
-		hx-post={ fmt.Sprintf("/api/web/patient/%s/prophylaxes", patient.PublicId) }
+		hx-post={ fmt.Sprintf("/api/web/patient/%s/prophylaxis", patient.PublicId) }
 		hx-ext="json-enc"
 		hx-target="#status-msg"
 		hx-swap="innerHTML"

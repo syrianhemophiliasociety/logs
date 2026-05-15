@@ -1255,6 +1255,64 @@ func (r *Repository) ListProphylaxesForPatient(patientId uint) ([]models.Prophyl
 	return pp, nil
 }
 
+func (r *Repository) SetProphylaxisEndDateForPatient(id, patientId uint, endDate time.Time) (models.Prophylaxis, error) {
+	var pp models.Prophylaxis
+	err := tryWrapDbError(
+		r.client.
+			Model(&pp).
+			Where("id = ? AND patient_id = ?", id, patientId).
+			Update("end_date", endDate).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Prophylaxis{}, &app.ErrNotFound{
+			ResourceName: "prophylaxis",
+		}
+	}
+	if err != nil {
+		return models.Prophylaxis{}, err
+	}
+
+	return pp, nil
+}
+
+func (r *Repository) SetProphylaxisChosenForPatient(id, patientId uint, chosen bool) (models.Prophylaxis, error) {
+	var pp models.Prophylaxis
+	err := tryWrapDbError(
+		r.client.
+			Model(&pp).
+			Where("id = ? AND patient_id = ?", id, patientId).
+			Update("chosen", chosen).
+			Update("updated_at", time.Now().UTC()).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return models.Prophylaxis{}, &app.ErrNotFound{
+			ResourceName: "prophylaxis",
+		}
+	}
+	if err != nil {
+		return models.Prophylaxis{}, err
+	}
+
+	return pp, nil
+}
+
+func (r *Repository) DeleteProphylaxisForPatient(id, patientId uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Prophylaxis)).
+			Delete(&models.Prophylaxis{Id: id}, "id = ? AND patient_id = ?", id, patientId).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *Repository) CreateDiagnosis(diagnosis models.Diagnosis) (models.Diagnosis, error) {
 	diagnosis.CreatedAt = time.Now().UTC()
 	diagnosis.UpdatedAt = time.Now().UTC()

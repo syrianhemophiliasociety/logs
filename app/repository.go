@@ -68,6 +68,9 @@ type Repository interface {
 
 	CreateProphylaxis(pp models.Prophylaxis) (models.Prophylaxis, error)
 	ListProphylaxesForPatient(patientId uint) ([]models.Prophylaxis, error)
+	DeleteProphylaxisForPatient(id, patientId uint) error
+	SetProphylaxisEndDateForPatient(id, patientId uint, endDate time.Time) (models.Prophylaxis, error)
+	SetProphylaxisChosenForPatient(id, patientId uint, chosen bool) (models.Prophylaxis, error)
 
 	CreateDiagnosis(d models.Diagnosis) (models.Diagnosis, error)
 	DeleteDiagnisis(id uint) error

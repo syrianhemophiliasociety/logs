@@ -230,7 +230,10 @@ var arabic = Keys{
 	ProphylaxesOnceInWeek:         "مرة أسبوعياً",
 	ProphylaxesTwiceInWeek:        "مرتان أسبوعياً",
 	ProphylaxesThriceInWeek:       "ثلاث مرات أسبوعياً",
-	Prophylaxis 				"Prophylaxis",
+	ProphylaxisMarkChosen:         "Mark chosen",
+	ProphylaxisEnd:                "End",
+	Prophylaxis:                   "Prophylaxis",
+	ProphylaxisChoose:             "Choose",
 
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))

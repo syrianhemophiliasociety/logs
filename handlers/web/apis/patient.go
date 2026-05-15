@@ -674,6 +674,96 @@ func (v *patientApi) HandleCreatePatientProphylaxis(w http.ResponseWriter, r *ht
 	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
 }
 
+func (v *patientApi) HandleEndPatientProphylaxis(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+	ppId, err := strconv.Atoi(r.PathValue("pp_id"))
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.EndPatientProphylaxis(actions.EndPatientProphylaxisParams{
+		ActionContext: ctx,
+		PatientId:     patientId,
+		ProphylaxisId: uint(ppId),
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func (v *patientApi) HandleMarkPatientProphylaxisAsChosen(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+	ppId, err := strconv.Atoi(r.PathValue("pp_id"))
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.MarkPatientProphylaxisAsChosen(actions.MarkPatientProphylaxisAsChosenParams{
+		ActionContext: ctx,
+		PatientId:     patientId,
+		ProphylaxisId: uint(ppId),
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func (v *patientApi) HandleDeletePatientProphylaxis(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	patientId := r.PathValue("id")
+	ppId, err := strconv.Atoi(r.PathValue("pp_id"))
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	_, err = v.usecases.DeletePatientPropylaxis(actions.DeletePatientPropylaxisParams{
+		ActionContext: ctx,
+		PatientId:     patientId,
+		ProphylaxisId: uint(ppId),
+	})
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
 func validateFileType(r io.ReadSeeker, wantedTypes ...string) error {
 	reader := bufio.NewReader(r)
 

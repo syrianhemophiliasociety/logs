@@ -12,7 +12,7 @@ type HyperButtonParams struct {
 
 templ HyperButton(params HyperButtonParams) {
 	<button
-		class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]", "px-4" , "w-full" , "text-accent", params.Class }
+		class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]", "px-4" , "w-fit" , "text-accent", params.Class }
 		if params.HxMethod == "GET" {
 			hx-get={ params.HxPath }
 		}

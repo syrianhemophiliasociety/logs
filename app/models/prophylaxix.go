@@ -11,6 +11,7 @@ type Prophylaxis struct {
 	Title            string  `gorm:"not null"`
 	FrequencyPerDays float32 `gorm:"not null"`
 	EndDate          time.Time
+	Chosen           bool
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
