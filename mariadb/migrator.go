@@ -21,6 +21,7 @@ var migratableModels = []schema.Tabler{
 	new(models.Address),
 	new(models.Patient),
 	new(models.PatientId),
+	new(models.HasVirus),
 	new(models.PatientUseMedicine),
 	new(models.PrescribedMedicine),
 	new(models.JointsEvaluation),

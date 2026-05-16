@@ -14,3 +14,16 @@ type Virus struct {
 func (Virus) TableName() string {
 	return "viruses"
 }
+
+type HasVirus struct {
+	Virus     Virus
+	VirusId   uint `gorm:"primaryKey"`
+	Patient   Patient
+	PatientId uint `gorm:"primaryKey"`
+
+	CreatedAt time.Time `gorm:"index;not null"`
+}
+
+func (HasVirus) TableName() string {
+	return "has_viruses"
+}
