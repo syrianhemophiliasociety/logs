@@ -803,6 +803,37 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 	}
 
+	for _, patient := range newPatients {
+		// Fibrinogen
+		patientFibi, ok := mPatientFibrinogen[patient.IndexId()]
+		if !ok {
+			log.Warningf("Fibi not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientFibiValue, err := strconv.ParseFloat(patientFibi.Fibi, 64)
+		if err != nil {
+			continue
+		}
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientFibi.CreatedAt,
+			BloodTestId: patientFibi.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientFibi.CreatedAt,
+					BloodTestFieldId: patientFibi.FieldId,
+					ValueString:      patientFibi.Fibi,
+					ValueNumber:      patientFibiValue,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
 	outIgnoredPatients := make([]Patient, len(ignoredPatients))
 	for i := range ignoredPatients {
 		outIgnoredPatients[i].FromModel(ignoredPatients[i])
