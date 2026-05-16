@@ -31,9 +31,17 @@ type csvRow struct {
 	Diagnosis_GroupName   string
 	Diagnosis_Title       string
 	DateOfDiagnosis       time.Time
-	FactorVIII            string
+	BTFactorVIII          string
 	BloodGroupABO         string
 	BloodGroupRhD         string
+	BTFactorIX            string
+	BTVWFAg               string
+	BTFactorV             string
+	BTFactorX             string
+	BTFibrinogen          string
+	BTFactorVII           string
+	BTInhibitorsScreening string
+	BTInhibitorsTitrage   string
 }
 
 func tryParseTime(dateStr string) (time.Time, error) {
@@ -100,9 +108,17 @@ func extractCsvRecords(csvFile io.Reader) ([]csvRow, error) {
 			Diagnosis_GroupName:   diagnosisGroup,
 			Diagnosis_Title:       diagnosisTitle,
 			DateOfDiagnosis:       dateOfDiagnosis,
-			FactorVIII:            strings.TrimSpace(column[17]),
+			BTFactorVIII:          strings.TrimSpace(column[17]),
 			BloodGroupABO:         strings.TrimSpace(column[18]),
 			BloodGroupRhD:         strings.TrimSpace(column[19]),
+			BTFactorIX:            strings.TrimSpace(column[20]),
+			BTVWFAg:               strings.TrimSpace(column[21]),
+			BTFactorV:             strings.TrimSpace(column[22]),
+			BTFactorX:             strings.TrimSpace(column[23]),
+			BTFibrinogen:          strings.TrimSpace(column[24]),
+			BTFactorVII:           strings.TrimSpace(column[25]),
+			BTInhibitorsScreening: strings.TrimSpace(column[26]),
+			BTInhibitorsTitrage:   strings.TrimSpace(column[27]),
 		}
 
 		rows = append(rows, r)
@@ -128,6 +144,57 @@ type patientBloodGroup struct {
 	RhFieldId  uint
 	Rh         string
 	CreatedAt  time.Time
+}
+
+type patientFactorVII struct {
+	Id        uint
+	FieldId   uint
+	FactorVii string
+	CreatedAt time.Time
+}
+
+type patientFactorV struct {
+	Id        uint
+	FieldId   uint
+	FactorV   string
+	CreatedAt time.Time
+}
+
+type patientFactorX struct {
+	Id        uint
+	FieldId   uint
+	FactorX   string
+	CreatedAt time.Time
+}
+
+type patientFactorIX struct {
+	Id        uint
+	FieldId   uint
+	FactorIX  string
+	CreatedAt time.Time
+}
+
+type patientVWFAg struct {
+	Id        uint
+	FieldId   uint
+	VWFAg     string
+	CreatedAt time.Time
+}
+
+type patientFibrinogen struct {
+	Id        uint
+	FieldId   uint
+	Fibi      string
+	CreatedAt time.Time
+}
+
+type patientInhibitors struct {
+	Id        uint
+	FieldId   uint
+	Screening string
+	Field2Id  uint
+	Titrage   string
+	CreatedAt time.Time
 }
 
 type patientFactorVIII struct {
@@ -157,6 +224,13 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 	patientDiagnoses := make(map[string]*models.Diagnosis)
 	mPatientBloodGroup := make(map[string]*patientBloodGroup)
 	mPatientFactorVIII := make(map[string]*patientFactorVIII)
+	mPatientFactorVII := make(map[string]*patientFactorVII)
+	mPatientFactorV := make(map[string]*patientFactorV)
+	mPatientFactorIX := make(map[string]*patientFactorIX)
+	mPatientFactorX := make(map[string]*patientFactorX)
+	mPatientVWFAg := make(map[string]*patientVWFAg)
+	mPatientFibrinogen := make(map[string]*patientFibrinogen)
+	mPatientInhibitors := make(map[string]*patientInhibitors)
 
 	for _, record := range importRecords {
 		patient := models.Patient{
@@ -200,8 +274,51 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 
 		mPatientFactorVIII[patient.IndexId()] = &patientFactorVIII{
 			Id:         0,
-			FactorViii: record.FactorVIII,
+			FactorViii: record.BTFactorVIII,
 			CreatedAt:  record.DateOfDiagnosis,
+		}
+
+		mPatientFactorVII[patient.IndexId()] = &patientFactorVII{
+			Id:        0,
+			FactorVii: record.BTFactorVII,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientFactorV[patient.IndexId()] = &patientFactorV{
+			Id:        0,
+			FactorV:   record.BTFactorV,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientFactorIX[patient.IndexId()] = &patientFactorIX{
+			Id:        0,
+			FactorIX:  record.BTFactorIX,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientFactorX[patient.IndexId()] = &patientFactorX{
+			Id:        0,
+			FactorX:   record.BTFactorX,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientVWFAg[patient.IndexId()] = &patientVWFAg{
+			Id:        0,
+			VWFAg:     record.BTVWFAg,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientFibrinogen[patient.IndexId()] = &patientFibrinogen{
+			Id:        0,
+			Fibi:      record.BTFibrinogen,
+			CreatedAt: record.DateOfDiagnosis,
+		}
+
+		mPatientInhibitors[patient.IndexId()] = &patientInhibitors{
+			Id:        0,
+			Screening: record.BTInhibitorsScreening,
+			Titrage:   record.BTInhibitorsTitrage,
+			CreatedAt: record.DateOfDiagnosis,
 		}
 	}
 
@@ -306,6 +423,117 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 	}
 
+	for key := range mPatientFactorVII {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Factor - VII"
+		})
+		if foundBtIdx > -1 {
+			mPatientFactorVII[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Factor - VII"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientFactorVII[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientFactorV {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Factor - V"
+		})
+		if foundBtIdx > -1 {
+			mPatientFactorV[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Factor - V"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientFactorV[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientFactorX {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Factor - X"
+		})
+		if foundBtIdx > -1 {
+			mPatientFactorX[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Factor - X"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientFactorX[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientFactorIX {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Factor - IX"
+		})
+		if foundBtIdx > -1 {
+			mPatientFactorIX[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Factor - IX"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientFactorIX[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientVWFAg {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "VWF:Ag"
+		})
+		if foundBtIdx > -1 {
+			mPatientVWFAg[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "VWF:Ag"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientVWFAg[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientFibrinogen {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Fibrinogen"
+		})
+		if foundBtIdx > -1 {
+			mPatientFibrinogen[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Fibrinogen"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientFibrinogen[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+	}
+
+	for key := range mPatientInhibitors {
+		foundBtIdx := slices.IndexFunc(bloodTests, func(bt models.BloodTest) bool {
+			return bt.Name == "Inhibitors"
+		})
+		if foundBtIdx > -1 {
+			mPatientInhibitors[key].Id = bloodTests[foundBtIdx].Id
+		}
+		foundBtFieldAboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Inhibitor Screening"
+		})
+		if foundBtFieldAboIdx > -1 {
+			mPatientInhibitors[key].FieldId = bloodTests[foundBtIdx].Fields[foundBtFieldAboIdx].Id
+		}
+		foundBtField2AboIdx := slices.IndexFunc(bloodTests[foundBtIdx].Fields, func(btf models.BloodTestField) bool {
+			return btf.Name == "Inhibitor Titrage"
+		})
+		if foundBtField2AboIdx > -1 {
+			mPatientInhibitors[key].Field2Id = bloodTests[foundBtIdx].Fields[foundBtField2AboIdx].Id
+		}
+	}
+
 	for _, patient := range newPatients {
 		patientDiagnosis, ok := patientDiagnoses[patient.IndexId()]
 		if !ok {
@@ -374,6 +602,179 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 					BloodTestFieldId: patientFactor7.FieldId,
 					ValueString:      patientFactor7.FactorViii,
 					ValueNumber:      patientFactor7Value,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// factor vii
+		patientFactor6, ok := mPatientFactorVII[patient.IndexId()]
+		if !ok {
+			log.Warningf("Factor 6 was not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientFactor6Value, _ := strconv.ParseFloat(patientFactor6.FactorVii, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientFactor6.CreatedAt,
+			BloodTestId: patientFactor6.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientFactor6.CreatedAt,
+					BloodTestFieldId: patientFactor6.FieldId,
+					ValueString:      patientFactor6.FactorVii,
+					ValueNumber:      patientFactor6Value,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// factor v
+		patientFactor5, ok := mPatientFactorV[patient.IndexId()]
+		if !ok {
+			log.Warningf("Factor 5 was not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientFactor5Value, _ := strconv.ParseFloat(patientFactor5.FactorV, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientFactor5.CreatedAt,
+			BloodTestId: patientFactor5.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientFactor5.CreatedAt,
+					BloodTestFieldId: patientFactor5.FieldId,
+					ValueString:      patientFactor5.FactorV,
+					ValueNumber:      patientFactor5Value,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// factor ix
+		patientFactor9, ok := mPatientFactorIX[patient.IndexId()]
+		if !ok {
+			log.Warningf("Factor 9 was not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientFactor9Value, _ := strconv.ParseFloat(patientFactor9.FactorIX, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientFactor9.CreatedAt,
+			BloodTestId: patientFactor9.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientFactor9.CreatedAt,
+					BloodTestFieldId: patientFactor9.FieldId,
+					ValueString:      patientFactor9.FactorIX,
+					ValueNumber:      patientFactor9Value,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// factor x
+		patientFactor10, ok := mPatientFactorX[patient.IndexId()]
+		if !ok {
+			log.Warningf("Factor 10 was not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientFactor10Value, _ := strconv.ParseFloat(patientFactor10.FactorX, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientFactor10.CreatedAt,
+			BloodTestId: patientFactor10.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientFactor10.CreatedAt,
+					BloodTestFieldId: patientFactor10.FieldId,
+					ValueString:      patientFactor10.FactorX,
+					ValueNumber:      patientFactor10Value,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// vwfag
+		patientVWFAg, ok := mPatientVWFAg[patient.IndexId()]
+		if !ok {
+			log.Warningf("VWFAg not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientVWFAgValue, _ := strconv.ParseFloat(patientVWFAg.VWFAg, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientVWFAg.CreatedAt,
+			BloodTestId: patientVWFAg.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientVWFAg.CreatedAt,
+					BloodTestFieldId: patientVWFAg.FieldId,
+					ValueString:      patientVWFAg.VWFAg,
+					ValueNumber:      patientVWFAgValue,
+				},
+			},
+		})
+		if err != nil {
+			continue
+		}
+	}
+
+	for _, patient := range newPatients {
+		// inhibitors
+		patientInhibitors, ok := mPatientInhibitors[patient.IndexId()]
+		if !ok {
+			log.Warningf("Inhibitors was not found for patient '%s'\n", patient.IndexId())
+			continue
+		}
+
+		patientInTitValue, _ := strconv.ParseFloat(patientInhibitors.Titrage, 64)
+
+		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+			CreatedAt:   patientInhibitors.CreatedAt,
+			BloodTestId: patientInhibitors.Id,
+			PatientId:   patient.Id,
+			FilledFields: []models.BloodTestFilledField{
+				{
+					CreatedAt:        patientInhibitors.CreatedAt,
+					BloodTestFieldId: patientInhibitors.FieldId,
+					ValueString:      patientInhibitors.Screening,
+				},
+				{
+					CreatedAt:        patientInhibitors.CreatedAt,
+					BloodTestFieldId: patientInhibitors.Field2Id,
+					ValueString:      patientInhibitors.Titrage,
+					ValueNumber:      patientInTitValue,
 				},
 			},
 		})
