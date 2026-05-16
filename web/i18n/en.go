@@ -104,6 +104,8 @@ var english = Keys{
 	EnterMedicineManufacturer:     "Enter medicine's manufacturer",
 	MedicineFactorType:            "Medicine's factor type",
 	EnterMedicineFactorType:       "Enter medicine's factor type",
+	MedicineFactor:                "Medicine's factor",
+	EnterMedicineFactor:           "Enter medicine's factor",
 	MedicineBatchNumber:           "Medicine's batch number",
 	EnterMedicineBatchNumber:      "Enter medicine's batch number",
 	MedicineReceivedAt:            "Medicine received at",

@@ -12,6 +12,7 @@ type Medicine struct {
 	ReceivedAt   time.Time `gorm:"not null"`
 	Manufacturer string    `gorm:"not null"`
 	BatchNumber  string    `gorm:"not null"`
+	Factor       string    `gorm:"not null"`
 	FactorType   string    `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`

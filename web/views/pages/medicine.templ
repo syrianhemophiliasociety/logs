@@ -120,6 +120,17 @@ templ Medicine(medicine actions.Medicine) {
 			</div>
 			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
 				@components.Input(components.InputOptions{
+					Id:          "factor",
+					Name:        "factor",
+					Type:        components.InputTypeText,
+					Required:    true,
+					Autofocus:   false,
+					Disabled:    true,
+					Title:       i18n.StringsCtx(ctx).MedicineFactor,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineFactor,
+					Value:       medicine.Factor,
+				})
+				@components.Input(components.InputOptions{
 					Id:          "factor_type",
 					Name:        "factor_type",
 					Type:        components.InputTypeText,

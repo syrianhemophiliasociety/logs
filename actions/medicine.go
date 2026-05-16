@@ -17,6 +17,7 @@ type Medicine struct {
 	Manufacturer string    `json:"manufacturer"`
 	BatchNumber  string    `json:"batch_number"`
 	FactorType   string    `json:"factor_type"`
+	Factor       string    `json:"factor"`
 }
 
 func (m Medicine) DoseUnit() string {
@@ -39,6 +40,7 @@ func (m Medicine) IntoModel() models.Medicine {
 		Manufacturer: m.Manufacturer,
 		BatchNumber:  m.BatchNumber,
 		FactorType:   m.FactorType,
+		Factor:       m.Factor,
 	}
 }
 
@@ -54,6 +56,7 @@ func (m *Medicine) FromModel(medicine models.Medicine) {
 		Manufacturer: medicine.Manufacturer,
 		BatchNumber:  medicine.BatchNumber,
 		FactorType:   medicine.FactorType,
+		Factor:       medicine.Factor,
 	}
 }
 

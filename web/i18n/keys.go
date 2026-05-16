@@ -88,6 +88,8 @@ type Keys struct {
 	EnterMedicineManufacturer string
 	MedicineFactorType        string
 	EnterMedicineFactorType   string
+	MedicineFactor            string
+	EnterMedicineFactor       string
 	MedicineBatchNumber       string
 	EnterMedicineBatchNumber  string
 	MedicineReceivedAt        string

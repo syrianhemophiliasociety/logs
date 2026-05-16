@@ -106,6 +106,8 @@ var arabic = Keys{
 	EnterMedicineManufacturer:     "أدخل اسم الشركة المصنعة للدواء ",
 	MedicineFactorType:            "نوع العامل",
 	EnterMedicineFactorType:       "أدخل نوع العامل",
+	MedicineFactor:                "Medicine's factor",
+	EnterMedicineFactor:           "Enter medicine's factor",
 	MedicineBatchNumber:           "رقم الطبخة",
 	EnterMedicineBatchNumber:      "أدخل رقم الطبخة",
 	MedicineReceivedAt:            "تاريخ الاستلام",

@@ -23,6 +23,7 @@ type RequestMedicine struct {
 	Manufacturer string `json:"manufacturer"`
 	BatchNumber  string `json:"batch_number"`
 	FactorType   string `json:"factor_type"`
+	Factor       string `json:"factor"`
 }
 
 func clusterFuckMedicineToActionsOne(reqMed RequestMedicine) (actions.Medicine, error) {
@@ -56,6 +57,7 @@ func clusterFuckMedicineToActionsOne(reqMed RequestMedicine) (actions.Medicine, 
 		Manufacturer: reqMed.Manufacturer,
 		BatchNumber:  reqMed.BatchNumber,
 		FactorType:   reqMed.FactorType,
+		Factor:       reqMed.Factor,
 	}, nil
 }
 
