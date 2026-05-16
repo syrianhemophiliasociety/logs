@@ -590,7 +590,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientFactor7Value, _ := strconv.ParseFloat(patientFactor7.FactorViii, 64)
+		patientFactor7Value, err := strconv.ParseFloat(patientFactor7.FactorViii, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientFactor7.CreatedAt,
@@ -618,7 +621,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientFactor6Value, _ := strconv.ParseFloat(patientFactor6.FactorVii, 64)
+		patientFactor6Value, err := strconv.ParseFloat(patientFactor6.FactorVii, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientFactor6.CreatedAt,
@@ -646,7 +652,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientFactor5Value, _ := strconv.ParseFloat(patientFactor5.FactorV, 64)
+		patientFactor5Value, err := strconv.ParseFloat(patientFactor5.FactorV, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientFactor5.CreatedAt,
@@ -674,7 +683,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientFactor9Value, _ := strconv.ParseFloat(patientFactor9.FactorIX, 64)
+		patientFactor9Value, err := strconv.ParseFloat(patientFactor9.FactorIX, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientFactor9.CreatedAt,
@@ -702,7 +714,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientFactor10Value, _ := strconv.ParseFloat(patientFactor10.FactorX, 64)
+		patientFactor10Value, err := strconv.ParseFloat(patientFactor10.FactorX, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientFactor10.CreatedAt,
@@ -730,7 +745,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientVWFAgValue, _ := strconv.ParseFloat(patientVWFAg.VWFAg, 64)
+		patientVWFAgValue, err := strconv.ParseFloat(patientVWFAg.VWFAg, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientVWFAg.CreatedAt,
@@ -758,7 +776,10 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			continue
 		}
 
-		patientInTitValue, _ := strconv.ParseFloat(patientInhibitors.Titrage, 64)
+		patientInTitValue, err := strconv.ParseFloat(patientInhibitors.Titrage, 64)
+		if err != nil {
+			continue
+		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
 			CreatedAt:   patientInhibitors.CreatedAt,
