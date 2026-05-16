@@ -776,11 +776,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		patientInTitValue, err := strconv.ParseFloat(patientInhibitors.Titrage, 64)
-		if err != nil {
+		if err != nil && patientInhibitors.Screening == "" {
 			continue
 		}
 
-		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
+		btr := models.BloodTestResult{
 			CreatedAt:   patientInhibitors.CreatedAt,
 			BloodTestId: patientInhibitors.Id,
 			PatientId:   patient.Id,
@@ -790,14 +790,20 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 					BloodTestFieldId: patientInhibitors.FieldId,
 					ValueString:      patientInhibitors.Screening,
 				},
-				{
+			},
+		}
+
+		if patientInTitValue > 0 {
+			btr.FilledFields = append(btr.FilledFields,
+				models.BloodTestFilledField{
 					CreatedAt:        patientInhibitors.CreatedAt,
 					BloodTestFieldId: patientInhibitors.Field2Id,
 					ValueString:      patientInhibitors.Titrage,
 					ValueNumber:      patientInTitValue,
-				},
-			},
-		})
+				})
+		}
+
+		_, err = a.app.CreateBloodTestResult(btr)
 		if err != nil {
 			continue
 		}
