@@ -313,6 +313,34 @@ func (r *Repository) ListAllBloodTests() ([]models.BloodTest, error) {
 	return bloodTests, nil
 }
 
+func (r *Repository) ToggleBloodTestDisplay(id uint) error {
+	btBlyat, err := r.GetBloodTest(id)
+	if err != nil {
+		return tryWrapDbError(err)
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Model(new(models.BloodTest)).
+			Where("id = ?", id).
+			Update("display_in_brief", !btBlyat.DisplayInBrief).
+			Update("created_at", time.Now().UTC()).
+			Error,
+	)
+
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "blood_test",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (r *Repository) CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error) {
 	if btResult.CreatedAt.IsZero() {
 		btResult.CreatedAt = time.Now().UTC()

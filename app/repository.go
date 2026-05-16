@@ -21,6 +21,7 @@ type Repository interface {
 	GetBloodTest(id uint) (models.BloodTest, error)
 	UpdateBloodTest(id uint, bt models.BloodTest) (models.BloodTest, error)
 	ListAllBloodTests() ([]models.BloodTest, error)
+	ToggleBloodTestDisplay(id uint) error
 
 	CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error)
 	ListPatientBloodTestResults(patientId uint) ([]models.BloodTestResult, error)

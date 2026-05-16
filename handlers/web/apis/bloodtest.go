@@ -14,21 +14,23 @@ import (
 )
 
 type RequestBloodTest struct {
-	Id         uint     `json:"id"`
-	Name       string   `json:"name"`
-	FieldNames []string `json:"blood_test_field_name"`
-	FieldUnits []string `json:"blood_test_field_unit"`
-	MinValues  []string `json:"blood_test_field_min_value"`
-	MaxValues  []string `json:"blood_test_field_max_value"`
+	Id             uint     `json:"id"`
+	Name           string   `json:"name"`
+	DisplayInBrief string   `json:"display_in_brief"`
+	FieldNames     []string `json:"blood_test_field_name"`
+	FieldUnits     []string `json:"blood_test_field_unit"`
+	MinValues      []string `json:"blood_test_field_min_value"`
+	MaxValues      []string `json:"blood_test_field_max_value"`
 }
 
 type RequestBloodTestSingle struct {
-	Id        uint   `json:"id"`
-	Name      string `json:"name"`
-	FieldName string `json:"blood_test_field_name"`
-	FieldUnit string `json:"blood_test_field_unit"`
-	MinValue  string `json:"blood_test_field_min_value"`
-	MaxValue  string `json:"blood_test_field_max_value"`
+	Id             uint   `json:"id"`
+	Name           string `json:"name"`
+	DisplayInBrief string `json:"display_in_brief"`
+	FieldName      string `json:"blood_test_field_name"`
+	FieldUnit      string `json:"blood_test_field_unit"`
+	MinValue       string `json:"blood_test_field_min_value"`
+	MaxValue       string `json:"blood_test_field_max_value"`
 }
 
 func clusterFuckBloodTestsToActionsOne(btSingle RequestBloodTestSingle, btMulti RequestBloodTest) actions.BloodTest {
@@ -36,6 +38,7 @@ func clusterFuckBloodTestsToActionsOne(btSingle RequestBloodTestSingle, btMulti 
 
 	if btMulti.Name != "" {
 		newBloodTest.Name = btMulti.Name
+		newBloodTest.DisplayInBrief = btMulti.DisplayInBrief == "on"
 		for i := range len(btMulti.FieldNames) {
 			minValue, _ := strconv.ParseFloat(btMulti.MinValues[i], 64)
 			maxValue, _ := strconv.ParseFloat(btMulti.MaxValues[i], 64)
@@ -49,9 +52,12 @@ func clusterFuckBloodTestsToActionsOne(btSingle RequestBloodTestSingle, btMulti 
 				MaxValueNumber: maxValue,
 			})
 		}
+
+		return newBloodTest
 	}
 	if btSingle.Name != "" {
 		newBloodTest.Name = btSingle.Name
+		newBloodTest.DisplayInBrief = btSingle.DisplayInBrief == "on"
 		minValue, _ := strconv.ParseFloat(btSingle.MinValue, 64)
 		maxValue, _ := strconv.ParseFloat(btSingle.MaxValue, 64)
 		newBloodTest.Fields = append(newBloodTest.Fields, actions.BloodTestField{
@@ -62,6 +68,8 @@ func clusterFuckBloodTestsToActionsOne(btSingle RequestBloodTestSingle, btMulti 
 			MaxValueString: btSingle.MaxValue,
 			MaxValueNumber: maxValue,
 		})
+
+		return newBloodTest
 	}
 
 	return newBloodTest
@@ -94,11 +102,11 @@ func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	var reqBody RequestBloodTest
-	var reqBody2 RequestBloodTestSingle
-	err = json.Unmarshal(body, &reqBody)
-	if err != nil {
-		err = json.Unmarshal(body, &reqBody2)
+	var reqBodyMulti RequestBloodTest
+	var reqBodySingle RequestBloodTestSingle
+	err = json.Unmarshal(body, &reqBodySingle)
+	if err != nil || reqBodySingle.Name == "" {
+		err = json.Unmarshal(body, &reqBodySingle)
 		if err != nil {
 			components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 			log.Errorln(err)
@@ -106,9 +114,11 @@ func (v *bloodTestApi) HandleCreateBloodTest(w http.ResponseWriter, r *http.Requ
 		}
 	}
 
+	log.Debugf("bt kurwa,\nsingle: %+v\nmulti: %+v\n", reqBodySingle, reqBodyMulti)
+
 	_, err = v.usecases.CreateBloodTest(actions.CreateBloodTestParams{
 		ActionContext: ctx,
-		BloodTest:     clusterFuckBloodTestsToActionsOne(reqBody2, reqBody),
+		BloodTest:     clusterFuckBloodTestsToActionsOne(reqBodySingle, reqBodyMulti),
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -131,6 +141,31 @@ func (v *bloodTestApi) HandleDeleteBloodTest(w http.ResponseWriter, r *http.Requ
 	intId, _ := strconv.Atoi(id)
 
 	_, err = v.usecases.DeleteBloodTest(actions.DeleteBloodTestParams{
+		ActionContext: ctx,
+		BloodTestId:   uint(intId),
+	})
+	if err != nil {
+		writeRawTextResponse(w, i18n.Strings("en").ErrorSomethingWentWrong)
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	writeRawTextResponse(w, i18n.Strings("en").MessageSuccess)
+}
+
+func (v *bloodTestApi) HandleToggleBloodTestDisplay(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+
+	id := r.PathValue("id")
+	intId, _ := strconv.Atoi(id)
+
+	_, err = v.usecases.ToggleBloodTestDisplay(actions.ToggleBloodTestDisplayParams{
 		ActionContext: ctx,
 		BloodTestId:   uint(intId),
 	})

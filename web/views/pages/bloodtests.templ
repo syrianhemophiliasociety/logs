@@ -74,6 +74,15 @@ templ newBloodTest() {
 					Title:       i18n.StringsCtx(ctx).BloodTestName,
 					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestName,
 				})
+				@components.Input(components.InputOptions{
+					Id:          "display_in_brief",
+					Name:        "display_in_brief",
+					Type:        components.InputTypeCheckbox,
+					Required:    false,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).BloodTestDisplayInBrief,
+					Placeholder: i18n.StringsCtx(ctx).EnterBloodTestDisplayInBrief,
+				})
 				<p class={ "text-secondary", "text-lg" }>{ i18n.StringsCtx(ctx).BloodTestFields }</p>
 				<div id="blood_tests" class={ "flex", "flex-col", "gap-5" }>
 					<div id="blood_test_field" class={ "flex", "flex-col", "justify-between", "gap-3" }>

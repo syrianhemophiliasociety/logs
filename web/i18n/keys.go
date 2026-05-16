@@ -96,10 +96,13 @@ type Keys struct {
 	EnterMedicineExpiresAt    string
 
 	BloodTest                         string
+	BloodTestDisplayInBriefNotice     string
 	BloodTestResult                   string
 	BloodTestDetails                  string
 	BloodTestName                     string
 	EnterBloodTestName                string
+	BloodTestDisplayInBrief           string
+	EnterBloodTestDisplayInBrief      string
 	BloodTestFields                   string
 	BloodTestFieldName                string
 	EnterBloodTestFieldName           string

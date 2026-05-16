@@ -35,6 +35,7 @@ type PrescribedMedicine struct {
 	Id         uint `gorm:"primaryKey;autoIncrement"`
 	VisitId    uint `gorm:"not null;index"`
 	PatientId  uint `gorm:"not null"`
+	Medicine   Medicine
 	MedicineId uint `gorm:"not null"`
 	UsedAt     time.Time
 

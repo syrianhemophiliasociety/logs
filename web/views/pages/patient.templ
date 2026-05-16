@@ -9,6 +9,7 @@ import (
 	"shs/web/views/components"
 	"shs/web/views/helpers"
 	"shs/web/views/icons"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -131,7 +132,9 @@ templ patientBriefProfile(patient actions.Patient) {
 						}
 					</td>
 				</tr>
-				if len(patient.Prophylaxes) > 0 {
+				if len(patient.Prophylaxes) > 0 && slices.ContainsFunc(patient.Prophylaxes, func(pppp actions.Prophylaxis) bool {
+                    return pppp.EndDate.Before(time.Now().UTC())
+                }) {
 					{{
 						chosenProphylaxis := patient.Prophylaxes[0]
 						for _, pp := range patient.Prophylaxes {
@@ -147,12 +150,30 @@ templ patientBriefProfile(patient actions.Patient) {
 						</td>
 					</tr>
 				}
-				<tr>
-					<td><b>{ i18n.StringsCtx(ctx).NavBloodTests }</b></td>
-					<td>
-						TODO: DO SOMETHING HERE
-					</td>
-				</tr>
+				if len(patient.BloodTestResults) > 0 && slices.ContainsFunc(patient.BloodTestResults, func (btr actions.BloodTestResult) bool {
+                    return btr.DisplayInBrief
+                }) {
+					<tr>
+						<td><b>{ i18n.StringsCtx(ctx).NavBloodTests }</b></td>
+						<td>
+							{{
+								fuckingWorkingBloodFuckingTests := make([]actions.BloodTestResult, 0, len(patient.BloodTestResults))
+								for _, btr := range patient.BloodTestResults {
+									if !btr.DisplayInBrief {
+										continue
+									}
+									fuckingWorkingBloodFuckingTests = append(fuckingWorkingBloodFuckingTests, btr)
+								}
+							}}
+							for _,btr := range fuckingWorkingBloodFuckingTests {
+								<span>{ btr.Name }</span>
+								for _, field := range btr.FilledFields {
+									<pre class={ "italic", "ps-6" }>{ field.Name } - { fmt.Sprintf("%2.f",field.ValueNumber) } { field.Unit }</pre>
+								}
+							}
+						</td>
+					</tr>
+				}
 			</tbody>
 		</table>
 		<button

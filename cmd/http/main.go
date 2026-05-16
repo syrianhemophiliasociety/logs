@@ -223,6 +223,7 @@ func main() {
 
 	webApisHandler.HandleFunc("POST /blood-test", webAuthMiddleware.AuthApi(bloodTestWebApi.HandleCreateBloodTest))
 	webApisHandler.HandleFunc("DELETE /blood-test/{id}", webAuthMiddleware.AuthApi(bloodTestWebApi.HandleDeleteBloodTest))
+	webApisHandler.HandleFunc("PUT /blood-test/{id}/display", webAuthMiddleware.AuthApi(bloodTestWebApi.HandleToggleBloodTestDisplay))
 
 	webApisHandler.HandleFunc("POST /diagnosis", webAuthMiddleware.AuthApi(diagnosisWebApi.HandleCreateDiagnosis))
 	webApisHandler.HandleFunc("DELETE /diagnosis/{id}", webAuthMiddleware.AuthApi(diagnosisWebApi.HandleDeleteDiagnosis))

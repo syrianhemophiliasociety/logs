@@ -28,12 +28,13 @@ type BloodTestFilledField struct {
 }
 
 type BloodTestResult struct {
-	Id           uint                   `json:"id"`
-	Name         string                 `json:"name"`
-	BloodTestId  uint                   `json:"blood_test_id"`
-	FilledFields []BloodTestFilledField `json:"filled_fields"`
-	Pending      bool                   `json:"pending"`
-	CreatedAt    time.Time              `json:"created_at"`
+	Id             uint                   `json:"id"`
+	Name           string                 `json:"name"`
+	BloodTestId    uint                   `json:"blood_test_id"`
+	FilledFields   []BloodTestFilledField `json:"filled_fields"`
+	Pending        bool                   `json:"pending"`
+	DisplayInBrief bool                   `json:"display_in_brief"`
+	CreatedAt      time.Time              `json:"created_at"`
 }
 
 type Address struct {
@@ -176,11 +177,13 @@ func (p *Patient) FromModel(patient models.Patient) {
 
 func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTestResult, bloodTests []models.BloodTest) {
 	bloodTestNames := make(map[uint]string)
+	bloodTestFlash := make(map[uint]bool)
 	bloodTestFieldNames := make(map[uint]string)
 	bloodTestFieldUnits := make(map[uint]models.BlootTestUnit)
 
 	for _, bt := range bloodTests {
 		bloodTestNames[bt.Id] = bt.Name
+		bloodTestFlash[bt.Id] = bt.DisplayInBrief
 		for _, field := range bt.Fields {
 			bloodTestFieldNames[field.Id] = field.Name
 			bloodTestFieldUnits[field.Id] = field.Unit
@@ -201,12 +204,13 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 		}
 
 		(*p).BloodTestResults = append((*p).BloodTestResults, BloodTestResult{
-			Id:           btr.Id,
-			BloodTestId:  btr.BloodTestId,
-			Name:         bloodTestNames[btr.BloodTestId],
-			FilledFields: fields,
-			Pending:      btr.Pending,
-			CreatedAt:    btr.CreatedAt,
+			Id:             btr.Id,
+			BloodTestId:    btr.BloodTestId,
+			Name:           bloodTestNames[btr.BloodTestId],
+			FilledFields:   fields,
+			Pending:        btr.Pending,
+			DisplayInBrief: bloodTestFlash[btr.BloodTestId],
+			CreatedAt:      btr.CreatedAt,
 		})
 	}
 }

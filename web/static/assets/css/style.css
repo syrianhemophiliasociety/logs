@@ -140,3 +140,11 @@ div.nav-link a:hover,
 .tabs input[type="radio"]:checked + label {
   background-color: var(--color-accent-trans-20);
 }
+
+table,
+tr,
+td,
+th {
+  padding: 5px;
+  border: 2px var(--color-secondary) solid;
+}

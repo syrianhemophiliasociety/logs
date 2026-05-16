@@ -35,6 +35,18 @@ templ Medicine(medicine actions.Medicine) {
 					Value:       medicine.Name,
 				})
 				@components.Input(components.InputOptions{
+					Id:          "amount",
+					Name:        "amount",
+					Type:        components.InputTypeNumber,
+					Required:    true,
+					Autofocus:   false,
+					Title:       i18n.StringsCtx(ctx).MedicineAmount,
+					Placeholder: i18n.StringsCtx(ctx).EnterMedicineAmount,
+					Value:       strconv.Itoa(medicine.Amount),
+				})
+			</div>
+			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
+				@components.Input(components.InputOptions{
 					Id:          "dose",
 					Name:        "dose",
 					Type:        components.InputTypeNumber,
@@ -45,8 +57,6 @@ templ Medicine(medicine actions.Medicine) {
 					Placeholder: i18n.StringsCtx(ctx).EnterMedicineDose,
 					Value:       strconv.Itoa(medicine.Dose),
 				})
-			</div>
-			<div class={ "flex" , "flex-row" , "gap-[15px]" }>
 				@components.Select(components.SelectParams{
 					Id:          "unit",
 					Name:        i18n.StringsCtx(ctx).MedicineUnit,
@@ -58,16 +68,6 @@ templ Medicine(medicine actions.Medicine) {
 						{Name: "IU", Value: "IU"},
 					},
 					SelectedValue: medicine.Unit,
-				})
-				@components.Input(components.InputOptions{
-					Id:          "amount",
-					Name:        "amount",
-					Type:        components.InputTypeNumber,
-					Required:    true,
-					Autofocus:   false,
-					Title:       i18n.StringsCtx(ctx).MedicineAmount,
-					Placeholder: i18n.StringsCtx(ctx).EnterMedicineAmount,
-					Value:       strconv.Itoa(medicine.Amount),
 				})
 			</div>
 			<div class={ "flex" , "flex-row" , "gap-[15px]" }>

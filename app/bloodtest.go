@@ -29,6 +29,10 @@ func (a *App) ListPatientBloodTestResults(patientId uint) ([]models.BloodTestRes
 	return a.repo.ListPatientBloodTestResults(patientId)
 }
 
+func (a *App) ToggleBloodTestDisplay(id uint) error {
+	return a.repo.ToggleBloodTestDisplay(id)
+}
+
 func (a *App) UpdatePatientPendingBloodTestResultFields(btrId uint, fields []models.BloodTestFilledField) error {
 	err := a.repo.SetBloodTestResultPending(btrId, false)
 	if err != nil {

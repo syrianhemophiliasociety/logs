@@ -90,9 +90,10 @@ func (BloodTestField) TableName() string {
 }
 
 type BloodTest struct {
-	Id     uint             `gorm:"primaryKey;autoIncrement"`
-	Name   string           `gorm:"not null"`
-	Fields []BloodTestField `gorm:"foreignKey:BloodTestId"`
+	Id             uint             `gorm:"primaryKey;autoIncrement"`
+	Name           string           `gorm:"not null"`
+	Fields         []BloodTestField `gorm:"foreignKey:BloodTestId"`
+	DisplayInBrief bool             `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

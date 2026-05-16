@@ -16,9 +16,10 @@ type BloodTestField struct {
 }
 
 type BloodTest struct {
-	Id     uint             `json:"id"`
-	Name   string           `json:"name"`
-	Fields []BloodTestField `json:"fields"`
+	Id             uint             `json:"id"`
+	Name           string           `json:"name"`
+	DisplayInBrief bool             `json:"display_in_brief"`
+	Fields         []BloodTestField `json:"fields"`
 }
 
 func (bt BloodTest) IntoModel() models.BloodTest {
@@ -34,8 +35,9 @@ func (bt BloodTest) IntoModel() models.BloodTest {
 		})
 	}
 	return models.BloodTest{
-		Name:   bt.Name,
-		Fields: bloodTestFields,
+		Name:           bt.Name,
+		Fields:         bloodTestFields,
+		DisplayInBrief: bt.DisplayInBrief,
 	}
 }
 
@@ -54,9 +56,10 @@ func (bt *BloodTest) FromModel(bloodTest models.BloodTest) {
 	}
 
 	(*bt) = BloodTest{
-		Id:     bloodTest.Id,
-		Name:   bloodTest.Name,
-		Fields: btFields,
+		Id:             bloodTest.Id,
+		Name:           bloodTest.Name,
+		Fields:         btFields,
+		DisplayInBrief: bloodTest.DisplayInBrief,
 	}
 }
 
@@ -90,6 +93,27 @@ type UpdateBloodTestPayload struct {
 
 func (a *Actions) UpdateBloodTest(params UpdateBloodTestParams) (UpdateBloodTestPayload, error) {
 	return UpdateBloodTestPayload{}, errors.New("not implemented")
+}
+
+type ToggleBloodTestDisplayParams struct {
+	ActionContext
+	BloodTestId uint `json:"blood_test_id"`
+}
+
+type ToggleBloodTestDisplayPayload struct {
+}
+
+func (a *Actions) ToggleBloodTestDisplay(params ToggleBloodTestDisplayParams) (ToggleBloodTestDisplayPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionWriteBloodTest) {
+		return ToggleBloodTestDisplayPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.ToggleBloodTestDisplay(params.BloodTestId)
+	if err != nil {
+		return ToggleBloodTestDisplayPayload{}, err
+	}
+
+	return ToggleBloodTestDisplayPayload{}, nil
 }
 
 type DeleteBloodTestParams struct {
