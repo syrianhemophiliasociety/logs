@@ -733,6 +733,7 @@ func (r *Repository) CreatePatient(patient models.Patient) (models.Patient, erro
 	if patient.NationalId == "" {
 		patient.NationalId = "please_change_" + patient.PublicId
 	}
+	patient.FillEmptyFieldsUsingPublicId()
 
 	err = tryWrapDbError(
 		r.client.

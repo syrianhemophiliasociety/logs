@@ -341,7 +341,6 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 	}
 
 	for i := range inPatients {
-		inPatients[i].FillEmptyFieldsUsingPublicId()
 		newPatient, err := a.app.CreatePatient(inPatients[i])
 		if err != nil {
 			log.Errorln("Failed to create patient: ", err)
