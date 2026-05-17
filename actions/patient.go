@@ -34,6 +34,7 @@ type BloodTestResult struct {
 	FilledFields   []BloodTestFilledField `json:"filled_fields"`
 	Pending        bool                   `json:"pending"`
 	DisplayInBrief bool                   `json:"display_in_brief"`
+	TestedAt       time.Time              `json:"tested_at"`
 	CreatedAt      time.Time              `json:"created_at"`
 }
 
@@ -84,34 +85,6 @@ func (p Patient) FullName() string {
 }
 
 func (p Patient) IntoModel() models.Patient {
-	viruses := make([]models.Virus, 0, len(p.Viruses))
-	for _, v := range p.Viruses {
-		viruses = append(viruses, models.Virus{
-			Id:   v.Id,
-			Name: v.Name,
-		})
-	}
-
-	bloodTestResults := make([]models.BloodTestResult, 0, len(p.BloodTestResults))
-	for _, btr := range p.BloodTestResults {
-		bloodTestResultFields := make([]models.BloodTestFilledField, 0, len(btr.FilledFields))
-		for _, field := range btr.FilledFields {
-			bloodTestResultFields = append(bloodTestResultFields, models.BloodTestFilledField{
-				BloodTestResultId: btr.BloodTestId,
-				BloodTestFieldId:  field.BloodTestFieldId,
-				ValueNumber:       field.ValueNumber,
-				ValueString:       field.ValueString,
-			})
-		}
-
-		bloodTestResults = append(bloodTestResults, models.BloodTestResult{
-			BloodTestId:  btr.BloodTestId,
-			FilledFields: bloodTestResultFields,
-			Pending:      btr.Pending,
-			CreatedAt:    btr.CreatedAt,
-		})
-	}
-
 	return models.Patient{
 		Id:          p.Id,
 		PublicId:    p.PublicId,
@@ -211,6 +184,7 @@ func (p *Patient) WithBloodTestResults(patientBloodTestResults []models.BloodTes
 			Pending:        btr.Pending,
 			DisplayInBrief: bloodTestFlash[btr.BloodTestId],
 			CreatedAt:      btr.CreatedAt,
+			TestedAt:       btr.TestedAt,
 		})
 	}
 }
