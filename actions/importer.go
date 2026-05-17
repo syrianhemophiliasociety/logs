@@ -143,49 +143,49 @@ type patientBloodGroup struct {
 	ABO        string
 	RhFieldId  uint
 	Rh         string
-	CreatedAt  time.Time
+	TestedAt   time.Time
 }
 
 type patientFactorVII struct {
 	Id        uint
 	FieldId   uint
 	FactorVii string
-	CreatedAt time.Time
+	TestedAt  time.Time
 }
 
 type patientFactorV struct {
-	Id        uint
-	FieldId   uint
-	FactorV   string
-	CreatedAt time.Time
+	Id       uint
+	FieldId  uint
+	FactorV  string
+	TestedAt time.Time
 }
 
 type patientFactorX struct {
-	Id        uint
-	FieldId   uint
-	FactorX   string
-	CreatedAt time.Time
+	Id       uint
+	FieldId  uint
+	FactorX  string
+	TestedAt time.Time
 }
 
 type patientFactorIX struct {
-	Id        uint
-	FieldId   uint
-	FactorIX  string
-	CreatedAt time.Time
+	Id       uint
+	FieldId  uint
+	FactorIX string
+	TestedAt time.Time
 }
 
 type patientVWFAg struct {
-	Id        uint
-	FieldId   uint
-	VWFAg     string
-	CreatedAt time.Time
+	Id       uint
+	FieldId  uint
+	VWFAg    string
+	TestedAt time.Time
 }
 
 type patientFibrinogen struct {
-	Id        uint
-	FieldId   uint
-	Fibi      string
-	CreatedAt time.Time
+	Id       uint
+	FieldId  uint
+	Fibi     string
+	TestedAt time.Time
 }
 
 type patientInhibitors struct {
@@ -194,14 +194,14 @@ type patientInhibitors struct {
 	Screening string
 	Field2Id  uint
 	Titrage   string
-	CreatedAt time.Time
+	TestedAt  time.Time
 }
 
 type patientFactorVIII struct {
 	Id         uint
 	FieldId    uint
 	FactorViii string
-	CreatedAt  time.Time
+	TestedAt   time.Time
 }
 
 func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (ImportPatientsFromCsvPayload, error) {
@@ -260,65 +260,65 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		patients = append(patients, patient)
 
 		patientDiagnoses[patient.IndexId()] = &models.Diagnosis{
-			GroupName: record.Diagnosis_GroupName,
-			Title:     record.Diagnosis_Title,
-			CreatedAt: record.DateOfDiagnosis,
+			GroupName:   record.Diagnosis_GroupName,
+			Title:       record.Diagnosis_Title,
+			DiagnosedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientBloodGroup[patient.IndexId()] = &patientBloodGroup{
-			Id:        0,
-			ABO:       record.BloodGroupABO,
-			Rh:        record.BloodGroupRhD,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			ABO:      record.BloodGroupABO,
+			Rh:       record.BloodGroupRhD,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientFactorVIII[patient.IndexId()] = &patientFactorVIII{
 			Id:         0,
 			FactorViii: record.BTFactorVIII,
-			CreatedAt:  record.DateOfDiagnosis,
+			TestedAt:   record.DateOfDiagnosis,
 		}
 
 		mPatientFactorVII[patient.IndexId()] = &patientFactorVII{
 			Id:        0,
 			FactorVii: record.BTFactorVII,
-			CreatedAt: record.DateOfDiagnosis,
+			TestedAt:  record.DateOfDiagnosis,
 		}
 
 		mPatientFactorV[patient.IndexId()] = &patientFactorV{
-			Id:        0,
-			FactorV:   record.BTFactorV,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			FactorV:  record.BTFactorV,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientFactorIX[patient.IndexId()] = &patientFactorIX{
-			Id:        0,
-			FactorIX:  record.BTFactorIX,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			FactorIX: record.BTFactorIX,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientFactorX[patient.IndexId()] = &patientFactorX{
-			Id:        0,
-			FactorX:   record.BTFactorX,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			FactorX:  record.BTFactorX,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientVWFAg[patient.IndexId()] = &patientVWFAg{
-			Id:        0,
-			VWFAg:     record.BTVWFAg,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			VWFAg:    record.BTVWFAg,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientFibrinogen[patient.IndexId()] = &patientFibrinogen{
-			Id:        0,
-			Fibi:      record.BTFibrinogen,
-			CreatedAt: record.DateOfDiagnosis,
+			Id:       0,
+			Fibi:     record.BTFibrinogen,
+			TestedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientInhibitors[patient.IndexId()] = &patientInhibitors{
 			Id:        0,
 			Screening: record.BTInhibitorsScreening,
 			Titrage:   record.BTInhibitorsTitrage,
-			CreatedAt: record.DateOfDiagnosis,
+			TestedAt:  record.DateOfDiagnosis,
 		}
 	}
 
@@ -543,7 +543,8 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		_, err := a.app.CreateDiagnosisResult(models.DiagnosisResult{
 			DiagnosisId: patientDiagnosis.Id,
 			PatientId:   patient.Id,
-			CreatedAt:   patientDiagnosis.CreatedAt,
+			DiagnosedAt: patientDiagnosis.DiagnosedAt,
+			CreatedAt:   time.Now().UTC(),
 		})
 		if err != nil {
 			log.Warningf("Failed to assign '%s - %s' diagnosis to patient with id %s\n", patientDiagnosis.GroupName, patientDiagnosis.Title, patient.PublicId)
@@ -560,17 +561,15 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientBloodGroup.CreatedAt,
+			TestedAt:    patientBloodGroup.TestedAt,
 			BloodTestId: patientBloodGroup.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientBloodGroup.CreatedAt,
 					BloodTestFieldId: patientBloodGroup.RhFieldId,
 					ValueString:      patientBloodGroup.Rh,
 				},
 				{
-					CreatedAt:        patientBloodGroup.CreatedAt,
 					BloodTestFieldId: patientBloodGroup.ABOFieldId,
 					ValueString:      patientBloodGroup.ABO,
 				},
@@ -595,12 +594,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFactor7.CreatedAt,
+			TestedAt:    patientFactor7.TestedAt,
 			BloodTestId: patientFactor7.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFactor7.CreatedAt,
 					BloodTestFieldId: patientFactor7.FieldId,
 					ValueString:      patientFactor7.FactorViii,
 					ValueNumber:      patientFactor7Value,
@@ -626,12 +624,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFactor6.CreatedAt,
+			TestedAt:    patientFactor6.TestedAt,
 			BloodTestId: patientFactor6.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFactor6.CreatedAt,
 					BloodTestFieldId: patientFactor6.FieldId,
 					ValueString:      patientFactor6.FactorVii,
 					ValueNumber:      patientFactor6Value,
@@ -657,12 +654,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFactor5.CreatedAt,
+			TestedAt:    patientFactor5.TestedAt,
 			BloodTestId: patientFactor5.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFactor5.CreatedAt,
 					BloodTestFieldId: patientFactor5.FieldId,
 					ValueString:      patientFactor5.FactorV,
 					ValueNumber:      patientFactor5Value,
@@ -688,12 +684,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFactor9.CreatedAt,
+			TestedAt:    patientFactor9.TestedAt,
 			BloodTestId: patientFactor9.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFactor9.CreatedAt,
 					BloodTestFieldId: patientFactor9.FieldId,
 					ValueString:      patientFactor9.FactorIX,
 					ValueNumber:      patientFactor9Value,
@@ -719,12 +714,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFactor10.CreatedAt,
+			TestedAt:    patientFactor10.TestedAt,
 			BloodTestId: patientFactor10.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFactor10.CreatedAt,
 					BloodTestFieldId: patientFactor10.FieldId,
 					ValueString:      patientFactor10.FactorX,
 					ValueNumber:      patientFactor10Value,
@@ -750,12 +744,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientVWFAg.CreatedAt,
+			TestedAt:    patientVWFAg.TestedAt,
 			BloodTestId: patientVWFAg.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientVWFAg.CreatedAt,
 					BloodTestFieldId: patientVWFAg.FieldId,
 					ValueString:      patientVWFAg.VWFAg,
 					ValueNumber:      patientVWFAgValue,
@@ -781,12 +774,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		btr := models.BloodTestResult{
-			CreatedAt:   patientInhibitors.CreatedAt,
+			TestedAt:    patientInhibitors.TestedAt,
 			BloodTestId: patientInhibitors.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientInhibitors.CreatedAt,
 					BloodTestFieldId: patientInhibitors.FieldId,
 					ValueString:      patientInhibitors.Screening,
 				},
@@ -796,7 +788,6 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		if patientInTitValue > 0 {
 			btr.FilledFields = append(btr.FilledFields,
 				models.BloodTestFilledField{
-					CreatedAt:        patientInhibitors.CreatedAt,
 					BloodTestFieldId: patientInhibitors.Field2Id,
 					ValueString:      patientInhibitors.Titrage,
 					ValueNumber:      patientInTitValue,
@@ -823,12 +814,11 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		}
 
 		_, err = a.app.CreateBloodTestResult(models.BloodTestResult{
-			CreatedAt:   patientFibi.CreatedAt,
+			TestedAt:    patientFibi.TestedAt,
 			BloodTestId: patientFibi.Id,
 			PatientId:   patient.Id,
 			FilledFields: []models.BloodTestFilledField{
 				{
-					CreatedAt:        patientFibi.CreatedAt,
 					BloodTestFieldId: patientFibi.FieldId,
 					ValueString:      patientFibi.Fibi,
 					ValueNumber:      patientFibiValue,

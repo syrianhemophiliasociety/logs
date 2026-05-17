@@ -342,10 +342,11 @@ func (r *Repository) ToggleBloodTestDisplay(id uint) error {
 }
 
 func (r *Repository) CreateBloodTestResult(btResult models.BloodTestResult) (models.BloodTestResult, error) {
-	if btResult.CreatedAt.IsZero() {
-		btResult.CreatedAt = time.Now().UTC()
-	}
+	btResult.CreatedAt = time.Now().UTC()
 	btResult.UpdatedAt = time.Now().UTC()
+	if btResult.TestedAt.IsZero() {
+		btResult.TestedAt = btResult.CreatedAt
+	}
 
 	err := tryWrapDbError(
 		r.client.
@@ -1343,7 +1344,7 @@ func (r *Repository) DeleteProphylaxisForPatient(id, patientId uint) error {
 }
 
 func (r *Repository) CreateDiagnosis(diagnosis models.Diagnosis) (models.Diagnosis, error) {
-	diagnosis.CreatedAt = time.Now().UTC()
+	diagnosis.DiagnosedAt = time.Now().UTC()
 	diagnosis.UpdatedAt = time.Now().UTC()
 
 	err := tryWrapDbError(
@@ -1400,10 +1401,11 @@ func (r *Repository) ListAllDiagnoses() ([]models.Diagnosis, error) {
 }
 
 func (r *Repository) CreateDiagnosisResult(diagnosis models.DiagnosisResult) (models.DiagnosisResult, error) {
-	if diagnosis.CreatedAt.IsZero() {
-		diagnosis.CreatedAt = time.Now().UTC()
-	}
+	diagnosis.CreatedAt = time.Now().UTC()
 	diagnosis.UpdatedAt = time.Now().UTC()
+	if diagnosis.DiagnosedAt.IsZero() {
+		diagnosis.DiagnosedAt = diagnosis.CreatedAt
+	}
 
 	err := tryWrapDbError(
 		r.client.

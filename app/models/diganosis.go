@@ -10,8 +10,8 @@ type Diagnosis struct {
 	AKA       string
 	// TODO: add filled fields
 
-	CreatedAt time.Time `gorm:"index;not null"`
-	UpdatedAt time.Time
+	DiagnosedAt time.Time `gorm:"index;not null"`
+	UpdatedAt   time.Time
 }
 
 func (Diagnosis) TableName() string {

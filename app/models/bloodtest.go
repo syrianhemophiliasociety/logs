@@ -123,6 +123,7 @@ type BloodTestFilledField struct {
 	BloodTestFieldId  uint
 	ValueNumber       float64
 	ValueString       string
+	TestedAt          time.Time `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
@@ -139,6 +140,7 @@ type BloodTestResult struct {
 	PatientId    uint                   `gorm:"index;not null"`
 	FilledFields []BloodTestFilledField `gorm:"foreignKey:BloodTestResultId"`
 	Pending      bool                   `gorm:"not null"`
+	TestedAt     time.Time              `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time
