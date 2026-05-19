@@ -1151,18 +1151,18 @@ func (r *Repository) GetAllAddresses() ([]models.Address, error) {
 }
 
 func (r *Repository) GetAllAddressesALike(searchAddress models.Address) ([]models.Address, error) {
-	findQuery := make([]string, 0, 3)
+	findQuery := ""
 	findArgs := make([]any, 0, 3)
 	if searchAddress.Governorate != "" {
-		findQuery = append(findQuery, "LOWER(governorate) LIKE LOWER(?)")
+		findQuery += "LOWER(governorate) LIKE LOWER(?)"
 		findArgs = append(findArgs, likeArg(searchAddress.Governorate))
 	}
 	if searchAddress.Suburb != "" {
-		findQuery = append(findQuery, "LOWER(suburb) LIKE LOWER(?)")
+		findQuery += " AND LOWER(suburb) LIKE LOWER(?)"
 		findArgs = append(findArgs, likeArg(searchAddress.Suburb))
 	}
 	if searchAddress.Street != "" {
-		findQuery = append(findQuery, "LOWER(street) LIKE LOWER(?)")
+		findQuery = " AND LOWER(street) LIKE LOWER(?)"
 		findArgs = append(findArgs, likeArg(searchAddress.Street))
 	}
 
@@ -1171,7 +1171,7 @@ func (r *Repository) GetAllAddressesALike(searchAddress models.Address) ([]model
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.Address)).
-			Where(strings.Join(findQuery, " AND "), findArgs...).
+			Where(findQuery, findArgs...).
 			Find(&addresses).
 			Error,
 	)
