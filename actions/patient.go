@@ -261,7 +261,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		Street:      params.NewPatient.Residency.Street,
 	})
 
-	if len(residencyAddresses) == 1 {
+	if len(residencyAddresses) > 0 {
 		newPatient.Residency.Id = residencyAddresses[0].Id
 		newPatient.ResidencyId = residencyAddresses[0].Id
 	} else {
@@ -278,7 +278,7 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		Street:      params.NewPatient.PlaceOfBirth.Street,
 	})
 
-	if len(placesOfBirth) == 1 {
+	if len(placesOfBirth) > 0 {
 		newPatient.PlaceOfBirth.Id = placesOfBirth[0].Id
 		newPatient.PlaceOfBirthId = placesOfBirth[0].Id
 	} else {
