@@ -341,6 +341,40 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 	}
 
 	for i := range inPatients {
+		residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
+			Governorate: inPatients[i].Residency.Governorate,
+			Suburb:      inPatients[i].Residency.Suburb,
+			Street:      inPatients[i].Residency.Street,
+		})
+
+		if len(residencyAddresses) == 1 {
+			inPatients[i].Residency.Id = residencyAddresses[0].Id
+			inPatients[i].ResidencyId = residencyAddresses[0].Id
+		} else {
+			residency, err := a.app.CreateAddress(inPatients[i].Residency)
+			if err != nil {
+				// return CreatePatientPayload{}, err
+			}
+			inPatients[i].Residency = residency
+		}
+
+		placesOfBirth, _ := a.app.GetAllAddressesALike(models.Address{
+			Governorate: inPatients[i].PlaceOfBirth.Governorate,
+			Suburb:      inPatients[i].PlaceOfBirth.Suburb,
+			Street:      inPatients[i].PlaceOfBirth.Street,
+		})
+
+		if len(placesOfBirth) == 1 {
+			inPatients[i].PlaceOfBirth.Id = placesOfBirth[0].Id
+			inPatients[i].PlaceOfBirthId = placesOfBirth[0].Id
+		} else {
+			placeOfBirth, err := a.app.CreateAddress(inPatients[i].PlaceOfBirth)
+			if err != nil {
+				// return CreatePatientPayload{}, err
+			}
+			inPatients[i].PlaceOfBirth = placeOfBirth
+		}
+
 		newPatient, err := a.app.CreatePatient(inPatients[i])
 		if err != nil {
 			log.Errorln("Failed to create patient: ", err)
