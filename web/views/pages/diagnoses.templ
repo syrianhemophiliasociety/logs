@@ -76,7 +76,6 @@ templ newDiagnosis() {
 					Name:        "title",
 					Type:        components.InputTypeText,
 					Required:    true,
-					Autofocus:   true,
 					Title:       i18n.StringsCtx(ctx).DiagnosisTitle,
 					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisTitle,
 				})
@@ -85,7 +84,6 @@ templ newDiagnosis() {
 					Name:        "icd_11",
 					Type:        components.InputTypeText,
 					Required:    true,
-					Autofocus:   true,
 					Title:       i18n.StringsCtx(ctx).DiagnosisICD11,
 					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisICD11,
 				})
@@ -93,8 +91,6 @@ templ newDiagnosis() {
 					Id:          "aka",
 					Name:        "aka",
 					Type:        components.InputTypeText,
-					Required:    true,
-					Autofocus:   true,
 					Title:       i18n.StringsCtx(ctx).DiagnosisAKA,
 					Placeholder: i18n.StringsCtx(ctx).EnterDiagnosisAKA,
 				})

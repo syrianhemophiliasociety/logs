@@ -1344,7 +1344,7 @@ func (r *Repository) DeleteProphylaxisForPatient(id, patientId uint) error {
 }
 
 func (r *Repository) CreateDiagnosis(diagnosis models.Diagnosis) (models.Diagnosis, error) {
-	diagnosis.DiagnosedAt = time.Now().UTC()
+	diagnosis.CreatedAt = time.Now().UTC()
 	diagnosis.UpdatedAt = time.Now().UTC()
 
 	err := tryWrapDbError(
