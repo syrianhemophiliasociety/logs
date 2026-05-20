@@ -260,9 +260,9 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		patients = append(patients, patient)
 
 		patientDiagnoses[patient.IndexId()] = &models.Diagnosis{
-			GroupName:   record.Diagnosis_GroupName,
-			Title:       record.Diagnosis_Title,
-			DiagnosedAt: record.DateOfDiagnosis,
+			GroupName: record.Diagnosis_GroupName,
+			Title:     record.Diagnosis_Title,
+			CreatedAt: record.DateOfDiagnosis,
 		}
 
 		mPatientBloodGroup[patient.IndexId()] = &patientBloodGroup{
@@ -577,7 +577,7 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 		_, err := a.app.CreateDiagnosisResult(models.DiagnosisResult{
 			DiagnosisId: patientDiagnosis.Id,
 			PatientId:   patient.Id,
-			DiagnosedAt: patientDiagnosis.DiagnosedAt,
+			DiagnosedAt: patientDiagnosis.CreatedAt,
 			CreatedAt:   time.Now().UTC(),
 		})
 		if err != nil {

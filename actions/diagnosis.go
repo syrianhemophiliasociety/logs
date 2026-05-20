@@ -28,7 +28,7 @@ func (d *Diagnosis) FromModel(diagnosis models.Diagnosis) {
 	(*d).Id = diagnosis.Id
 	(*d).GroupName = diagnosis.GroupName
 	(*d).Title = diagnosis.Title
-	(*d).CreatedAt = diagnosis.DiagnosedAt
+	(*d).CreatedAt = diagnosis.CreatedAt
 	(*d).ICD11 = diagnosis.ICD11
 	(*d).AKA = diagnosis.AKA
 }
