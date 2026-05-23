@@ -341,15 +341,16 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 	}
 
 	for i := range inPatients {
-		residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
+		patientResidency := models.Address{
 			Governorate: inPatients[i].Residency.Governorate,
 			Suburb:      inPatients[i].Residency.Suburb,
 			Street:      inPatients[i].Residency.Street,
-		})
+		}
+		residencyAddresses, _ := a.app.GetAllAddressesALike(patientResidency)
 
-		if len(residencyAddresses) == 1 {
-			inPatients[i].Residency.Id = residencyAddresses[0].Id
-			inPatients[i].ResidencyId = residencyAddresses[0].Id
+		if idx, err := getExactAddress(patientResidency, residencyAddresses); err == nil {
+			inPatients[i].Residency.Id = residencyAddresses[idx].Id
+			inPatients[i].ResidencyId = residencyAddresses[idx].Id
 		} else {
 			residency, err := a.app.CreateAddress(inPatients[i].Residency)
 			if err != nil {
@@ -358,15 +359,16 @@ func (a *Actions) ImportPatientsFromCsv(params ImportPatientsFromCsvParams) (Imp
 			inPatients[i].Residency = residency
 		}
 
-		placesOfBirth, _ := a.app.GetAllAddressesALike(models.Address{
+		patientPOB := models.Address{
 			Governorate: inPatients[i].PlaceOfBirth.Governorate,
 			Suburb:      inPatients[i].PlaceOfBirth.Suburb,
 			Street:      inPatients[i].PlaceOfBirth.Street,
-		})
+		}
+		placesOfBirth, _ := a.app.GetAllAddressesALike(patientPOB)
 
-		if len(placesOfBirth) == 1 {
-			inPatients[i].PlaceOfBirth.Id = placesOfBirth[0].Id
-			inPatients[i].PlaceOfBirthId = placesOfBirth[0].Id
+		if idx, err := getExactAddress(patientPOB, placesOfBirth); err == nil {
+			inPatients[i].PlaceOfBirth.Id = placesOfBirth[idx].Id
+			inPatients[i].PlaceOfBirthId = placesOfBirth[idx].Id
 		} else {
 			placeOfBirth, err := a.app.CreateAddress(inPatients[i].PlaceOfBirth)
 			if err != nil {

@@ -2,6 +2,7 @@ package actions
 
 import (
 	"encoding/base64"
+	"errors"
 	"shs/app"
 	"shs/app/models"
 	"shs/cardgen"
@@ -248,6 +249,18 @@ type CreatePatientPayload struct {
 	PatientPublicId string `json:"id"`
 }
 
+func getExactAddress(address models.Address, addresses []models.Address) (int, error) {
+	for i, aa := range addresses {
+		if aa.Governorate == address.Governorate &&
+			aa.Suburb == address.Suburb &&
+			aa.Street == address.Street {
+			return i, nil
+		}
+	}
+
+	return -1, errors.New("no address was matched")
+}
+
 func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayload, error) {
 	if !params.Account.HasPermission(models.AccountPermissionWritePatient) {
 		return CreatePatientPayload{}, ErrPermissionDenied{}
@@ -255,15 +268,16 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 
 	newPatient := params.NewPatient.IntoModel()
 
-	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
+	patientResidency := models.Address{
 		Governorate: params.NewPatient.Residency.Governorate,
 		Suburb:      params.NewPatient.Residency.Suburb,
 		Street:      params.NewPatient.Residency.Street,
-	})
+	}
+	residencyAddresses, _ := a.app.GetAllAddressesALike(patientResidency)
 
-	if len(residencyAddresses) == 1 {
-		newPatient.Residency.Id = residencyAddresses[0].Id
-		newPatient.ResidencyId = residencyAddresses[0].Id
+	if i, err := getExactAddress(patientResidency, residencyAddresses); err == nil {
+		newPatient.Residency.Id = residencyAddresses[i].Id
+		newPatient.ResidencyId = residencyAddresses[i].Id
 	} else {
 		residency, err := a.app.CreateAddress(params.NewPatient.Residency.IntoModel())
 		if err != nil {
@@ -272,15 +286,16 @@ func (a *Actions) CreatePatient(params CreatePatientParams) (CreatePatientPayloa
 		newPatient.Residency = residency
 	}
 
-	placesOfBirth, _ := a.app.GetAllAddressesALike(models.Address{
+	patientPOB := models.Address{
 		Governorate: params.NewPatient.PlaceOfBirth.Governorate,
 		Suburb:      params.NewPatient.PlaceOfBirth.Suburb,
 		Street:      params.NewPatient.PlaceOfBirth.Street,
-	})
+	}
+	placesOfBirth, _ := a.app.GetAllAddressesALike(patientPOB)
 
-	if len(placesOfBirth) == 1 {
-		newPatient.PlaceOfBirth.Id = placesOfBirth[0].Id
-		newPatient.PlaceOfBirthId = placesOfBirth[0].Id
+	if i, err := getExactAddress(patientPOB, placesOfBirth); err == nil {
+		newPatient.PlaceOfBirth.Id = placesOfBirth[i].Id
+		newPatient.PlaceOfBirthId = placesOfBirth[i].Id
 	} else {
 		placeOfBirth, err := a.app.CreateAddress(params.NewPatient.PlaceOfBirth.IntoModel())
 		if err != nil {
@@ -338,15 +353,16 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 
 	newPatient := params.NewPatient.IntoModel()
 
-	residencyAddresses, _ := a.app.GetAllAddressesALike(models.Address{
+	patientResidency := models.Address{
 		Governorate: params.NewPatient.Residency.Governorate,
 		Suburb:      params.NewPatient.Residency.Suburb,
 		Street:      params.NewPatient.Residency.Street,
-	})
+	}
+	residencyAddresses, _ := a.app.GetAllAddressesALike(patientResidency)
 
-	if len(residencyAddresses) == 1 {
-		newPatient.Residency.Id = residencyAddresses[0].Id
-		newPatient.ResidencyId = residencyAddresses[0].Id
+	if i, err := getExactAddress(patientResidency, residencyAddresses); err == nil {
+		newPatient.Residency.Id = residencyAddresses[i].Id
+		newPatient.ResidencyId = residencyAddresses[i].Id
 	} else {
 		residency, err := a.app.CreateAddress(params.NewPatient.Residency.IntoModel())
 		if err != nil {
@@ -356,15 +372,16 @@ func (a *Actions) UpdatePatient(params UpdatePatientParams) (UpdatePatientPayloa
 		newPatient.ResidencyId = residency.Id
 	}
 
-	placesOfBirth, _ := a.app.GetAllAddressesALike(models.Address{
+	patientPOB := models.Address{
 		Governorate: params.NewPatient.PlaceOfBirth.Governorate,
 		Suburb:      params.NewPatient.PlaceOfBirth.Suburb,
 		Street:      params.NewPatient.PlaceOfBirth.Street,
-	})
+	}
+	placesOfBirth, _ := a.app.GetAllAddressesALike(patientPOB)
 
-	if len(placesOfBirth) == 1 {
-		newPatient.PlaceOfBirth.Id = placesOfBirth[0].Id
-		newPatient.PlaceOfBirthId = placesOfBirth[0].Id
+	if i, err := getExactAddress(patientPOB, placesOfBirth); err == nil {
+		newPatient.PlaceOfBirth.Id = placesOfBirth[i].Id
+		newPatient.PlaceOfBirthId = placesOfBirth[i].Id
 	} else {
 		placeOfBirth, err := a.app.CreateAddress(params.NewPatient.PlaceOfBirth.IntoModel())
 		if err != nil {
