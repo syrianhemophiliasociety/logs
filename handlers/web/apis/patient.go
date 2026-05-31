@@ -292,7 +292,7 @@ type ProphylaxisRequest struct {
 	FrequencyPerDays string `json:"frequency"`
 	EndDate          string `json:"end_date"`
 	MedicineId       string `json:"medicine_id"`
-	MedicineDose     string `json:"amount"`
+	MedicineAmount   string `json:"amount"`
 }
 
 func clusterFuckProhylaxisToActionsOne(pp ProphylaxisRequest) (actions.Prophylaxis, error) {
@@ -300,7 +300,7 @@ func clusterFuckProhylaxisToActionsOne(pp ProphylaxisRequest) (actions.Prophylax
 	if err != nil {
 		return actions.Prophylaxis{}, err
 	}
-	medicineDose, err := strconv.Atoi(pp.MedicineDose)
+	medicineDose, err := strconv.Atoi(pp.MedicineAmount)
 	if err != nil {
 		return actions.Prophylaxis{}, err
 	}
@@ -310,7 +310,7 @@ func clusterFuckProhylaxisToActionsOne(pp ProphylaxisRequest) (actions.Prophylax
 		Title:            pp.Title,
 		FrequencyPerDays: pp.FrequencyPerDays,
 		MedicineId:       uint(medicineId),
-		MedicineDose:     medicineDose,
+		MedicineAmount:   medicineDose,
 		EndDate:          endDate,
 	}, nil
 }

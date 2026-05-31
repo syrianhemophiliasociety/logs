@@ -695,7 +695,10 @@ templ patientListProphylaxes(patient actions.Patient) {
 							{ pp.PrescribedMedicine.Name }
 						</span>
 						<span class={ "text-lg" }>
-							{ fmt.Sprint(pp.MedicineDose) }
+							{ pp.PrescribedMedicine.DoseUnit() }
+						</span>
+						<span class={ "text-lg" }>
+							{ fmt.Sprint(pp.MedicineAmount) }
 						</span>
 						<span class={ "text-lg" }>
 							{ pp.EndDate.Format("2006 Jan/02") }

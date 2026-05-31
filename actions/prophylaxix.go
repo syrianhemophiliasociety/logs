@@ -36,7 +36,7 @@ var (
 	}
 )
 
-func ProphylaxisFrequncyNumberToString(num float32) string {
+func ProphylaxisFrequencyNumberToString(num float32) string {
 	return prophylaxisFrequencyMapperHuh[num]
 }
 
@@ -47,7 +47,7 @@ type Prophylaxis struct {
 	EndDate            time.Time `json:"end_date"`
 	MedicineId         uint      `json:"medicine_id,omitempty"`
 	PrescribedMedicine Medicine  `json:"prescribed_medicine"`
-	MedicineDose       int       `json:"medicine_dose"`
+	MedicineAmount     int       `json:"medicine_amount"`
 	Chosen             bool      `json:"chosen"`
 }
 
@@ -56,7 +56,7 @@ func (pp *Prophylaxis) FromModel(p models.Prophylaxis) {
 	(*pp).Title = p.Title
 	(*pp).FrequencyPerDays = prophylaxisFrequencyMapperHuh[p.FrequencyPerDays]
 	(*pp).EndDate = p.EndDate
-	(*pp).MedicineDose = p.MedicineDose
+	(*pp).MedicineAmount = p.MedicineAmount
 	med := new(Medicine)
 	med.FromModel(p.Medicine)
 	(*pp).PrescribedMedicine = *med
@@ -69,7 +69,7 @@ func (pp Prophylaxis) IntoModel() models.Prophylaxis {
 		Title:            pp.Title,
 		FrequencyPerDays: prophylaxisFrequencyMapper[pp.FrequencyPerDays],
 		EndDate:          pp.EndDate,
-		MedicineDose:     pp.MedicineDose,
+		MedicineDose:     pp.MedicineAmount,
 		MedicineId:       pp.MedicineId,
 	}
 }

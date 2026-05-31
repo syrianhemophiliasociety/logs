@@ -7,7 +7,7 @@ type Prophylaxis struct {
 	PatientId        uint `gorm:"index;not null"`
 	MedicineId       uint `gorm:"index;not null"`
 	Medicine         Medicine
-	MedicineDose     int     `gorm:"not null"`
+	MedicineAmount   int     `gorm:"not null"`
 	Title            string  `gorm:"not null"`
 	FrequencyPerDays float32 `gorm:"not null"`
 	EndDate          time.Time
