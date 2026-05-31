@@ -69,7 +69,7 @@ func (pp Prophylaxis) IntoModel() models.Prophylaxis {
 		Title:            pp.Title,
 		FrequencyPerDays: prophylaxisFrequencyMapper[pp.FrequencyPerDays],
 		EndDate:          pp.EndDate,
-		MedicineDose:     pp.MedicineAmount,
+		MedicineAmount:   pp.MedicineAmount,
 		MedicineId:       pp.MedicineId,
 	}
 }
