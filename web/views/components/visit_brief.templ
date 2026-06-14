@@ -1,0 +1,43 @@
+package components
+
+import (
+	"shs/actions"
+	"shs/web/i18n"
+	"strconv"
+	"time"
+)
+
+templ VisitsBrief(visits []actions.VisitWithPatient) {
+	@ScrollableList(ScrollableListParams{}) {
+		for _, visit := range visits {
+			@JustLink("/visit/"+strconv.Itoa(int(visit.Visit.Id)), "Medicine page", visitBrief(visit))
+		}
+	}
+}
+
+templ visitBrief(visit actions.VisitWithPatient) {
+	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+		<span class="min-w-20 text-lg text-secondary font-bold">{ visit.Visit.VisitedAt.Format(time.DateOnly) }</span>
+		<span class="w-20 text-lg text-secondary">{ visit.Patient.FullName() }</span>
+		<span class="min-w-20 text-lg text-secondary">
+			switch visit.Visit.Reason {
+				case "primary_prophylaxis":
+					{ i18n.StringsCtx(ctx).PrimaryProphylaxis }
+				case "secondary_prophylaxis":
+					{ i18n.StringsCtx(ctx).SecondaryProphylaxis }
+				case "surgery":
+					{ i18n.StringsCtx(ctx).Surgery }
+				case "joint_evaluation":
+					{ i18n.StringsCtx(ctx).JointEvaluation }
+				case "joint_injection":
+					{ i18n.StringsCtx(ctx).JointInjection }
+				case "hemelibra":
+					{ i18n.StringsCtx(ctx).Hemelibra }
+				case "home_treatment":
+					{ i18n.StringsCtx(ctx).TreatmentAtHome }
+				case "active_bleeding":
+					{ i18n.StringsCtx(ctx).ActiveBleeding }
+			}
+		</span>
+	</div>
+}

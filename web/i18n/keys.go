@@ -234,6 +234,8 @@ type Keys struct {
 	UpdateProfile               string
 	SaveProfile                 string
 	ProfileDetails              string
+	VisitStartDate              string
+	VisitEndDate                string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string

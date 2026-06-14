@@ -39,6 +39,20 @@ const links = [
     ],
   },
   {
+    check: (l) => l === "/medicines/logs",
+    elements: [
+      document.getElementById("/medicines/logs"),
+      document.getElementById("/medicines/logs?mobile"),
+    ],
+  },
+  {
+    check: (l) => l === "/visits",
+    elements: [
+      document.getElementById("/visits"),
+      document.getElementById("/visits?mobile"),
+    ],
+  },
+  {
     check: (l) => l.startsWith("/management"),
     elements: [
       document.getElementById("/management"),

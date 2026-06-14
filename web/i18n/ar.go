@@ -242,6 +242,8 @@ var arabic = Keys{
 	Prophylaxis:                   "Prophylaxis",
 	ProphylaxisChoose:             "Choose",
 
+	VisitStartDate: "Start date",
+	VisitEndDate:   "End date",
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("الزيارة بتاريخ %s", date.Format(time.DateOnly))
 	},

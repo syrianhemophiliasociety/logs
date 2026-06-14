@@ -239,6 +239,8 @@ var english = Keys{
 	ProphylaxisMarkChosen:         "Mark chosen",
 	ProphylaxisEnd:                "End",
 	ProphylaxisChoose:             "Choose",
+	VisitStartDate:                "Start date",
+	VisitEndDate:                  "End date",
 	VisitTitleFmt: func(date time.Time) string {
 		return fmt.Sprintf("Patient visit at %s", date.Format(time.DateOnly))
 	},

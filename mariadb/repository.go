@@ -1039,6 +1039,23 @@ func (r *Repository) CreatePrescribedMedicine(pm models.PrescribedMedicine) (mod
 	return pm, nil
 }
 
+func (r *Repository) ListVisitsOnTimeRange(from, to time.Time) ([]models.Visit, error) {
+	var visits []models.Visit
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.Visit)).
+			Where("created_at BETWEEN ? AND ?", from, to).
+			Find(&visits).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return visits, nil
+}
+
 func (r *Repository) GetPatientLastVisit(patientId uint) (models.Visit, error) {
 	var visits []models.Visit
 
@@ -1084,6 +1101,22 @@ func (r *Repository) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.
 	}
 
 	return prescribedMeds, nil
+}
+
+func (r *Repository) ListAllPrescribedMedicines() ([]models.PrescribedMedicine, error) {
+	var pm []models.PrescribedMedicine
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PrescribedMedicine)).
+			Find(&pm).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return pm, nil
 }
 
 func (r *Repository) UseMedicineForVisit(prescribedMedicineId, visitId uint) error {

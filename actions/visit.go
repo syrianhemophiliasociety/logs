@@ -2,6 +2,7 @@ package actions
 
 import (
 	"shs/app/models"
+	"slices"
 	"time"
 )
 
@@ -13,6 +14,22 @@ type Visit struct {
 	PatientWeight      float64              `json:"patient_weight"`
 	PatientHeight      float64              `json:"patient_height"`
 	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
+}
+
+func (v *Visit) FromModel(visit models.Visit) {
+	(*v) = Visit{
+		Id:            visit.Id,
+		Reason:        string(visit.Reason),
+		ExtraNote:     visit.Notes,
+		VisitedAt:     visit.CreatedAt,
+		PatientWeight: visit.PatientWeight,
+		PatientHeight: visit.PatientHeight,
+	}
+}
+
+type VisitWithPatient struct {
+	Visit   Visit   `json:"visit"`
+	Patient Patient `json:"patient"`
 }
 
 type CreatePatientVisitParams struct {
@@ -271,6 +288,100 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 	}
 
 	return ListPatientVisitsPayload{
+		Data: outVisits,
+	}, nil
+}
+
+type ListAllVisitsParams struct {
+	ActionContext
+	StartDate         time.Time `json:"start_date"`
+	EndDate           time.Time `json:"end_date"`
+	SortByVisitReason string    `json:"sort_by_visit_reason"`
+}
+
+type ListAllVisitsPayload struct {
+	Data []VisitWithPatient `json:"data"`
+}
+
+func (a *Actions) ListAllVisits(params ListAllVisitsParams) (ListAllVisitsPayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadOtherVisits) {
+		return ListAllVisitsPayload{}, ErrPermissionDenied{}
+	}
+
+	visits, err := a.app.ListVisitsOnTimeRange(params.StartDate, time.Now())
+	if err != nil {
+		return ListAllVisitsPayload{}, err
+	}
+
+	outVisits := make([]VisitWithPatient, 0, len(visits))
+
+	for _, visit := range visits {
+		patient, err := a.app.GetPatientById(visit.PatientId)
+		if err != nil {
+			return ListAllVisitsPayload{}, err
+		}
+
+		prescribedMeds, err := a.app.ListPatientVisitPrescribedMedicine(visit.Id)
+		if err != nil {
+			return ListAllVisitsPayload{}, err
+		}
+
+		medsIds := make([]uint, 0, len(prescribedMeds))
+		for _, pm := range prescribedMeds {
+			medsIds = append(medsIds, pm.MedicineId)
+		}
+
+		meds, err := a.app.ListMedicinesByIds(medsIds)
+		if err != nil {
+			return ListAllVisitsPayload{}, err
+		}
+
+		medsMapped := make(map[uint]models.Medicine)
+		for _, med := range meds {
+			medsMapped[med.Id] = med
+		}
+
+		outMeds := make([]PrescribedMedicine, 0, len(prescribedMeds))
+		for _, pm := range prescribedMeds {
+			outMed := new(PrescribedMedicine)
+			outMed.FromModel(pm, medsMapped[pm.MedicineId])
+			outMeds = append(outMeds, *outMed)
+		}
+
+		outPatient := new(Patient)
+		outPatient.FromModel(patient)
+
+		outVisits = append(outVisits, VisitWithPatient{
+			Visit: Visit{
+				Id:                 visit.Id,
+				Reason:             string(visit.Reason),
+				ExtraNote:          visit.Notes,
+				VisitedAt:          visit.CreatedAt,
+				PrescribedMedicine: outMeds,
+				PatientWeight:      visit.PatientWeight,
+				PatientHeight:      visit.PatientHeight,
+			},
+			Patient: *outPatient,
+		})
+	}
+
+	if params.SortByVisitReason != "" {
+		slices.SortFunc(outVisits, func(vi, vj VisitWithPatient) int {
+			iMatches := vi.Visit.Reason == params.SortByVisitReason
+			jMatches := vj.Visit.Reason == params.SortByVisitReason
+			if iMatches == jMatches {
+				return 0
+			}
+
+			if iMatches {
+				return -1
+			}
+
+			return 1
+		})
+	}
+
+	return ListAllVisitsPayload{
 		Data: outVisits,
 	}, nil
 }

@@ -47,6 +47,10 @@ func (a *App) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.Prescri
 	return a.repo.ListPatientVisitPrescribedMedicine(visitId)
 }
 
+func (a *App) ListAllPrescribedMedicines() ([]models.PrescribedMedicine, error) {
+	return a.repo.ListAllPrescribedMedicines()
+}
+
 func (a *App) UseMedicineForVisit(prescribedMedicineId, visitId uint) error {
 	return a.repo.UseMedicineForVisit(prescribedMedicineId, visitId)
 }

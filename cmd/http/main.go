@@ -75,7 +75,9 @@ func main() {
 	pagesHandler.HandleFunc("GET /privacy", contenttype.Html(webAuthMiddleware.OptionalAuthPage(pages.HandlePrivacyPage)))
 	pagesHandler.HandleFunc("GET /login", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleLoginPage)))
 	pagesHandler.HandleFunc("GET /viruses", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleVirusesPage)))
+	pagesHandler.HandleFunc("GET /visits", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleVisitsPage)))
 	pagesHandler.HandleFunc("GET /medicines", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleMedicinesPage)))
+	pagesHandler.HandleFunc("GET /medicines/logs", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleMedicinesUseLogsPage)))
 	pagesHandler.HandleFunc("GET /medicine/{id}", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleMedicinePage)))
 	pagesHandler.HandleFunc("GET /blood-tests", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleBloodTestsPage)))
 	pagesHandler.HandleFunc("GET /blood-test/{id}", contenttype.Html(webAuthMiddleware.AuthPage(pages.HandleBloodTestPage)))
@@ -253,11 +255,13 @@ func main() {
 	///
 
 	patientHtmx := webhtmx.NewPatientHtmx(usecases)
+	visitHtmx := webhtmx.NewVisitHtmx(usecases)
 
 	htmxHandler := http.NewServeMux()
 	htmxHandler.HandleFunc("POST /patient/find", webAuthMiddleware.AuthApi(patientHtmx.HandleFindPatients))
 	htmxHandler.HandleFunc("GET /patient/{id}/view", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientDetailsView))
 	htmxHandler.HandleFunc("GET /patient/{id}/update", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientUpdateView))
+	htmxHandler.HandleFunc("POST /visits/find", webAuthMiddleware.AuthApi(visitHtmx.HandleFindVisits))
 
 	applicationHandler := http.NewServeMux()
 	applicationHandler.Handle("/", version.Handler(appVersion, webi18n.Handler(ismobile.Handler(webtheme.Handler(pagesHandler)))))

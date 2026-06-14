@@ -705,3 +705,56 @@ func (p *pagesHandler) HandleStatisticsPage(w http.ResponseWriter, r *http.Reque
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
 	}, pages.Statistics()).Render(r.Context(), w)
 }
+
+func (p *pagesHandler) HandleMedicinesUseLogsPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	_ = ctx
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavMedicineUseLogs)
+		w.Header().Set("HX-Push-Url", "/medicines/logs")
+		pages.MedicinesUseLogs().Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavMedicineUseLogs,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.MedicinesUseLogs()).Render(r.Context(), w)
+}
+
+func (p *pagesHandler) HandleVisitsPage(w http.ResponseWriter, r *http.Request) {
+	ctx, err := context.Parse(r.Context())
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	payload, err := p.usecases.ListAllVisits(actions.ListAllVisitsParams{ActionContext: ctx})
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	if contenttype.IsNoLayoutPage(r) {
+		w.Header().Set("HX-Title", i18n.Strings("en").NavVisits)
+		w.Header().Set("HX-Push-Url", "/visits")
+		pages.Visits(payload.Data).Render(r.Context(), w)
+		return
+	}
+
+	layouts.Default(layouts.PageProps{
+		Title:    i18n.StringsCtx(r.Context()).NavVisits,
+		Url:      config.Env().Hostname,
+		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
+	}, pages.Visits(payload.Data)).Render(r.Context(), w)
+}
