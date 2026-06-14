@@ -63,6 +63,8 @@ var english = Keys{
 	NavAccount:            "User's account",
 	NavStatistics:         "Statistics",
 	NavDiagnoses:          "Diagnoses",
+	NavVisits:             "Visits",
+	NavMedicineUseLogs:    "Medicine Use Logs",
 	TabsList:              "List",
 	TabsSearch:            "Search",
 	TabsCreate:            "Create",

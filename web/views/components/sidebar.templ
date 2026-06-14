@@ -1,6 +1,7 @@
 package components
 
 import (
+	"context"
 	"shs/app/models"
 	"shs/web/i18n"
 	"shs/web/views/helpers"
@@ -17,6 +18,96 @@ templ Sidebar() {
 	}
 }
 
+type pageLink struct {
+	icon  templ.Component
+	title string
+	href  string
+}
+
+func pagesLinks(ctx context.Context) []pageLink {
+	links := make([]pageLink, 0, 10)
+
+	if !helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
+		links = append(links, pageLink{
+			icon:  icons.Home(),
+			title: i18n.StringsCtx(ctx).NavHome,
+			href:  "/",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
+		links = append(links, pageLink{
+			icon:  icons.Patient(),
+			title: i18n.StringsCtx(ctx).NavPatients,
+			href:  "/patients",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOtherVisits) {
+		links = append(links, pageLink{
+			icon:  icons.Visits(),
+			title: i18n.StringsCtx(ctx).NavVisits,
+			href:  "/visits",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
+		links = append(links, pageLink{
+			icon:  icons.Statistics(),
+			title: i18n.StringsCtx(ctx).NavStatistics,
+			href:  "/statistics",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadMedicine) {
+		links = append(links, pageLink{
+			icon:  icons.Medicine(),
+			title: i18n.StringsCtx(ctx).NavMedicine,
+			href:  "/medicines",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
+		links = append(links, pageLink{
+			icon:  icons.Medicine(),
+			title: i18n.StringsCtx(ctx).NavMedicineUseLogs,
+			href:  "/medicines/logs",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
+		links = append(links, pageLink{
+			icon:  icons.Medicine(),
+			title: i18n.StringsCtx(ctx).NavMedicine,
+			href:  "/patient/medications",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
+		links = append(links, pageLink{
+			icon:  icons.BloodTest(),
+			title: i18n.StringsCtx(ctx).NavBloodTests,
+			href:  "/blood-tests",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
+		links = append(links, pageLink{
+			icon:  icons.Diagnoses(),
+			title: i18n.StringsCtx(ctx).NavDiagnoses,
+			href:  "/diagnoses",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadVirus) {
+		links = append(links, pageLink{
+			icon:  icons.Virus(),
+			title: i18n.StringsCtx(ctx).NavViruses,
+			href:  "/viruses",
+		})
+	}
+	if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadAccounts) {
+		links = append(links, pageLink{
+			icon:  icons.Management(),
+			title: i18n.StringsCtx(ctx).NavManagement,
+			href:  "/management",
+		})
+	}
+
+	return links
+}
+
 templ mobileNavbar() {
 	<div
 		class={ "fixed", "bottom-0", "left-0", "h-auto", "w-full", }
@@ -28,49 +119,9 @@ templ mobileNavbar() {
 			}
 		>
 			<ul class={ "w-full", "m-0", "p-5", "px-14", "list-none", "flex", "justify-center" }>
-				if !helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
+				for _, link := range pagesLinks(ctx) {
 					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", true, icons.Home())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", true, icons.Patient())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavStatistics, "/statistics", true, icons.Statistics())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadMedicine) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", true, icons.Medicine())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", true, icons.Medicine())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", true, icons.BloodTest())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavDiagnoses, "/diagnoses", true, icons.Diagnoses())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadVirus) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", true, icons.Virus())
-					</li>
-				}
-				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadAccounts) {
-					<li>
-						@ImageRouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", true, icons.Management())
+						@ImageRouteLink(link.title, link.href, true, link.icon)
 					</li>
 				}
 			</ul>
@@ -93,49 +144,9 @@ templ desktopSidebar() {
 		<div class={ "w-full" }>
 			<nav class={ "p-5", "w-full" }>
 				<ul class={ "list-none", "flex", "flex-col", "gap-x-5", "max-w-60" }>
-					if !helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
+					for _, link := range pagesLinks(ctx) {
 						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavHome, "/", false, icons.Home())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavPatients, "/patients", false, icons.Patient())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadPatient) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavStatistics, "/statistics", false, icons.Statistics())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadMedicine) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/medicines", false, icons.Medicine())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadOwnVisit) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavMedicine, "/patient/medications", false, icons.Medicine())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavBloodTests, "/blood-tests", false, icons.BloodTest())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadBloodTest) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavDiagnoses, "/diagnoses", false, icons.Diagnoses())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadVirus) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavViruses, "/viruses", false, icons.Virus())
-						</li>
-					}
-					if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionReadAccounts) {
-						<li>
-							@ImageRouteLink(i18n.StringsCtx(ctx).NavManagement, "/management", false, icons.Management())
+							@ImageRouteLink(link.title, link.href, false, link.icon)
 						</li>
 					}
 				</ul>

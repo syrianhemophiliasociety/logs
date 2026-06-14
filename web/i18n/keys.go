@@ -39,19 +39,21 @@ type Keys struct {
 	Logout             string
 	Reload             string
 
-	NavHome       string
-	NavAbout      string
-	NavPrivacy    string
-	NavLogin      string
-	NavPatients   string
-	NavPatient    string
-	NavBloodTests string
-	NavMedicine   string
-	NavViruses    string
-	NavManagement string
-	NavAccount    string
-	NavStatistics string
-	NavDiagnoses  string
+	NavHome            string
+	NavAbout           string
+	NavPrivacy         string
+	NavLogin           string
+	NavPatients        string
+	NavPatient         string
+	NavBloodTests      string
+	NavMedicine        string
+	NavViruses         string
+	NavManagement      string
+	NavAccount         string
+	NavStatistics      string
+	NavDiagnoses       string
+	NavVisits          string
+	NavMedicineUseLogs string
 
 	TabsList        string
 	TabsSearch      string

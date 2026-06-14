@@ -63,6 +63,8 @@ var arabic = Keys{
 	NavAccount:            "حساب المستخدم",
 	NavStatistics:         "الإحصائيات",
 	NavDiagnoses:          "التشخيصات",
+	NavVisits:             "الزيارات",
+	NavMedicineUseLogs:    "سجلات استخدام الأدوية",
 	TabsList:              "قائمة",
 	TabsSearch:            "البحث",
 	TabsCreate:            "أنشئ",
