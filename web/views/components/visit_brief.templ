@@ -1,26 +1,26 @@
 package components
 
 import (
+	"fmt"
 	"shs/actions"
 	"shs/web/i18n"
-	"strconv"
 	"time"
 )
 
-templ VisitsBrief(visits []actions.VisitWithPatient) {
+templ VisitsBrief(vps []actions.VisitWithPatient) {
 	@ScrollableList(ScrollableListParams{}) {
-		for _, visit := range visits {
-			@JustLink("/visit/"+strconv.Itoa(int(visit.Visit.Id)), "Medicine page", visitBrief(visit))
+		for _, vp := range vps {
+			@JustLink(fmt.Sprintf("/patient/%s/visit/%d", vp.Patient.PublicId, vp.Visit.Id), "Visit page", visitBrief(vp.Patient, vp.Visit))
 		}
 	}
 }
 
-templ visitBrief(visit actions.VisitWithPatient) {
+templ visitBrief(patient actions.Patient, visit actions.Visit) {
 	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-		<span class="min-w-20 text-lg text-secondary font-bold">{ visit.Visit.VisitedAt.Format(time.DateOnly) }</span>
-		<span class="w-20 text-lg text-secondary">{ visit.Patient.FullName() }</span>
+		<span class="min-w-20 text-lg text-secondary font-bold">{ visit.VisitedAt.Format(time.DateOnly) }</span>
+		<span class="w-20 text-lg text-secondary">{ patient.FullName() }</span>
 		<span class="min-w-20 text-lg text-secondary">
-			switch visit.Visit.Reason {
+			switch visit.Reason {
 				case "primary_prophylaxis":
 					{ i18n.StringsCtx(ctx).PrimaryProphylaxis }
 				case "secondary_prophylaxis":

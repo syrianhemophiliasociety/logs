@@ -32,6 +32,22 @@ type VisitWithPatient struct {
 	Patient Patient `json:"patient"`
 }
 
+type TreatmentDetails struct {
+	Id          uint   `json:"id"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabic_title"`
+	Type        string `json:"type"`
+}
+
+func (td *TreatmentDetails) FromModel(treatment models.TreatmentDetails) {
+	(*td) = TreatmentDetails{
+		Id:          treatment.Id,
+		Title:       treatment.Title,
+		ArabicTitle: treatment.ArabicTitle,
+		Type:        treatment.Type,
+	}
+}
+
 type CreatePatientVisitParams struct {
 	ActionContext
 	PatientId           string
@@ -113,6 +129,7 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 
 type PrescribedMedicine struct {
 	Medicine
+	TreatmentDetailsId   uint      `json:"treatment_details_id"`
 	PrescribedMedicineId uint      `json:"prescribed_medicine_id"`
 	UsedAt               time.Time `json:"used_at"`
 }
@@ -123,6 +140,7 @@ func (pm *PrescribedMedicine) FromModel(m models.PrescribedMedicine, med models.
 	(*pm).Medicine = *outMed
 	(*pm).PrescribedMedicineId = m.Id
 	(*pm).UsedAt = m.UsedAt
+	(*pm).TreatmentDetailsId = m.TreatmentDetailsId
 }
 
 func (pm PrescribedMedicine) IntoModel(visitId, patientId, medicineId uint) models.PrescribedMedicine {
@@ -138,12 +156,13 @@ type GetPatientLastVisitParams struct {
 }
 
 type GetPatientLastVisitPayload struct {
-	VisitId            uint                 `json:"visit_id"`
-	Patient            Patient              `json:"patient"`
-	VisitedAt          time.Time            `json:"visited_at"`
-	PatientWeight      float64              `json:"patient_weight"`
-	PatientHeight      float64              `json:"patient_height"`
-	PrescribedMedicine []PrescribedMedicine `json:"prescribed_medicine"`
+	VisitId             uint                 `json:"visit_id"`
+	Patient             Patient              `json:"patient"`
+	VisitedAt           time.Time            `json:"visited_at"`
+	PatientWeight       float64              `json:"patient_weight"`
+	PatientHeight       float64              `json:"patient_height"`
+	PrescribedMedicine  []PrescribedMedicine `json:"prescribed_medicine"`
+	AvailableTreatments []TreatmentDetails   `json:"available_treatments"`
 }
 
 func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPatientLastVisitPayload, error) {
@@ -191,18 +210,32 @@ func (a *Actions) GetPatientLastVisit(params GetPatientLastVisitParams) (GetPati
 	outPatient := new(Patient)
 	outPatient.FromModel(patient)
 
+	treatments, err := a.app.ListAllTreatmentDetails()
+	if err != nil {
+		return GetPatientLastVisitPayload{}, err
+	}
+
+	outTreatments := make([]TreatmentDetails, 0, len(treatments))
+	for _, t := range treatments {
+		outTreatment := new(TreatmentDetails)
+		outTreatment.FromModel(t)
+		outTreatments = append(outTreatments, *outTreatment)
+	}
+
 	return GetPatientLastVisitPayload{
-		Patient:            *outPatient,
-		PrescribedMedicine: outMeds,
-		VisitedAt:          lastVisit.CreatedAt,
-		VisitId:            lastVisit.Id,
-		PatientWeight:      lastVisit.PatientWeight,
-		PatientHeight:      lastVisit.PatientHeight,
+		Patient:             *outPatient,
+		PrescribedMedicine:  outMeds,
+		VisitedAt:           lastVisit.CreatedAt,
+		VisitId:             lastVisit.Id,
+		PatientWeight:       lastVisit.PatientWeight,
+		PatientHeight:       lastVisit.PatientHeight,
+		AvailableTreatments: outTreatments,
 	}, nil
 }
 
 type UseMedicineForVisitParams struct {
 	ActionContext
+	TreatmentId          uint `json:"visit_treatment_id"`
 	PrescribedMedicineId uint `json:"prescribed_medicine_id"`
 	VisitId              uint `json:"visit_id"`
 }
@@ -215,7 +248,7 @@ func (a *Actions) UseMedicineForVisit(params UseMedicineForVisitParams) (UseMedi
 		return UseMedicineForVisitPayload{}, ErrPermissionDenied{}
 	}
 
-	err := a.app.UseMedicineForVisit(params.PrescribedMedicineId, params.VisitId)
+	err := a.app.UseMedicineForVisit(params.PrescribedMedicineId, params.VisitId, params.TreatmentId)
 	if err != nil {
 		return UseMedicineForVisitPayload{}, err
 	}

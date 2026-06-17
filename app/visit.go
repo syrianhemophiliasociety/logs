@@ -16,3 +16,7 @@ func (a *App) CreatePrescribedMedicine(pm models.PrescribedMedicine) (models.Pre
 func (a *App) ListVisitsOnTimeRange(from, to time.Time) ([]models.Visit, error) {
 	return a.repo.ListVisitsOnTimeRange(from, to)
 }
+
+func (a *App) ListAllTreatmentDetails() ([]models.TreatmentDetails, error) {
+	return a.repo.ListAllTreatmentDetails()
+}

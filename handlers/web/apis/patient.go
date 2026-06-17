@@ -832,6 +832,7 @@ func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Req
 
 	visitIdStr := r.PathValue("visit_id")
 	medIdStr := r.PathValue("med_id")
+	treatmentIdStr := r.PathValue("treatment_id")
 	visitId, err := strconv.Atoi(visitIdStr)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
@@ -844,11 +845,18 @@ func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Req
 		log.Errorln(err)
 		return
 	}
+	treatmentId, err := strconv.Atoi(treatmentIdStr)
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
 
 	_, err = v.usecases.UseMedicineForVisit(actions.UseMedicineForVisitParams{
 		ActionContext:        ctx,
 		VisitId:              uint(visitId),
 		PrescribedMedicineId: uint(medId),
+		TreatmentId:          uint(treatmentId),
 	})
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)

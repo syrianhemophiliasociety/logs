@@ -55,13 +55,14 @@ type Keys struct {
 	NavVisits          string
 	NavMedicineUseLogs string
 
-	TabsList        string
-	TabsSearch      string
-	TabsCreate      string
-	TabsCheckup     string
-	TabsVisits      string
-	TabsJoints      string
-	TabsProphylaxes string
+	TabsList             string
+	TabsSearch           string
+	TabsCreate           string
+	TabsCheckup          string
+	TabsVisits           string
+	TabsJoints           string
+	TabsProphylaxes      string
+	TabsTreatmentDetails string
 
 	FormsSubmit   string
 	FormsDelete   string
@@ -77,6 +78,7 @@ type Keys struct {
 	EnterVirusBloodTest string
 
 	Medicine                  string
+	ChooseMedicine            string
 	EnterMedicineName         string
 	MedicineDose              string
 	EnterMedicineDose         string
@@ -223,6 +225,8 @@ type Keys struct {
 	ProphylaxisMarkChosen         string
 	ProphylaxisEnd                string
 	ProphylaxisChoose             string
+	Treatment                     string
+	ChooseTreatment               string
 
 	VisitTitleFmt               func(date time.Time) string
 	UseOnePrescribedMedicineFmt func(medicineName string) string

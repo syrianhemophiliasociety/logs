@@ -86,11 +86,14 @@ func (p *Patient) FillEmptyFieldsUsingPublicId() {
 	}
 }
 
+// TODO: check if struct is dead :)
 type PatientUseMedicine struct {
-	Id         uint `gorm:"primaryKey;autoIncrement"`
-	PatientId  uint `gorm:"not null"`
-	VisitId    uint `gorm:"not null"`
-	MedicineId uint `gorm:"not null"`
+	Id                 uint `gorm:"primaryKey;autoIncrement"`
+	PatientId          uint `gorm:"not null"`
+	VisitId            uint `gorm:"not null"`
+	MedicineId         uint `gorm:"not null"`
+	TreatmentDetails   TreatmentDetails
+	TreatmentDetailsId uint `gorm:"not null"`
 
 	CreatedAt time.Time `gorm:"index;not null"`
 	UpdatedAt time.Time

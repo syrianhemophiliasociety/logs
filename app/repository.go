@@ -61,7 +61,11 @@ type Repository interface {
 
 	GetPatientLastVisit(patientId uint) (models.Visit, error)
 	ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error)
-	UseMedicineForVisit(prescribedMedicineId, visitId uint) error
+	UseMedicineForVisit(prescribedMedicineId, visitId, treatmentId uint) error
+
+	CreateTreatmentDetails(td models.TreatmentDetails) (models.TreatmentDetails, error)
+	ListAllTreatmentDetails() ([]models.TreatmentDetails, error)
+	DeleteTreatmentDetails(id uint) error
 
 	CreateAddress(address models.Address) (models.Address, error)
 	GetAllAddresses() ([]models.Address, error)

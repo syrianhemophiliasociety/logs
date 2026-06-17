@@ -1109,6 +1109,7 @@ func (r *Repository) ListAllPrescribedMedicines() ([]models.PrescribedMedicine, 
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.PrescribedMedicine)).
+			Preload("TreatmentDetails").
 			Find(&pm).
 			Error,
 	)
@@ -1119,18 +1120,76 @@ func (r *Repository) ListAllPrescribedMedicines() ([]models.PrescribedMedicine, 
 	return pm, nil
 }
 
-func (r *Repository) UseMedicineForVisit(prescribedMedicineId, visitId uint) error {
+func (r *Repository) UseMedicineForVisit(prescribedMedicineId, visitId, treatmentId uint) error {
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.PrescribedMedicine)).
 			Where("id = ? AND visit_id = ?", prescribedMedicineId, visitId).
 			Update("used_at", time.Now().UTC()).
+			Update("treatment_details_id", treatmentId).
 			Error,
 	)
 
 	if _, ok := err.(*ErrRecordNotFound); ok {
 		return &app.ErrNotFound{
 			ResourceName: "prescribed_medicine",
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) CreateTreatmentDetails(td models.TreatmentDetails) (models.TreatmentDetails, error) {
+	td.CreatedAt = time.Now().UTC()
+	td.UpdatedAt = time.Now().UTC()
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.TreatmentDetails)).
+			Create(&td).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordExists); ok {
+		return models.TreatmentDetails{}, &app.ErrExists{
+			ResourceName: "treatment_details",
+		}
+	}
+	if err != nil {
+		return models.TreatmentDetails{}, err
+	}
+
+	return td, nil
+}
+
+func (r *Repository) ListAllTreatmentDetails() ([]models.TreatmentDetails, error) {
+	var td []models.TreatmentDetails
+
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.TreatmentDetails)).
+			Find(&td).
+			Error,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return td, nil
+}
+
+func (r *Repository) DeleteTreatmentDetails(id uint) error {
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.TreatmentDetails)).
+			Delete(&models.TreatmentDetails{Id: id}, "id = ?", id).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "treatment_details",
 		}
 	}
 	if err != nil {
