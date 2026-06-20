@@ -738,7 +738,14 @@ func (p *pagesHandler) HandleVisitsPage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	payload, err := p.usecases.ListAllVisits(actions.ListAllVisitsParams{ActionContext: ctx})
+	visits, err := p.usecases.ListAllVisits(actions.ListAllVisitsParams{ActionContext: ctx})
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
+
+	treatmentDetails, err := p.usecases.ListAllTreatmentDetails(actions.ListAllTreatmentDetailsParams{ActionContext: ctx})
 	if err != nil {
 		components.GenericError("What do you think you're doing?").
 			Render(r.Context(), w)
@@ -748,7 +755,7 @@ func (p *pagesHandler) HandleVisitsPage(w http.ResponseWriter, r *http.Request) 
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.Strings("en").NavVisits)
 		w.Header().Set("HX-Push-Url", "/visits")
-		pages.Visits(payload.Data).Render(r.Context(), w)
+		pages.Visits(visits.Data, treatmentDetails.Data).Render(r.Context(), w)
 		return
 	}
 
@@ -756,5 +763,5 @@ func (p *pagesHandler) HandleVisitsPage(w http.ResponseWriter, r *http.Request) 
 		Title:    i18n.StringsCtx(r.Context()).NavVisits,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.Visits(payload.Data)).Render(r.Context(), w)
+	}, pages.Visits(visits.Data, treatmentDetails.Data)).Render(r.Context(), w)
 }

@@ -831,21 +831,40 @@ func (v *patientApi) HandlePatientUseMedicine(w http.ResponseWriter, r *http.Req
 	}
 
 	visitIdStr := r.PathValue("visit_id")
-	medIdStr := r.PathValue("med_id")
-	treatmentIdStr := r.PathValue("treatment_id")
 	visitId, err := strconv.Atoi(visitIdStr)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
 	}
-	medId, err := strconv.Atoi(medIdStr)
+
+	var reqBody struct {
+		MedicineId  string `json:"medicine_id"`
+		TreatmentId string `json:"treatment_id"`
+	}
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)
 		return
 	}
-	treatmentId, err := strconv.Atoi(treatmentIdStr)
+
+	medIdKey := "med-"
+	treatmentIdKey := "treat-"
+
+	if len(reqBody.MedicineId) < len(medIdKey)+1 ||
+		len(reqBody.TreatmentId) < len(treatmentIdKey)+1 {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		return
+	}
+
+	medId, err := strconv.Atoi(reqBody.MedicineId[len(medIdKey):])
+	if err != nil {
+		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
+		log.Errorln(err)
+		return
+	}
+	treatmentId, err := strconv.Atoi(reqBody.TreatmentId[len(treatmentIdKey):])
 	if err != nil {
 		components.GenericError(i18n.StringsCtx(r.Context()).ErrorSomethingWentWrong).Render(r.Context(), w)
 		log.Errorln(err)

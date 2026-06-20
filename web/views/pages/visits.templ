@@ -8,7 +8,7 @@ import (
 	"shs/web/views/helpers"
 )
 
-templ Visits(visits []actions.VisitWithPatient) {
+templ Visits(visits []actions.VisitWithPatient, treatments []actions.TreatmentDetails) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavVisits }</h1>
 		@components.TabsPermissions([]helpers.Pair[models.AccountPermissions, components.TabContent]{
@@ -27,7 +27,7 @@ templ Visits(visits []actions.VisitWithPatient) {
 					Title:     i18n.StringsCtx(ctx).TabsTreatmentDetails,
 					TitleId:   "treatments",
 					GroupName: "visit",
-					Content:   treatmentDetailsTab(),
+					Content:   treatmentDetailsTab(treatments),
 				},
 			},
 		}...)
@@ -91,7 +91,7 @@ templ allVisits(vps []actions.VisitWithPatient) {
 	}
 }
 
-templ treatmentDetailsTab() {
+templ treatmentDetailsTab(treatments []actions.TreatmentDetails) {
 	@components.TabsPermissions([]helpers.Pair[models.AccountPermissions, components.TabContent]{
 		{
 			First: models.AccountPermissionReadOtherVisits,
@@ -99,7 +99,7 @@ templ treatmentDetailsTab() {
 				Title:     i18n.StringsCtx(ctx).TabsList,
 				TitleId:   "list",
 				GroupName: "treatment-details",
-				Content:   treatmentDetailsList(),
+				Content:   treatmentDetailsList(treatments),
 				SubTab:    true,
 			},
 		},
@@ -116,10 +116,61 @@ templ treatmentDetailsTab() {
 	}...)
 }
 
-templ treatmentDetailsList() {
-	noop
+templ treatmentDetailsList(treatments []actions.TreatmentDetails) {
+	@components.ScrollableList(components.ScrollableListParams{}) {
+		for _, t := range treatments {
+			<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+				<span class="min-w-20 text-lg text-secondary font-bold">{ t.Title }</span>
+				<span class="w-20 text-lg text-secondary">{ t.ArabicTitle }</span>
+				<span class="w-20 text-lg text-secondary">{ t.Type }</span>
+			</div>
+		}
+	}
 }
 
 templ treatmentDetailsCreate() {
-	noop
+	<form
+		class={ "", "flex", "flex-col", "gap-5" }
+		hx-encoding="application/json"
+		hx-post="/api/web/visit/treatment"
+		hx-ext="json-enc"
+		hx-target="#status-msg"
+		hx-swap="innerHTML"
+		data-loading-target="#loading"
+		data-loading-class-remove="hidden"
+		_="on htmx:afterRequest reset() me then call location.reload()"
+	>
+		<div class={ "flex", "flex-col", "gap-5", "justify-between" }>
+			@components.Input(components.InputOptions{
+				Id:          "title",
+				Name:        "title",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   true,
+				Title:       i18n.StringsCtx(ctx).TreatmentTitle,
+				Placeholder: i18n.StringsCtx(ctx).EnterTreatmentTitle,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "arabic_title",
+				Name:        "arabic_title",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).TreatmentArabicTitle,
+				Placeholder: i18n.StringsCtx(ctx).EnterTreatmentArabicTitle,
+			})
+			@components.Input(components.InputOptions{
+				Id:          "type",
+				Name:        "type",
+				Type:        components.InputTypeText,
+				Required:    true,
+				Autofocus:   false,
+				Title:       i18n.StringsCtx(ctx).TreatmentType,
+				Placeholder: i18n.StringsCtx(ctx).EnterTreatmentType,
+			})
+		</div>
+		<button type="submit" class={ "cursor-pointer" , "bg-secondary" , "rounded-[50px]" , "p-[10px]" , "px-[60px]", "w-full" , "text-accent" }>
+			{ i18n.StringsCtx(ctx).FormsSubmit }
+		</button>
+	</form>
 }

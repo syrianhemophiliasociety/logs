@@ -1181,7 +1181,19 @@ func (r *Repository) ListAllTreatmentDetails() ([]models.TreatmentDetails, error
 }
 
 func (r *Repository) DeleteTreatmentDetails(id uint) error {
+	var prescribedMedsUsingTreatment []models.PrescribedMedicine
 	err := tryWrapDbError(
+		r.client.
+			Model(new(models.PrescribedMedicine)).
+			Where("treatment_details_id = ?", id).
+			Find(&prescribedMedsUsingTreatment).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); !ok {
+		return err
+	}
+
+	err = tryWrapDbError(
 		r.client.
 			Model(new(models.TreatmentDetails)).
 			Delete(&models.TreatmentDetails{Id: id}, "id = ?", id).

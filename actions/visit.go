@@ -48,6 +48,14 @@ func (td *TreatmentDetails) FromModel(treatment models.TreatmentDetails) {
 	}
 }
 
+func (td *TreatmentDetails) IntoModel() models.TreatmentDetails {
+	return models.TreatmentDetails{
+		Title:       td.Title,
+		ArabicTitle: td.ArabicTitle,
+		Type:        td.Type,
+	}
+}
+
 type CreatePatientVisitParams struct {
 	ActionContext
 	PatientId           string
@@ -128,10 +136,11 @@ func (a *Actions) CreatePatientVisit(params CreatePatientVisitParams) (CreatePat
 }
 
 type PrescribedMedicine struct {
-	Medicine
-	TreatmentDetailsId   uint      `json:"treatment_details_id"`
-	PrescribedMedicineId uint      `json:"prescribed_medicine_id"`
-	UsedAt               time.Time `json:"used_at"`
+	Medicine             Medicine
+	TreatmentDetails     TreatmentDetails `json:"-"`
+	TreatmentDetailsId   uint             `json:"treatment_details_id"`
+	PrescribedMedicineId uint             `json:"prescribed_medicine_id"`
+	UsedAt               time.Time        `json:"used_at"`
 }
 
 func (pm *PrescribedMedicine) FromModel(m models.PrescribedMedicine, med models.Medicine) {
@@ -280,6 +289,14 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		return ListPatientVisitsPayload{}, err
 	}
 
+	treatments, _ := a.app.ListAllTreatmentDetails()
+	treatmentsMapped := make(map[uint]TreatmentDetails, len(treatments))
+	for _, t := range treatments {
+		outTreatment := new(TreatmentDetails)
+		outTreatment.FromModel(t)
+		treatmentsMapped[t.Id] = *outTreatment
+	}
+
 	outVisits := make([]Visit, 0, len(visits))
 	for _, visit := range visits {
 		prescribedMeds, err := a.app.ListPatientVisitPrescribedMedicine(visit.Id)
@@ -306,6 +323,7 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		for _, pm := range prescribedMeds {
 			outMed := new(PrescribedMedicine)
 			outMed.FromModel(pm, medsMapped[pm.MedicineId])
+			outMed.TreatmentDetails = treatmentsMapped[pm.TreatmentDetailsId]
 			outMeds = append(outMeds, *outMed)
 		}
 
@@ -417,4 +435,78 @@ func (a *Actions) ListAllVisits(params ListAllVisitsParams) (ListAllVisitsPayloa
 	return ListAllVisitsPayload{
 		Data: outVisits,
 	}, nil
+}
+
+type CreateTreatmentDetailsParams struct {
+	ActionContext
+	TreatmentDetails TreatmentDetails
+}
+
+type CreateTreatmentDetailsPayload struct{}
+
+func (a *Actions) CreateTreatmentDetails(params CreateTreatmentDetailsParams) (CreateTreatmentDetailsPayload, error) {
+	// TODO: maybe create a new permission type
+	if !params.Account.HasPermission(models.AccountPermissionWriteOtherVisits) {
+		return CreateTreatmentDetailsPayload{}, ErrPermissionDenied{}
+	}
+
+	treatment := params.TreatmentDetails.IntoModel()
+	_, err := a.app.CreateTreatmentDetails(treatment)
+	if err != nil {
+		return CreateTreatmentDetailsPayload{}, err
+	}
+
+	return CreateTreatmentDetailsPayload{}, nil
+}
+
+type ListAllTreatmentDetailsParams struct {
+	ActionContext
+}
+
+type ListAllTreatmentDetailsPayload struct {
+	Data []TreatmentDetails `json:"data"`
+}
+
+func (a *Actions) ListAllTreatmentDetails(params ListAllTreatmentDetailsParams) (ListAllTreatmentDetailsPayload, error) {
+	// TODO: maybe create a new permission type
+	if !params.Account.HasPermission(models.AccountPermissionReadOtherVisits) {
+		return ListAllTreatmentDetailsPayload{}, ErrPermissionDenied{}
+	}
+
+	treatments, err := a.app.ListAllTreatmentDetails()
+	if err != nil {
+		return ListAllTreatmentDetailsPayload{}, err
+	}
+
+	outTreatments := make([]TreatmentDetails, 0, len(treatments))
+	for _, t := range treatments {
+		outTreatment := new(TreatmentDetails)
+		outTreatment.FromModel(t)
+		outTreatments = append(outTreatments, *outTreatment)
+	}
+
+	return ListAllTreatmentDetailsPayload{
+		Data: outTreatments,
+	}, nil
+}
+
+type DeleteTreatmentDetailsParams struct {
+	ActionContext
+	Id uint
+}
+
+type DeleteTreatmentDetailsPayload struct{}
+
+func (a *Actions) DeleteTreatmentDetails(params DeleteTreatmentDetailsParams) (DeleteTreatmentDetailsPayload, error) {
+	// TODO: maybe create a new permission type
+	if !params.Account.HasPermission(models.AccountPermissionWriteOtherVisits) {
+		return DeleteTreatmentDetailsPayload{}, ErrPermissionDenied{}
+	}
+
+	err := a.app.DeleteTreatmentDetails(params.Id)
+	if err != nil {
+		return DeleteTreatmentDetailsPayload{}, err
+	}
+
+	return DeleteTreatmentDetailsPayload{}, nil
 }

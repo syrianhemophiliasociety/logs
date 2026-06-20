@@ -17,6 +17,14 @@ func (a *App) ListVisitsOnTimeRange(from, to time.Time) ([]models.Visit, error) 
 	return a.repo.ListVisitsOnTimeRange(from, to)
 }
 
+func (a *App) CreateTreatmentDetails(td models.TreatmentDetails) (models.TreatmentDetails, error) {
+	return a.repo.CreateTreatmentDetails(td)
+}
+
+func (a *App) DeleteTreatmentDetails(id uint) error {
+	return a.repo.DeleteTreatmentDetails(id)
+}
+
 func (a *App) ListAllTreatmentDetails() ([]models.TreatmentDetails, error) {
 	return a.repo.ListAllTreatmentDetails()
 }

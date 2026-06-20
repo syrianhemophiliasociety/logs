@@ -11,8 +11,7 @@ import (
 
 /**
 
-hx-post={ fmt.Sprintf("/api/web/patient/visit/%d/medicine/%d/treatment/%d", visitId, medicine.PrescribedMedicineId, treatmentId) }
-*/
+ */
 
 templ patientMedForm(visitId uint, meds []actions.PrescribedMedicine, treatments []actions.TreatmentDetails) {
 	{{
@@ -22,7 +21,7 @@ templ patientMedForm(visitId uint, meds []actions.PrescribedMedicine, treatments
 				continue
 			}
 			medsOptions = append(medsOptions, components.SelectOption{
-				Name:  fmt.Sprintf("%s %s", med.Name, med.DoseUnit()),
+				Name:  fmt.Sprintf("%s %s", med.Medicine.Name, med.Medicine.DoseUnit()),
 				Value: fmt.Sprintf("med-%d", med.PrescribedMedicineId),
 			})
 		}
@@ -36,13 +35,15 @@ templ patientMedForm(visitId uint, meds []actions.PrescribedMedicine, treatments
 			}
 			treatmentsOptions = append(treatmentsOptions, components.SelectOption{
 				Name:  title,
-				Value: fmt.Sprint(treatment.Id),
+				Value: fmt.Sprintf("treat-%d", treatment.Id),
 			})
 		}
 	}}
 	<form
 		hx-target="#status-msg"
 		hx-swap="none"
+		hx-ext="json-enc"
+		hx-post={ fmt.Sprintf("/api/web/patient/visit/%d/use-medicine", visitId) }
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
 		class={ "flex", "flex-col", "gap-3" }

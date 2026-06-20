@@ -211,6 +211,7 @@ func main() {
 	accountWebApi := webapis.NewAccountApi(usecases)
 	patientWebApi := webapis.NewPatientApi(usecases)
 	diagnosisWebApi := webapis.NewDiagnosisApi(usecases)
+	visitWebApi := webapis.NewVisitApi(usecases)
 
 	webApisHandler := http.NewServeMux()
 	webApisHandler.HandleFunc("POST /login/username", usernameLoginWebApi.HandleUsernameLogin)
@@ -246,10 +247,12 @@ func main() {
 	webApisHandler.HandleFunc("PUT /patient/{id}/prophylaxis/{pp_id}/end", webAuthMiddleware.AuthApi(patientWebApi.HandleEndPatientProphylaxis))
 	webApisHandler.HandleFunc("PUT /patient/{id}/prophylaxis/{pp_id}/mark-chosen", webAuthMiddleware.AuthApi(patientWebApi.HandleMarkPatientProphylaxisAsChosen))
 	webApisHandler.HandleFunc("DELETE /patient/{id}/prophylaxis/{pp_id}", webAuthMiddleware.AuthApi(patientWebApi.HandleDeletePatientProphylaxis))
-	webApisHandler.HandleFunc("POST /patient/visit/{visit_id}/medicine/{med_id}/treatment/{treatment_id}", webAuthMiddleware.AuthApi(patientWebApi.HandlePatientUseMedicine))
-	webApisHandler.HandleFunc("POST /patient/visit/use-medicine", webAuthMiddleware.AuthApi(patientWebApi.HandlePatientUseMedicine))
+	webApisHandler.HandleFunc("POST /patient/visit/{visit_id}/use-medicine", webAuthMiddleware.AuthApi(patientWebApi.HandlePatientUseMedicine))
 	webApisHandler.HandleFunc("DELETE /patient/{id}", webAuthMiddleware.AuthApi(patientWebApi.HandleDeletePatient))
 	webApisHandler.HandleFunc("POST /patients/import/csv", webAuthMiddleware.AuthApi(patientWebApi.HandleUploadImportPatientsFromCsv))
+
+	webApisHandler.HandleFunc("POST /visit/treatment", webAuthMiddleware.AuthApi(visitWebApi.HandleCreateTreatmentDetails))
+	webApisHandler.HandleFunc("DELETE /visit/treatment/{id}", webAuthMiddleware.AuthApi(visitWebApi.HandleDeleteTreatmentDetails))
 
 	///
 	/// HTMX APIS

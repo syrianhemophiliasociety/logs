@@ -225,8 +225,6 @@ type Keys struct {
 	ProphylaxisMarkChosen         string
 	ProphylaxisEnd                string
 	ProphylaxisChoose             string
-	Treatment                     string
-	ChooseTreatment               string
 
 	VisitTitleFmt               func(date time.Time) string
 	UseOnePrescribedMedicineFmt func(medicineName string) string
@@ -240,6 +238,15 @@ type Keys struct {
 	ProfileDetails              string
 	VisitStartDate              string
 	VisitEndDate                string
+
+	Treatment                 string
+	ChooseTreatment           string
+	TreatmentTitle            string
+	EnterTreatmentTitle       string
+	TreatmentArabicTitle      string
+	EnterTreatmentArabicTitle string
+	TreatmentType             string
+	EnterTreatmentType        string
 
 	CheckUpVisitReason              string
 	EnterCheckUpVisitReason         string
