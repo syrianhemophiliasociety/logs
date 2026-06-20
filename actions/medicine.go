@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 	"shs/app/models"
+	"shs/log"
 	"time"
 )
 
@@ -162,5 +163,68 @@ func (a *Actions) ListAllMedicine(params ListAllMedicineParams) (ListAllMedicine
 
 	return ListAllMedicinePayload{
 		Data: outMedicines,
+	}, nil
+}
+
+type ListAllPrescribedMedicineParams struct {
+	ActionContext
+}
+
+type ListAllPrescribedMedicinePayload struct {
+	Data []PrescribedMedicineWithPatient `json:"data"`
+}
+
+func (a *Actions) ListAllPrescribedMedicine(params ListAllPrescribedMedicineParams) (ListAllPrescribedMedicinePayload, error) {
+	if !params.Account.HasPermission(models.AccountPermissionReadPatient) {
+		return ListAllPrescribedMedicinePayload{}, ErrPermissionDenied{}
+	}
+	if !params.Account.HasPermission(models.AccountPermissionReadMedicine) {
+		return ListAllPrescribedMedicinePayload{}, ErrPermissionDenied{}
+	}
+
+	prescribedMeds, err := a.app.ListAllPrescribedMedicines()
+	if err != nil {
+		return ListAllPrescribedMedicinePayload{}, err
+	}
+
+	medsIds := make([]uint, 0, len(prescribedMeds))
+	for _, pm := range prescribedMeds {
+		medsIds = append(medsIds, pm.MedicineId)
+	}
+
+	meds, err := a.app.ListMedicinesByIds(medsIds)
+	if err != nil {
+		return ListAllPrescribedMedicinePayload{}, err
+	}
+
+	medsMapped := make(map[uint]models.Medicine)
+	for _, med := range meds {
+		medsMapped[med.Id] = med
+	}
+
+	outData := make([]PrescribedMedicineWithPatient, 0, len(prescribedMeds))
+	for _, medicine := range prescribedMeds {
+		if medicine.UsedAt.IsZero() {
+			continue
+		}
+		patient, err := a.app.GetPatientById(medicine.PatientId)
+		if err != nil {
+			log.Errorf("patient not found, error: %v\n", err)
+			return ListAllPrescribedMedicinePayload{}, err
+		}
+
+		outPrescribedMedicine := new(PrescribedMedicine)
+		outPrescribedMedicine.FromModel(medicine, medsMapped[medicine.MedicineId])
+		outPatient := new(Patient)
+		outPatient.FromModel(patient)
+
+		outData = append(outData, PrescribedMedicineWithPatient{
+			PrescribedMedicine: *outPrescribedMedicine,
+			Patient:            *outPatient,
+		})
+	}
+
+	return ListAllPrescribedMedicinePayload{
+		Data: outData,
 	}, nil
 }

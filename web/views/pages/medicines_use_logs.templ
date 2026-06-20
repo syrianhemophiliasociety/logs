@@ -1,9 +1,40 @@
 package pages
 
-import "shs/web/i18n"
+import (
+	"fmt"
+	"shs/actions"
+	"shs/web/i18n"
+	"shs/web/views/components"
+	"time"
+)
 
-templ MedicinesUseLogs() {
+templ MedicinesUseLogs(pmps []actions.PrescribedMedicineWithPatient) {
 	<div class={ "p-10" , "w-full", "flex", "flex-col", "gap-5" }>
 		<h1 class="w-full font-bold text-2xl text-secondary">{ i18n.StringsCtx(ctx).NavMedicineUseLogs }</h1>
+		if len(pmps) == 0 {
+			<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavMedicine) }</span>
+		} else {
+			@components.ScrollableList(components.ScrollableListParams{}) {
+				for _, pmp := range pmps {
+					<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
+						<span class="min-w-20 text-lg text-secondary font-bold">@components.RouteLink(pmp.Medicine.Name, fmt.Sprintf("/medicine/%d", pmp.Medicine.Id), false)
+</span>
+						<span class="w-20 text-lg text-secondary">{ pmp.Medicine.DoseUnit() }</span>
+						<span class="w-24 text-lg text-secondary">{ pmp.UsedAt.Format(time.DateOnly) }</span>
+						<span class="w-20 text-lg text-secondary">@components.RouteLink(pmp.Patient.FullName(), fmt.Sprintf("/patient/%s", pmp.Patient.PublicId), false)
+</span>
+						{{
+							title := pmp.PrescribedMedicine.TreatmentDetails.Title
+							localeKey, _ := ctx.Value("locale").(string)
+							if localeKey == "ar" {
+								title = pmp.PrescribedMedicine.TreatmentDetails.ArabicTitle
+							}
+						}}
+						<div><span>{ title }</span></div>
+						<div><span>{ pmp.PrescribedMedicine.TreatmentDetails.Type }</span></div>
+					</div>
+				}
+			}
+		}
 	</div>
 }

@@ -52,6 +52,7 @@ type PrescribedMedicine struct {
 	Medicine           Medicine
 	MedicineId         uint `gorm:"not null"`
 	UsedAt             time.Time
+	TreatmentDetails   TreatmentDetails `gorm:"-"`
 	TreatmentDetailsId uint
 
 	CreatedAt time.Time `gorm:"index;not null"`

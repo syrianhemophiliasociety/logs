@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"shs/app"
 	"shs/app/models"
+	"shs/log"
 	"strings"
 	"time"
 
@@ -1087,37 +1088,86 @@ func (r *Repository) GetPatientLastVisit(patientId uint) (models.Visit, error) {
 }
 
 func (r *Repository) ListPatientVisitPrescribedMedicine(visitId uint) ([]models.PrescribedMedicine, error) {
-	var prescribedMeds []models.PrescribedMedicine
+	var pms []models.PrescribedMedicine
 
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.PrescribedMedicine)).
 			Where("visit_id = ?", visitId).
-			Find(&prescribedMeds).
+			Find(&pms).
 			Error,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return prescribedMeds, nil
+	treatmentsMapped, err := r.listTreatmentsForPrescribedMedicines(pms)
+	if err != nil {
+		log.Errorf("ListPatientVisitPrescribedMedicine error: %v\n", err)
+		return nil, err
+	}
+
+	for i := range pms {
+		pms[i].TreatmentDetails = treatmentsMapped[pms[i].TreatmentDetailsId]
+	}
+
+	return pms, nil
 }
 
 func (r *Repository) ListAllPrescribedMedicines() ([]models.PrescribedMedicine, error) {
-	var pm []models.PrescribedMedicine
-
+	var pms []models.PrescribedMedicine
 	err := tryWrapDbError(
 		r.client.
 			Model(new(models.PrescribedMedicine)).
-			Preload("TreatmentDetails").
-			Find(&pm).
+			Find(&pms).
 			Error,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return pm, nil
+	treatmentsMapped, err := r.listTreatmentsForPrescribedMedicines(pms)
+	if err != nil {
+		log.Errorf("ListAllPrescribedMedicines error: %v\n", err)
+		return nil, err
+	}
+
+	for i := range pms {
+		pms[i].TreatmentDetails = treatmentsMapped[pms[i].TreatmentDetailsId]
+	}
+
+	return pms, nil
+}
+
+func (r *Repository) listTreatmentsForPrescribedMedicines(pms []models.PrescribedMedicine) (map[uint]models.TreatmentDetails, error) {
+	treatmentIds := make([]uint, 0, len(pms))
+	for _, pm := range pms {
+		if pm.TreatmentDetailsId == 0 {
+			continue
+		}
+		treatmentIds = append(treatmentIds, pm.TreatmentDetailsId)
+	}
+
+	var treatments []models.TreatmentDetails
+	err := tryWrapDbError(
+		r.client.
+			Model(new(models.TreatmentDetails)).
+			Where("id in ?", treatmentIds).
+			Find(&treatments).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); !ok && err != nil {
+		return nil, &app.ErrNotFound{
+			ResourceName: "treatment_details",
+		}
+	}
+
+	treatmentsMapped := make(map[uint]models.TreatmentDetails, len(pms))
+	for _, t := range treatments {
+		treatmentsMapped[t.Id] = t
+	}
+
+	return treatmentsMapped, nil
 }
 
 func (r *Repository) UseMedicineForVisit(prescribedMedicineId, visitId, treatmentId uint) error {
@@ -1189,7 +1239,7 @@ func (r *Repository) DeleteTreatmentDetails(id uint) error {
 			Find(&prescribedMedsUsingTreatment).
 			Error,
 	)
-	if _, ok := err.(*ErrRecordNotFound); !ok {
+	if _, ok := err.(*ErrRecordNotFound); !ok && err != nil {
 		return err
 	}
 

@@ -714,12 +714,17 @@ func (p *pagesHandler) HandleMedicinesUseLogsPage(w http.ResponseWriter, r *http
 		return
 	}
 
-	_ = ctx
+	pmps, err := p.usecases.ListAllPrescribedMedicine(actions.ListAllPrescribedMedicineParams{ActionContext: ctx})
+	if err != nil {
+		components.GenericError("What do you think you're doing?").
+			Render(r.Context(), w)
+		return
+	}
 
 	if contenttype.IsNoLayoutPage(r) {
 		w.Header().Set("HX-Title", i18n.Strings("en").NavMedicineUseLogs)
 		w.Header().Set("HX-Push-Url", "/medicines/logs")
-		pages.MedicinesUseLogs().Render(r.Context(), w)
+		pages.MedicinesUseLogs(pmps.Data).Render(r.Context(), w)
 		return
 	}
 
@@ -727,7 +732,7 @@ func (p *pagesHandler) HandleMedicinesUseLogsPage(w http.ResponseWriter, r *http
 		Title:    i18n.StringsCtx(r.Context()).NavMedicineUseLogs,
 		Url:      config.Env().Hostname,
 		ImageUrl: config.Env().Hostname + "/assets/favicon-32x32.png",
-	}, pages.MedicinesUseLogs()).Render(r.Context(), w)
+	}, pages.MedicinesUseLogs(pmps.Data)).Render(r.Context(), w)
 }
 
 func (p *pagesHandler) HandleVisitsPage(w http.ResponseWriter, r *http.Request) {

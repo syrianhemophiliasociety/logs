@@ -150,6 +150,9 @@ func (pm *PrescribedMedicine) FromModel(m models.PrescribedMedicine, med models.
 	(*pm).PrescribedMedicineId = m.Id
 	(*pm).UsedAt = m.UsedAt
 	(*pm).TreatmentDetailsId = m.TreatmentDetailsId
+	outTreatment := new(TreatmentDetails)
+	outTreatment.FromModel(m.TreatmentDetails)
+	(*pm).TreatmentDetails = *outTreatment
 }
 
 func (pm PrescribedMedicine) IntoModel(visitId, patientId, medicineId uint) models.PrescribedMedicine {
@@ -158,6 +161,11 @@ func (pm PrescribedMedicine) IntoModel(visitId, patientId, medicineId uint) mode
 		PatientId:  patientId,
 		MedicineId: medicineId,
 	}
+}
+
+type PrescribedMedicineWithPatient struct {
+	PrescribedMedicine
+	Patient
 }
 
 type GetPatientLastVisitParams struct {
@@ -289,14 +297,6 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		return ListPatientVisitsPayload{}, err
 	}
 
-	treatments, _ := a.app.ListAllTreatmentDetails()
-	treatmentsMapped := make(map[uint]TreatmentDetails, len(treatments))
-	for _, t := range treatments {
-		outTreatment := new(TreatmentDetails)
-		outTreatment.FromModel(t)
-		treatmentsMapped[t.Id] = *outTreatment
-	}
-
 	outVisits := make([]Visit, 0, len(visits))
 	for _, visit := range visits {
 		prescribedMeds, err := a.app.ListPatientVisitPrescribedMedicine(visit.Id)
@@ -323,7 +323,6 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		for _, pm := range prescribedMeds {
 			outMed := new(PrescribedMedicine)
 			outMed.FromModel(pm, medsMapped[pm.MedicineId])
-			outMed.TreatmentDetails = treatmentsMapped[pm.TreatmentDetailsId]
 			outMeds = append(outMeds, *outMed)
 		}
 

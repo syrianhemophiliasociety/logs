@@ -71,6 +71,7 @@ templ PatientVisit(patient actions.Patient, visit actions.Visit) {
 					}
 				}}
 				<div><span>{ title }</span></div>
+				<div><span>{ pm.TreatmentDetails.Type }</span></div>
 				<div>
 					<span class={ "" }>
 						{ i18n.StringsCtx(ctx).PrescribedMedicineUsedAt }&colon;
