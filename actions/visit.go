@@ -338,6 +338,10 @@ func (a *Actions) ListPatientVisits(params ListPatientVisitsParams) (ListPatient
 		})
 	}
 
+	slices.SortFunc(outVisits, func(vi, vj Visit) int {
+		return vj.VisitedAt.Compare(vi.VisitedAt)
+	})
+
 	return ListPatientVisitsPayload{
 		Data: outVisits,
 	}, nil
@@ -429,6 +433,10 @@ func (a *Actions) ListAllVisits(params ListAllVisitsParams) (ListAllVisitsPayloa
 			}
 
 			return 1
+		})
+	} else {
+		slices.SortFunc(outVisits, func(vi, vj VisitWithPatient) int {
+			return vj.Visit.VisitedAt.Compare(vi.Visit.VisitedAt)
 		})
 	}
 
