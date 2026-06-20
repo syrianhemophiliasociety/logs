@@ -23,7 +23,6 @@ var migratableModels = []schema.Tabler{
 	new(models.PatientId),
 	new(models.HasVirus),
 	new(models.TreatmentDetails),
-	new(models.PatientUseMedicine),
 	new(models.PrescribedMedicine),
 	new(models.JointsEvaluation),
 	new(models.Prophylaxis),
