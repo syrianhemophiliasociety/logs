@@ -5,7 +5,7 @@ MIGRATOR_BINARY_NAME=shs-logs-migrator
 
 TEMPL_CMD=templ
 ifdef CI
-	TEMPL_CMD := go run github.com/a-h/templ/cmd/templ@v0.3.906
+	TEMPL_CMD := go run github.com/a-h/templ/cmd/templ@v0.3.1020
 endif
 
 all: build-server build-migrator

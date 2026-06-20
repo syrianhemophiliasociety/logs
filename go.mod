@@ -1,10 +1,10 @@
 module shs
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/01walid/goarabic v0.0.1
-	github.com/a-h/templ v0.3.1001
+	github.com/a-h/templ v0.3.1020
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/mozillazg/go-unidecode v0.2.0
