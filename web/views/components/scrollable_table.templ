@@ -1,0 +1,41 @@
+package components
+
+type TableRowItems struct {
+	Value     string
+	Component templ.Component
+}
+
+type ScrollableTableParams struct {
+	Class        []string
+	HeaderTitles []string
+	Items        [][]TableRowItems
+}
+
+templ ScrollableTable(params ScrollableTableParams) {
+	<div class={ "w-full","h-full", "overflow-auto" }>
+		<table class={ "w-full" }>
+			<thead class={ "sticky", "top-0", "divide-x", "divide-secondary" }>
+				<tr>
+					for _, title := range params.HeaderTitles {
+						<th class={ "bg-primary", "border-2", "border-secondary" }>{ title }</th>
+					}
+				</tr>
+			</thead>
+			<tbody class={ "divide-y", "divide-x", "divide-secondary" }>
+				for _, row := range params.Items {
+					<tr class={ "bg-secondary-trans-20" }>
+						for _, col := range row {
+							<td>
+								if col.Value != "" {
+									{ col.Value }
+								} else if col.Component!=nil {
+									@col.Component
+								}
+							</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

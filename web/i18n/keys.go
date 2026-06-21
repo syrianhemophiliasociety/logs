@@ -70,6 +70,8 @@ type Keys struct {
 	FormsFind     string
 	FormsUpdate   string
 
+	TablesActions string
+
 	NoUnit string
 
 	Virus               string
@@ -156,6 +158,8 @@ type Keys struct {
 	AccountDelete            string
 
 	Patient                       string
+	PatientFullName               string
+	PatientParentsNames           string
 	PatientFirstName              string
 	EnterPatientFirstName         string
 	PatientLastName               string
@@ -262,6 +266,7 @@ type Keys struct {
 	PrescribedAmount                string
 	UsedAmount                      string
 	PrescribedMedicineUsedAt        string
+	VisitDate                       string
 
 	DiagnosisTitle          string
 	EnterDiagnosisTitle     string

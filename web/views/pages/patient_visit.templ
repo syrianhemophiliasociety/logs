@@ -5,6 +5,7 @@ import (
 	"shs/actions"
 	"shs/web/i18n"
 	"shs/web/views/components"
+	"shs/web/views/helpers"
 	"time"
 )
 
@@ -55,34 +56,36 @@ templ PatientVisit(patient actions.Patient, visit actions.Visit) {
 		</table>
 		<hr/>
 		<h2 class="w-full font-bold text-xl text-secondary">{ i18n.StringsCtx(ctx).CheckUpPrescribedMedicines } </h2>
-		for _, pm := range visit.PrescribedMedicine {
-			<div class={ "bg-secondary-trans-20", "p-5", "rounded-md", "flex", "justify-between" }>
-				<div>
-					<span class={ "font-bold", "text-lg" }>
-						@components.RouteLink(pm.Medicine.Name, fmt.Sprintf("/medicine/%d", pm.Medicine.Id), false)
-					</span>
-					<span class={ "" }>{ pm.Medicine.DoseUnit() }</span>
-				</div>
-				{{
-					title := pm.TreatmentDetails.Title
-					localeKey, _ := ctx.Value("locale").(string)
-					if localeKey == "ar" {
-						title = pm.TreatmentDetails.ArabicTitle
-					}
-				}}
-				<div><span>{ title }</span></div>
-				<div><span>{ pm.TreatmentDetails.Type }</span></div>
-				<div>
-					<span class={ "" }>
-						{ i18n.StringsCtx(ctx).PrescribedMedicineUsedAt }&colon;
-						if pm.UsedAt.IsZero() {
-							{ "N/A" }
-						} else {
-							{ pm.UsedAt.Format(time.DateOnly+" - " + time.TimeOnly) }
-						}
-					</span>
-				</div>
-			</div>
-		}
+		{{
+			headerTitles := []string{
+				i18n.StringsCtx(ctx).Medicine,
+				i18n.StringsCtx(ctx).MedicineDose,
+				i18n.StringsCtx(ctx).TreatmentTitle,
+				i18n.StringsCtx(ctx).TreatmentType,
+				i18n.StringsCtx(ctx).PrescribedMedicineUsedAt,
+			}
+			items := make([][]components.TableRowItems, 0, len(visit.PrescribedMedicine))
+			for _, pm := range visit.PrescribedMedicine {
+				usedAt := "N/A"
+				if !pm.UsedAt.IsZero() {
+					usedAt = pm.UsedAt.Format(time.DateOnly + " - " + time.TimeOnly)
+				}
+				items = append(items, []components.TableRowItems{
+					{Component: components.RouteLink(pm.Medicine.Name, fmt.Sprintf("/medicine/%d", pm.Medicine.Id), false)},
+					{Value: pm.Medicine.DoseUnit()},
+					{Value: helpers.TranslatedString(helpers.TranslatedStringParams{
+						CTX:     ctx,
+						English: pm.TreatmentDetails.Title,
+						Arabic:  pm.TreatmentDetails.ArabicTitle,
+					})},
+					{Value: pm.TreatmentDetails.Type},
+					{Value: usedAt},
+				})
+			}
+		}}
+		@components.ScrollableTable(components.ScrollableTableParams{
+			HeaderTitles: headerTitles,
+			Items:        items,
+		})
 	</div>
 }

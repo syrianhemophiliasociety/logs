@@ -1,6 +1,7 @@
 package components
 
 import (
+	"fmt"
 	"shs/actions"
 	"shs/web/i18n"
 )
@@ -9,28 +10,35 @@ templ PatientsBrief(patients []actions.Patient) {
 	if len(patients) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavPatients) }</span>
 	} else {
-		@ScrollableList(ScrollableListParams{}) {
-			for _, patient := range patients {
-				@JustLink("/patient/"+patient.PublicId, "Patient page", patientBrief(patient))
+		{{
+			headerTitles := []string{
+				i18n.StringsCtx(ctx).PatientId,
+				i18n.StringsCtx(ctx).PatientFullName,
+				i18n.StringsCtx(ctx).PatientParentsNames,
 			}
-		}
+			items := make([][]TableRowItems, 0, len(patients))
+			for _, patient := range patients {
+				items = append(items, []TableRowItems{
+					{Component: RouteLink(patient.PublicId, fmt.Sprintf("/patient/%s", patient.PublicId), false)},
+					{Component: RouteLink(patient.FullName(), fmt.Sprintf("/patient/%s", patient.PublicId), false)},
+					{Component: patientDecendentOf(patient)},
+				})
+			}
+		}}
+		@ScrollableTable(ScrollableTableParams{
+			HeaderTitles: headerTitles,
+			Items:        items,
+		})
 	}
 }
 
-templ patientBrief(patient actions.Patient) {
-	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-		<span
-			class="min-w-20 text-xl font-bold text-secondary"
-		>{ patient.PublicId }</span>
-		<span class="min-w-20 text-xl font-bold text-secondary">{ patient.FullName() }</span>
-		<span class="min-w-20 text-xl text-secondary">
-			if patient.Gender {
-				{ i18n.StringsCtx(ctx).PatientSonOf }
-			} else {
-				{ i18n.StringsCtx(ctx).PatientDaughterOf }
-			}
-			<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
-		</span>
-		@DeleteButton("patient", i18n.StringsCtx(ctx).Patient, patient.PublicId, patient.FullName(), true)
-	</div>
+templ patientDecendentOf(patient actions.Patient) {
+	<span class="min-w-20 text-xl text-secondary">
+		if patient.Gender {
+			{ i18n.StringsCtx(ctx).PatientSonOf }
+		} else {
+			{ i18n.StringsCtx(ctx).PatientDaughterOf }
+		}
+		<b>{ patient.FatherName }</b> { i18n.StringsCtx(ctx).And } <b>{ patient.MotherName }</b>
+	</span>
 }

@@ -8,36 +8,42 @@ import (
 )
 
 templ VisitsBrief(vps []actions.VisitWithPatient) {
-	@ScrollableList(ScrollableListParams{}) {
-		for _, vp := range vps {
-			@JustLink(fmt.Sprintf("/patient/%s/visit/%d", vp.Patient.PublicId, vp.Visit.Id), "Visit page", visitBrief(vp.Patient, vp.Visit))
+	{{
+		headerTitles := []string{
+			i18n.StringsCtx(ctx).VisitDate,
+			i18n.StringsCtx(ctx).PatientFullName,
+			i18n.StringsCtx(ctx).CheckUpVisitReason,
 		}
-	}
-}
-
-templ visitBrief(patient actions.Patient, visit actions.Visit) {
-	<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-		<span class="min-w-20 text-lg text-secondary font-bold">{ visit.VisitedAt.Format(time.DateOnly) }</span>
-		<span class="w-20 text-lg text-secondary">{ patient.FullName() }</span>
-		<span class="min-w-20 text-lg text-secondary">
-			switch visit.Reason {
-				case "primary_prophylaxis":
-					{ i18n.StringsCtx(ctx).PrimaryProphylaxis }
-				case "secondary_prophylaxis":
-					{ i18n.StringsCtx(ctx).SecondaryProphylaxis }
-				case "surgery":
-					{ i18n.StringsCtx(ctx).Surgery }
-				case "joint_evaluation":
-					{ i18n.StringsCtx(ctx).JointEvaluation }
-				case "joint_injection":
-					{ i18n.StringsCtx(ctx).JointInjection }
-				case "hemelibra":
-					{ i18n.StringsCtx(ctx).Hemelibra }
-				case "home_treatment":
-					{ i18n.StringsCtx(ctx).TreatmentAtHome }
-				case "active_bleeding":
-					{ i18n.StringsCtx(ctx).ActiveBleeding }
+		items := make([][]TableRowItems, 0, len(vps))
+		for _, vp := range vps {
+			reason := ""
+			switch vp.Visit.Reason {
+			case "primary_prophylaxis":
+				reason = i18n.StringsCtx(ctx).PrimaryProphylaxis
+			case "secondary_prophylaxis":
+				reason = i18n.StringsCtx(ctx).SecondaryProphylaxis
+			case "surgery":
+				reason = i18n.StringsCtx(ctx).Surgery
+			case "joint_evaluation":
+				reason = i18n.StringsCtx(ctx).JointEvaluation
+			case "joint_injection":
+				reason = i18n.StringsCtx(ctx).JointInjection
+			case "hemelibra":
+				reason = i18n.StringsCtx(ctx).Hemelibra
+			case "home_treatment":
+				reason = i18n.StringsCtx(ctx).TreatmentAtHome
+			case "active_bleeding":
+				reason = i18n.StringsCtx(ctx).ActiveBleeding
 			}
-		</span>
-	</div>
+			items = append(items, []TableRowItems{
+				{Component: RouteLink(vp.Visit.VisitedAt.Format(time.DateOnly), fmt.Sprintf("/patient/%s/visit/%d", vp.Patient.PublicId, vp.Visit.Id), false)},
+				{Component: RouteLink(vp.Patient.FullName(), fmt.Sprintf("/patient/%s", vp.Patient.PublicId), false)},
+				{Value: reason},
+			})
+		}
+	}}
+	@ScrollableTable(ScrollableTableParams{
+		HeaderTitles: headerTitles,
+		Items:        items,
+	})
 }

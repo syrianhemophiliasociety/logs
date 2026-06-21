@@ -32,17 +32,29 @@ templ allDiagnoses(diagnoses []actions.Diagnosis) {
 	if len(diagnoses) == 0 {
 		<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavDiagnoses) }</span>
 	} else {
-		@components.ScrollableList(components.ScrollableListParams{}) {
-			for _, diagnosis := range diagnoses {
-				<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.GroupName }</span>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.Title }</span>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.ICD11 }</span>
-					<span class="min-w-20 font-bold text-lg text-secondary">{ diagnosis.AKA }</span>
-					@components.DeleteButton("diagnosis", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(diagnosis.Id)), diagnosis.Title, false)
-				</div>
+		{{
+			headerTitles := []string{
+				i18n.StringsCtx(ctx).DiagnosisGroupName,
+				i18n.StringsCtx(ctx).DiagnosisTitle,
+				i18n.StringsCtx(ctx).DiagnosisICD11,
+				i18n.StringsCtx(ctx).DiagnosisAKA,
+				i18n.StringsCtx(ctx).TablesActions,
 			}
-		}
+			items := make([][]components.TableRowItems, 0, len(diagnoses))
+			for _, diagnosis := range diagnoses {
+				items = append(items, []components.TableRowItems{
+					{Value: diagnosis.GroupName},
+					{Value: diagnosis.Title},
+					{Value: diagnosis.ICD11},
+					{Value: diagnosis.AKA},
+					{Component: components.DeleteButton("diagnosis", i18n.StringsCtx(ctx).BloodTest, strconv.Itoa(int(diagnosis.Id)), diagnosis.Title, false)},
+				})
+			}
+		}}
+		@components.ScrollableTable(components.ScrollableTableParams{
+			HeaderTitles: headerTitles,
+			Items:        items,
+		})
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"shs/actions"
 	"shs/web/i18n"
 	"shs/web/views/components"
+	"shs/web/views/helpers"
 	"time"
 )
 
@@ -14,27 +15,35 @@ templ MedicinesUseLogs(pmps []actions.PrescribedMedicineWithPatient) {
 		if len(pmps) == 0 {
 			<span class={ "text-xl", "font-bold", "lowercase" }>{ i18n.StringsCtx(ctx).MessageEmptyListFmt(i18n.StringsCtx(ctx).NavMedicine) }</span>
 		} else {
-			@components.ScrollableList(components.ScrollableListParams{}) {
-				for _, pmp := range pmps {
-					<div class={ "p-3" , "rounded-md" , "bg-secondary-trans-20" , "w-full" , "flex" , "justify-between" , "items-center" }>
-						<span class="min-w-20 text-lg text-secondary font-bold">@components.RouteLink(pmp.Medicine.Name, fmt.Sprintf("/medicine/%d", pmp.Medicine.Id), false)
-</span>
-						<span class="w-20 text-lg text-secondary">{ pmp.Medicine.DoseUnit() }</span>
-						<span class="w-24 text-lg text-secondary">{ pmp.UsedAt.Format(time.DateOnly) }</span>
-						<span class="w-20 text-lg text-secondary">@components.RouteLink(pmp.Patient.FullName(), fmt.Sprintf("/patient/%s", pmp.Patient.PublicId), false)
-</span>
-						{{
-							title := pmp.PrescribedMedicine.TreatmentDetails.Title
-							localeKey, _ := ctx.Value("locale").(string)
-							if localeKey == "ar" {
-								title = pmp.PrescribedMedicine.TreatmentDetails.ArabicTitle
-							}
-						}}
-						<div><span>{ title }</span></div>
-						<div><span>{ pmp.PrescribedMedicine.TreatmentDetails.Type }</span></div>
-					</div>
+			{{
+				headerTitles := []string{
+					i18n.StringsCtx(ctx).Medicine,
+					i18n.StringsCtx(ctx).MedicineDose,
+					i18n.StringsCtx(ctx).PrescribedMedicineUsedAt,
+					i18n.StringsCtx(ctx).PatientFullName,
+					i18n.StringsCtx(ctx).TreatmentTitle,
+					i18n.StringsCtx(ctx).TreatmentType,
 				}
-			}
+				items := make([][]components.TableRowItems, 0, len(pmps))
+				for _, pmp := range pmps {
+					items = append(items, []components.TableRowItems{
+						{Component: components.RouteLink(pmp.Medicine.Name, fmt.Sprintf("/medicine/%d", pmp.Medicine.Id), false)},
+						{Value: pmp.Medicine.DoseUnit()},
+						{Value: pmp.UsedAt.Format(time.DateOnly)},
+						{Component: components.RouteLink(pmp.Patient.FullName(), fmt.Sprintf("/patient/%s", pmp.Patient.PublicId), false)},
+						{Value: helpers.TranslatedString(helpers.TranslatedStringParams{
+							CTX:     ctx,
+							English: pmp.PrescribedMedicine.TreatmentDetails.Title,
+							Arabic:  pmp.PrescribedMedicine.TreatmentDetails.ArabicTitle,
+						})},
+						{Value: pmp.PrescribedMedicine.TreatmentDetails.Type},
+					})
+				}
+			}}
+			@components.ScrollableTable(components.ScrollableTableParams{
+				HeaderTitles: headerTitles,
+				Items:        items,
+			})
 		}
 	</div>
 }
