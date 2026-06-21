@@ -92,12 +92,7 @@ templ PatientBloodTestResult(patient actions.Patient, btr actions.BloodTestResul
 								</b>
 							</td>
 							<td>
-								{ btField.ValueString }
-								if btField.Unit == "no_unit" {
-									{ "" }
-								} else {
-									{ btField.Unit }
-								}
+								{ btField.ValueUnit() }
 							</td>
 							<td>
 								{ bloodTestFieldRange(ctx, btField, bt) }

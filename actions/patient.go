@@ -3,6 +3,7 @@ package actions
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"shs/app"
 	"shs/app/models"
 	"shs/cardgen"
@@ -26,6 +27,20 @@ type BloodTestFilledField struct {
 	Unit             models.BlootTestUnit `json:"unit"`
 	ValueNumber      float64              `json:"value_number"`
 	ValueString      string               `json:"value_string"`
+}
+
+func (field BloodTestFilledField) ValueUnit() string {
+	valueUnit := new(strings.Builder)
+	if field.ValueNumber != 0.0 {
+		fmt.Fprintf(valueUnit, "%2.f", field.ValueNumber)
+	} else {
+		valueUnit.WriteString(field.ValueString)
+	}
+	if field.Unit != "no_unit" && field.Unit != "-" {
+		fmt.Fprintf(valueUnit, " %s", field.Unit)
+	}
+	return valueUnit.String()
+
 }
 
 type BloodTestResult struct {

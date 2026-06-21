@@ -168,7 +168,10 @@ templ patientBriefProfile(patient actions.Patient) {
 							for _,btr := range fuckingWorkingBloodFuckingTests {
 								<span>{ btr.Name }</span>
 								for _, field := range btr.FilledFields {
-									<pre class={ "italic", "ps-6" }>{ field.Name } - { fmt.Sprintf("%2.f",field.ValueNumber) } { field.Unit }</pre>
+									<pre class={ "italic", "ps-6" }>
+										{ field.Name } -
+										{ field.ValueUnit() }
+									</pre>
 								}
 							}
 						</td>
