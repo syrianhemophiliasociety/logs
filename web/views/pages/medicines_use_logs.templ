@@ -29,7 +29,7 @@ templ MedicinesUseLogs(pmps []actions.PrescribedMedicineWithPatient) {
 					items = append(items, []components.TableRowItems{
 						{Component: components.RouteLink(pmp.Medicine.Name, fmt.Sprintf("/medicine/%d", pmp.Medicine.Id), false)},
 						{Value: pmp.Medicine.DoseUnit()},
-						{Value: pmp.UsedAt.Format(time.DateOnly)},
+						{Value: pmp.UsedAt.Format(time.DateTime)},
 						{Component: components.RouteLink(pmp.Patient.FullName(), fmt.Sprintf("/patient/%s", pmp.Patient.PublicId), false)},
 						{Value: helpers.TranslatedString(helpers.TranslatedStringParams{
 							CTX:     ctx,
