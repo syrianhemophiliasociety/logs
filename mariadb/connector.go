@@ -32,7 +32,7 @@ func dbConnector() (*gorm.DB, error) {
 		}
 	}
 
-	instance, err := gorm.Open(mysql.Open(
+	instance, err = gorm.Open(mysql.Open(
 		fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=True&loc=Local&charset=utf8mb4",
 			config.Env().DB.Username,
 			config.Env().DB.Password,
