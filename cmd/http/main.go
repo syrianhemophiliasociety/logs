@@ -264,7 +264,7 @@ func main() {
 	htmxHandler := http.NewServeMux()
 	htmxHandler.HandleFunc("POST /patient/find", webAuthMiddleware.AuthApi(patientHtmx.HandleFindPatients))
 	htmxHandler.HandleFunc("GET /patient/{id}/view", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientDetailsView))
-	htmxHandler.HandleFunc("GET /patient/{id}/update", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientUpdateView))
+	htmxHandler.HandleFunc("PUT /patient/{id}/update", webAuthMiddleware.AuthApi(patientHtmx.HandlePatientUpdateView))
 	htmxHandler.HandleFunc("POST /visits/find", webAuthMiddleware.AuthApi(visitHtmx.HandleFindVisits))
 
 	applicationHandler := http.NewServeMux()

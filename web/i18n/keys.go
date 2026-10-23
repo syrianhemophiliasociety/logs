@@ -150,6 +150,7 @@ type Keys struct {
 	EnterAccountPermissions  string
 	PermissionRead           string
 	PermissionWrite          string
+	PermissionDelete         string
 	AccountType              string
 	EnterAccountType         string
 	AccountTypeSecritary     string
@@ -238,6 +239,7 @@ type Keys struct {
 	SelectPatientRecordsFile    string
 	GenerateCard                string
 	UpdateProfile               string
+	DeletePatient               string
 	SaveProfile                 string
 	ProfileDetails              string
 	VisitStartDate              string

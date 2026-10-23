@@ -81,7 +81,8 @@ func (r *Repository) CreateSuperAdmin() error {
 			models.AccountPermissionReadJoints |
 			models.AccountPermissionWriteJoints |
 			models.AccountPermissionReadProphylaxes |
-			models.AccountPermissionWriteProphylaxes,
+			models.AccountPermissionWriteProphylaxes |
+			models.AccountPermissionDeletePatient,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}

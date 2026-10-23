@@ -3,7 +3,9 @@ package components
 import (
 	"fmt"
 	"shs/actions"
+	"shs/app/models"
 	"shs/web/i18n"
+	"shs/web/views/helpers"
 )
 
 templ PatientViewProfile(patient actions.Patient) {
@@ -157,15 +159,26 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 `, patient.PublicId, patient.FullName()),
 				})
 			</div>
-			<div class="w-1/2">
+			<div class={ "w-1/2", "flex", "flex-col", "gap-3" }>
 				@HyperButton(HyperButtonParams{
 					Title:    i18n.StringsCtx(ctx).UpdateProfile,
 					Class:    []string{"!w-[200px]"},
-					HxMethod: "GET",
+					HxMethod: "PUT",
 					HxPath:   fmt.Sprintf("/htmx/patient/%s/update", patient.PublicId),
 					HxSwap:   "outerHTML",
 					HxTarget: "#patient-profile-sub-container",
 				})
+				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionDeletePatient) {
+					@HyperButton(HyperButtonParams{
+						Title:     i18n.StringsCtx(ctx).DeletePatient,
+						Class:     []string{"!w-[200px]"},
+						HxMethod:  "DELETE",
+						HxPath:    fmt.Sprintf("/api/web/patient/%s", patient.PublicId),
+						HxConfirm: "Are you REALLY sure, this isn't reversible!",
+						HxSwap:    "none",
+						HxTarget:  "this",
+					})
+				}
 			</div>
 		</div>
 	</div>

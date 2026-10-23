@@ -921,7 +921,12 @@ func (r *Repository) ListLastPatients(limit int) ([]models.Patient, error) {
 }
 
 func (r *Repository) DeletePatient(id uint) error {
-	err := tryWrapDbError(
+	patient, err := r.GetPatientById(id)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
 		r.client.
 			Exec("DELETE FROM did_blood_tests WHERE patient_id = ?", id).
 			Error,
@@ -933,6 +938,42 @@ func (r *Repository) DeletePatient(id uint) error {
 	err = tryWrapDbError(
 		r.client.
 			Exec("DELETE FROM has_viruses WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM diagnoses_results WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM visits WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM prophylaxes WHERE patient_id = ?", id).
+			Error,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tryWrapDbError(
+		r.client.
+			Exec("DELETE FROM joints_evaluations WHERE patient_id = ?", id).
 			Error,
 	)
 	if err != nil {
@@ -954,6 +995,20 @@ func (r *Repository) DeletePatient(id uint) error {
 		return err
 	}
 
+	err = tryWrapDbError(
+		r.client.
+			Model(new(models.Account)).
+			Delete(&models.Account{Username: patient.PublicId}, "username = ?", patient.PublicId).
+			Error,
+	)
+	if _, ok := err.(*ErrRecordNotFound); ok {
+		return &app.ErrNotFound{
+			ResourceName: "account",
+		}
+	}
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

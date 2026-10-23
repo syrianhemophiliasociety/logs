@@ -70,6 +70,17 @@ templ accountPermissionsForm(account actions.Account) {
 		Id:          "permissions",
 		Name:        "permissions",
 		Type:        components.InputTypeCheckbox,
+		Value:       strconv.Itoa(int(models.AccountPermissionDeletePatient)),
+		Checked:     account.HasPermission(models.AccountPermissionDeletePatient),
+		Required:    false,
+		Autofocus:   false,
+		Title:       permissionText(ctx, i18n.StringsCtx(ctx).PermissionDelete, i18n.StringsCtx(ctx).NavPatients),
+		Placeholder: i18n.StringsCtx(ctx).EnterAccountPermissions,
+	})
+	@components.Input(components.InputOptions{
+		Id:          "permissions",
+		Name:        "permissions",
+		Type:        components.InputTypeCheckbox,
 		Value:       strconv.Itoa(int(models.AccountPermissionReadMedicine)),
 		Checked:     account.HasPermission(models.AccountPermissionReadMedicine),
 		Required:    false,
