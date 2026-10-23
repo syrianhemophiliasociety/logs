@@ -7,6 +7,7 @@ type HyperButtonParams struct {
 	HxPath      string
 	HxSwap      string
 	HxTarget    string
+	HxConfirm   string
 	HyperScript string
 }
 
@@ -37,6 +38,9 @@ templ HyperButton(params HyperButtonParams) {
 			hx-swap={ params.HxSwap }
 		} else {
 			hx-swap="none"
+		}
+		if params.HxConfirm != "" {
+			hx-confirm={ params.HxConfirm }
 		}
 		data-loading-target="#loading"
 		data-loading-class-remove="hidden"
