@@ -931,7 +931,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM did_blood_tests WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -940,7 +940,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM has_viruses WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -949,7 +949,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM diagnoses_results WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -958,7 +958,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM visits WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -967,7 +967,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM prophylaxes WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -976,7 +976,7 @@ func (r *Repository) DeletePatient(id uint) error {
 			Exec("DELETE FROM joints_evaluations WHERE patient_id = ?", id).
 			Error,
 	)
-	if err != nil {
+	if _, ok := err.(*ErrRecordNotFound); err != nil && !ok {
 		return err
 	}
 
@@ -1009,6 +1009,7 @@ func (r *Repository) DeletePatient(id uint) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

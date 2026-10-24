@@ -170,13 +170,14 @@ then call Utils.downloadFileBase64(result, "%s Card.png")
 				})
 				if helpers.AccountCtx(ctx).HasPermission(models.AccountPermissionDeletePatient) {
 					@HyperButton(HyperButtonParams{
-						Title:     i18n.StringsCtx(ctx).DeletePatient,
-						Class:     []string{"!w-[200px]"},
-						HxMethod:  "DELETE",
-						HxPath:    fmt.Sprintf("/api/web/patient/%s", patient.PublicId),
-						HxConfirm: "Are you REALLY sure, this isn't reversible!",
-						HxSwap:    "none",
-						HxTarget:  "this",
+						Title:       i18n.StringsCtx(ctx).DeletePatient,
+						Class:       []string{"!w-[200px]"},
+						HxMethod:    "DELETE",
+						HxPath:      fmt.Sprintf("/api/web/patient/%s", patient.PublicId),
+						HxConfirm:   "Are you REALLY sure, this isn't reversible!",
+						HxSwap:      "none",
+						HxTarget:    "this",
+						HyperScript: `on htmx:afterRequest call navigation.navigate("/patients")`,
 					})
 				}
 			</div>
